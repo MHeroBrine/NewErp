@@ -1,0 +1,143 @@
+// 列表
+.v-table {
+  border-collapse: collapse;
+  // width: 100%;
+  // display: flex;
+  width: 900px;
+  border-bottom: 1px solid rgb(180, 186, 192);
+  tr {
+    display: flex;
+    flex-wrap: wrap;
+    height: 50px;
+    th,
+    td {
+      text-align: start;
+      border: 1px solid rgb(180, 186, 192);
+      border-bottom: 0;
+      padding-left: 20px;
+      line-height: 50px;
+      flex: 1;
+      margin-right: -1px;
+    }
+    th {
+      background-color: #eee;
+      font-weight: bold;
+      border-bottom: 1px solid rgb(180, 186, 192);
+    }
+  }
+}
+
+// 弹窗
+.v-alert {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 101;
+  .pre_container {
+    position: relative;
+    width: 600px;
+    height: 300px;
+    background-color: #fff;
+    border-radius: 20px;
+    border: 1px solid #000;
+    .pre_title {
+      text-align: center;
+      width: 100%;
+      height: 60px;
+      line-height: 60px;
+      border-bottom: 1px solid #000;
+      a {
+        position: absolute;
+        left: 10px;
+      }
+      h3 {
+        font-size: 20px;
+        font-weight: bold;
+      }
+    }
+  }
+}
+
+// 按钮
+.v-button {
+  cursor: pointer;
+  outline: none;
+  color: #fff;
+  font-size: 14px;
+  letter-spacing: 1px;
+  border-radius: 5px;
+  min-width: 80px;
+  min-height: 30px;
+  padding: 10px;
+  background-color: #fff;
+  color: #000;
+  border: 0px;
+  transition: all 0.3s;
+
+}
+.b-primary {
+  color: #fff;
+  background-color: #46b8ed;
+  &:hover {
+    background-color: #8fcce8;
+  }
+  &:active {
+    background-color: #1e99d3;
+  }
+}
+.b-success {
+  color: #fff;
+  background-color: #67c23a;
+}
+.b-info {
+  color: #fff;
+  background-color: #909399;
+}
+.b-warning {
+  color: #fff;
+  background-color: #e6a23c;
+}
+.b-danger {
+  color: #fff;
+  background-color: #f56c6c;
+}
+.b-disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  &:hover {
+    opacity: 0.4;
+  }
+}
+.b-small {
+  font-size: 16px;
+  min-width: 80px;
+  min-height: 40px;
+}
+.b-medium {
+  min-width: 100px;
+  min-height: 50px;
+}
+.b-dlarge {
+  font-size: 22px;
+  min-width: 140px;
+  min-height: 70px;
+}
+
+// 输入框
+.v-input {
+  outline: none;
+  box-sizing: border-box;
+  font-size: 16px;
+  border: 1px solid #c5c5c5;
+  &::-webkit-input-placeholder {
+    color: #c5c5c5;
+  }
+  &:focus {
+    border: 1px solid rgb(70, 184, 237);
+  }
+}

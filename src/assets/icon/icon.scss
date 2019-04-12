@@ -1,0 +1,79 @@
+icon {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.back_1 {
+    position: relative;
+    width: 0;
+    height: 0;
+    border-bottom: 15px solid #000;
+    border-left: 15px solid transparent;
+    &::before {
+        content: "";
+        position: absolute;
+        width: 0;
+        height: 0;
+        right: 0px;
+        top: 15px;
+        border-top: 15px solid #000;
+        border-left: 15px solid transparent;
+    }
+}
+
+.back_2 {
+    position: relative;
+    width: 0;
+    height: 0;
+    border-bottom: 15px solid #000;
+    border-left: 15px solid transparent;
+    &::before {
+        content: "";
+        position: absolute;
+        width: 0;
+        height: 0;
+        right: 0px;
+        top: 15px;
+        border-top: 15px solid #000;
+        border-left: 15px solid transparent;
+    }
+}
+
+.forward_1 {
+    position: relative;
+    width: 0;
+    height: 0;
+    border-bottom: 15px solid #000;
+    border-right: 15px solid transparent;
+    &::before {
+        content: "";
+        position: absolute;
+        width: 0;
+        height: 0;
+        left: 0px;
+        top: 15px;
+        border-top: 15px solid #000;
+        border-right: 15px solid transparent;
+    }
+}
+
+.forward_2 {
+    position: relative;
+    width: 0;
+    height: 0;
+    border-bottom: 15px solid #000;
+    border-right: 15px solid transparent;
+    &::before {
+        content: "";
+        position: absolute;
+        width: 0;
+        height: 0;
+        left: 0px;
+        top: 15px;
+        border-top: 15px solid #000;
+        border-right: 15px solid transparent;
+    }
+}

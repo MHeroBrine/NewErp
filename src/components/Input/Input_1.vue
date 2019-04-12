@@ -1,6 +1,6 @@
 <template>
     <div class="v-input">
-        <span ref="span">{{ title }}</span>
+        <span ref="span" v-if="title">{{ title }}</span>
         <input 
             v-bind:type="type" 
             v-bind:value="value" 
@@ -46,8 +46,10 @@
             }
         },
         mounted() {
-            if (this.title.length < 4) {
-                this.$refs.span.innerHTML += "&#x3000;&#x3000;";
+            if (this.title !== undefined) {
+                if (this.title.length < 4) {
+                    this.$refs.span.innerHTML += "&#x3000;&#x3000;";
+                }
             }
 
             if (this.RegExp) {

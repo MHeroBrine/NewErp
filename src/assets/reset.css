@@ -47,6 +47,7 @@ table {
 	border-spacing: 0;
 }
 a {
+	cursor: pointer;
 	text-decoration: none;
 	color: #000;
 }
@@ -62,4 +63,9 @@ div {
 }
 .fr {
 	float: right;
+}
+.center {
+	display: flex;
+	justify-content: center;
+	width: 1200px;
 }

@@ -1,9 +1,9 @@
 <template>
     <div class="select">
         <span>{{ title }}</span>
-        <select>
+        <select :value="selected" @change="$emit('change', $event.target.value)">
             <template v-for="item in option">
-                <option :value="item">{{ item }}</option>
+                <option :value="item.value">{{ item.text }}</option>
             </template>
         </select>
     </div>
@@ -11,12 +11,11 @@
 
 <script>
     export default {
-        data() {
-            return {
-                option: ''
-            }
+        model: {
+            prop: 'selected',
+            event: 'change'
         },
-        props: ['title', 'option']
+        props: ['title', 'option', 'selected']
     }
 </script>
 

@@ -26,6 +26,7 @@
 
 <style lang="scss" scoped>
     .button_1 {
+        display: inline-block;
         margin: 10px;
         button {
             cursor: pointer;
