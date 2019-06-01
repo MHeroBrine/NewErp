@@ -2,9 +2,9 @@
     <div class="nav_user">
         <div class="profile">
             <div class="changeProfile" @click="changeProfile()">更换头像</div>
-            <img src="../../assets/icon/user.svg" alt="">
+            <img src="../../assets/Header/Nav_user_2.svg" alt="">
             <div></div>
-            <span>用户名：XXX</span>
+            <span class="userName">用户名</span>
         </div>
         <div class="accountManage">
             <h3>账号管理</h3>
@@ -49,21 +49,30 @@
 
 <style lang="scss" scoped>
     .nav_user {
-        width: 150px;
-        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-left: 332px;
+        width: 313px;
+        height: 840px;
+        text-align: center;
         background-color: #fff;
-        border-right: 1px solid #000;
+        border: 2px solid #46B8ED;
         .profile {
             position: relative;
             text-align: center;
-            height: 150px;
+            width: 124px;
+            height: 124px;
+            margin-top: 70px;
+            border: 2px solid #46B8ED;
             .changeProfile {
                 position: absolute;
-                width: 100px;
-                height: 100px;
-                line-height: 100px;
-                left: 25px;
-                top: 30px;
+                width: 124px;
+                height: 32px;
+                line-height: 32px;
+                left: -2px;
+                bottom: 0px;
+                z-index: 50;
                 background-color: #000;
                 opacity: 0;
                 color: #fff;
@@ -73,28 +82,48 @@
                 }
             }
             img {
-                margin-top: 30px;
-                width: 100px;
+                position: absolute;
+                width: 84px;
+                height: 98px;
+                left: 20px;
+                bottom: 13px;
+            }
+            .userName {
+                position: absolute;
+                bottom: -46px;
+                left: 39px;
             }
         }
         .accountManage {
-            margin-top: 20px;
-            text-align: center;
+            display: flex;
+            flex-direction: column;
+            margin-top: 126px;
+            align-items: center;
             h3 {
-                font-size: 20px;
-                font-weight: bold;
+                width: 100px;
+                font-size: 24px;
+                padding: 0 2px 4px 2px;
+                border-bottom: 2px solid #409EFF;
             }
             ul {
+                width: 313px;
                 margin-top: 20px;
                 li {
-                    padding-top: 15px;
-                    padding-bottom: 15px;
+                    font-size: 20px;
+                    padding: 20px;
                     background-color: #409EFF;
-                    width: 100%;
                     a {
                         color: #fff;
                     }
-                    // margin-top: 10px;
+                    &:nth-of-type(2) {
+                        background-color: #fff;
+                        border-right: 2px solid #409EFF;
+                        border-left: 2px solid #409EFF;
+                        a {
+                            color: #000;
+                            
+                        }
+                    }
                 }
             }
         }

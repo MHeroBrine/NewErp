@@ -341,7 +341,6 @@
                 this.float.productList = !this.float.productList;
                 Axios.get(this.URL + '/game/compete/operation/market/market/infos/get/status?enterpriseId=' + id + '&marketStatus=' + state)
                     .then(Response => {
-                        console.log(Response);
                     })
             },
             editCheck(data) {
@@ -353,7 +352,6 @@
                     arr[i] = false;
                 }
                 this.editable = arr;
-                console.log(this.editable);
             },
             editADcost(value) {
                 this.editable[value] = !this.editable[value];

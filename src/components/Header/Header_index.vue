@@ -1,56 +1,32 @@
 <template>
     <div class="header_index">
         <div class="title">
-            <h1>ERP虚拟运营系统</h1>&nbsp;&nbsp;&nbsp;<span>第一年第一期</span>&nbsp;&nbsp;
-            <img src="../../assets/icon/play.svg" alt="">
-            <img src="../../assets/icon/exit.svg" alt="" @click="endGame()">
-
-            <div class="endGame" v-if="isEnd">
-                <div class="container mg">
-                    <div class="top">
-                        <h3>退出经营？</h3>
-                    </div>
-                    <div class="context">
-                        <p>填写实验报告&nbsp;&nbsp;<a @click="editReport()">--></a></p>
-                    </div>
-                    <div class="form">
-                        <template v-for="item in data">
-                            <v-input1 :title="item.title" v-model="item.value"></v-input1>
-                        </template>
-                    </div>
-                    <div class="button">
-                        <v-button1 type="primary" value="确认" width="140px" @click.native="confirm()"></v-button1>
-                        <v-button1 type="primary" value="返回" width="140px" @click.native="endGame()"></v-button1>
-                    </div>
-                </div>
+            <h1>ERP虚拟运营系统</h1>
+        </div>
+        <i><img src="@/assets/Game/Index/quit.svg"></i>
+        <i><img src="@/assets/Game/Index/next.svg"></i>
+        
+        <div class="title_right">
+            <div class="user" @mouseover="isHide = false">
+                <img src="@/assets/Header/Nav_user.png"><span class="userName">用户名</span>
             </div>
+        </div>
+        <div class="cover" v-show="!isHide" @mouseleave="isHide = true" v-if="turn">
 
         </div>
-        <div>
-            <div class="menu">
-                实验报告&nbsp;<a @click="isMenu = !isMenu">↓</a>
-                <ul v-if="isMenu">
-                    <li>查看报告</li>
-                    <li>在线编辑</li>
-                </ul>
-                &nbsp;&nbsp;&nbsp;
+        <div class="info" v-bind:class="{ show: !isHide }" @mouseenter="isHide = false" @mouseleave="isHide = true" v-if="turn">
+            <div class="main">
+                <img src="@/assets/Header/Nav_user_2.svg" alt="" class="user">
+                <span class="name">姓名：{{ this.$store.state.user.studentName }}</span>
+                <span class="studentAccount">学号：{{ this.$store.state.user.studentAccount }}</span>
+                <a class="continue">继续</a>
+                <img src="@/assets/Header/Nav_clock.svg" class="clock">
+                <span class="game">......比赛</span>
+                <a class="exit" @click="exit()">安全退出</a>
             </div>
-            <img src="../../assets/icon/home.svg" alt="" @click="linkTo('/nav')">
-            <img src="../../assets/icon/user.svg" alt="" class="user" @click="showCard()">
-            <div class="card" v-if="cardState">
-                <div>
-                    <img src="../../assets/icon/user.svg" alt="">
-                    <a>{{ this.$store.state.user.studentName }}</a> / <a>{{ this.$store.state.user.studentAccount }}</a>
-                    <a href="#" @click="exit()">安全退出</a>
-                </div>
-                <div>
-                    <span>xxx比赛</span><a>继续</a>
-                </div>
-                <div>
-                    <router-link to="/userInfo" class="fr" @click.native="cardState = false">个人中心</router-link>
-                </div>
+            <div class="footer">
+                <a class="link" @click="infoCenter()">个人中心 >></a>
             </div>
-            {{ this.$store.state.user.studentName }}
         </div>
     </div>
 </template>
@@ -61,7 +37,10 @@
             return {
                 isMenu: false,
                 isEnd: false,
-                cardState: false
+                cardState: false,
+                // 是否展示下拉框
+                isHide: true,
+                turn: true
             }
         },
         methods: {
@@ -81,149 +60,155 @@
             editReport() {
                 this.$router.push('/report');
                 this.endGame();
-            },
-            confirm() {
-
-            },
+            }
         }
     }
 </script>
 
 <style lang="scss" scoped>
     .header_index {
+        position: relative;
         display: flex;
         justify-content: space-between;
-        height: 70px;
-        line-height: 70px;
+        height: 60px;
+        line-height: 60px;
         min-width: 1000px;
-        padding: 10px;
-        background-color: #666;
-        h1 {
-            font-size: 30px;
-            font-weight: bold;
+        .title {
+            width: 320px;
+            h1 {
+                margin-left: 15px;
+                font-size: 22px;
+            }
+            img {
+                margin-left: 35px;
+                margin-top: 17px;
+                width: 206px;
+                height: 27px;
+            }
         }
-        div {
+        i {
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            border: 1px solid #eee;
+            left: 250px;
+            top: 15px;
+            // border-radius: 50%;
+            img {
+                position: absolute;
+                top: 6px;
+                left: 6px;
+                width: 16px;
+                height: 16px;
+            }
+            &:nth-of-type(2) {
+                left: 295px;
+            }
+        }
+        .version {
+            margin-right: 37px;
+            font-size: 16px;
+            span {
+                font-weight: bold;
+            }
+        }
+        .title_right {
             display: flex;
+            .user {
+                width: 100px;
+                position: relative;
+                margin-right: 260px;
+                img {
+                    cursor: pointer;
+                    width: 38px;
+                    height: 38px;
+                    margin-top: 11px;
+                }
+                span {
+                    color: #333;
+                    margin-top: 2px;
+                    font-size: 12px;
+                    left: 45px;
+                    position: absolute;
+                }
+            }
             a {
                 font-weight: bold;
             }
         }
-        img {
-            cursor: pointer;
-            width: 50px;
-            height: 50px;
-        }
-        .title {
-            img {
-                width: 40px;
-            }
-            .endGame {
-                display: flex;
-                align-items: center;
-                position: absolute;
-                width: 100%;
-                height: 100%;
-                top: 0;
-                left: 0;
-                z-index: 100;
-                .container {
-                    display: block;
-                    position: relative;
-                    width: 600px;
-                    height: 300px;
-                    background-color: #fff;
-                    border-radius: 20px;
-                    border: 1px solid #000;
-                    .top {
-                        display: flex;
-                        justify-content: center;
-                        width: 100%;
-                        height: 60px;
-                        line-height: 60px;
-                        border-bottom: 1px solid #000;
-                        h3 {
-                            font-size: 20px;
-                            font-weight: bold;
-                        }
-                    }
-                    .context {
-                        display: flex;
-                        justify-content: center;
-                        width: 100%;
-                        height: 100px;
-                        line-height: 100px;
-                        
-                    }
-                    .button {
-                        display: flex;
-                        justify-content: center;
-                    }
-                }
-            }
-        }
-        .menu {
-            position: relative;
-            margin-right: 30px;
-            a {
-                cursor: pointer;
-            }
-            ul {
-                position: absolute;
-                top: 62px;
-                li {
-                    display: flex;
-                    flex-direction: row;
-                    width: 80px;
-                    line-height: 30px;
-                    background-color: #fff;
-                }
-            }
-        }
-         .card {
-            display: block;
+        .cover {
             position: absolute;
-            width: 350px;
-            height: 200px;
-            top: 61px;
-            right: 0;
-            border: 1px solid #000;
-            border-top: 0px;
+            right: 60px;
+            width: 358px;
+            height: 60px;
+        }
+        .info {
+            position: absolute;
+            width: 358px;
+            height: 0px;
+            overflow: hidden;
             background-color: #fff;
-            div {
-                display: block;
-                padding: 10px;
+            box-shadow: 0px 5px 10px 1.08px rgba(134, 134, 134, 0.5);
+            z-index: 30;
+            right: 60px;
+            top: 60px;
+            transition: all 0.5s;
+            .main {
+                position: relative;
                 width: 100%;
-                &:nth-of-type(1) {
-                    // width: 100%;
-                    height: 100px;
-                }       
-                &:nth-of-type(2) {
-                    // width: 100%;
-                    height: 70px;
-                    border-bottom: 2px solid #eee;
-                    span {
-                        margin-left: 100px;
-                    }
-                    a {
-                        margin-left: 30px;
-                    }
-                }   
-                &:nth-of-type(3) {
-                    padding: 0;
-                    line-height: 28px;
-                    height: 28px;
-                    a {
-                        margin-right: 10px;
-                    }
-                }          
-                a {
-                    font-weight: normal;
-                    font-size: 13px;
-                    &:nth-of-type(3) {
-                        margin-left: 120px;
-                    }
+                height: 182px;
+                font-size: 12px;
+                .user {
+                    position: absolute;
+                    left: 34px;
+                    top: 28px;
+                }
+                .name {
+                    position: absolute;
+                    left: 83px;
+                    top: 37px;
+                }
+                .studentAccount {
+                    position: absolute;
+                    top: 37px;
+                    left: 170px;
+                }
+                .continue {
+                    position: absolute;
+                    top: 37px;
+                    right: 37px;
+                }
+                .clock {
+                    position: absolute;
+                    left: 83px;
+                    top: 127px;
+                }
+                .game {
+                    position: absolute;
+                    left: 120px;
+                    top: 120px;
+                }
+                .exit {
+                    position: absolute;
+                    color: #46b8ed;
+                    right: 37px;
+                    top: 120px;
                 }
             }
+            .footer {
+                position: relative;
+                height: 42px;
+                background-color: #E4E4E4;
+                font-size: 14px;
+                .link {
+                    position: absolute;
+                    right: 36px;
+                    top: -8px;
+                }
+            }
+        }
+        .show {
+            height: 224px;
         }
     }
 </style>

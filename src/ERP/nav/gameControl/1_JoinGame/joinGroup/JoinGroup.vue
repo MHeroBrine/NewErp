@@ -1,12 +1,15 @@
 <template>
     <div id="joinGroup">
-        <div class="nav">
-            <img src="../../../../../assets/icon/circle.svg" alt=""><a @click="freshList()">刷新</a>&nbsp;&nbsp;
-            <img src="../../../../../assets/icon/plus.svg" alt=""><a @click="createGroup()">新建企业</a>
-            <router-link class="fr" to="/joinGame">比赛名称</router-link>
-        </div>
-        <div class="content mg">
-            <v-pagination-group></v-pagination-group>
+        <div class="container_default">
+            <div class="title">
+                <h3>加入企业</h3>
+            </div>
+            <div class="main">
+                <v-pagination-group></v-pagination-group>
+                <img src="@/assets/Nav/GameControl/back_round.svg" class="back" @click="linkTo('/nav')">
+                <img src="@/assets/Nav/GameControl/add.svg" class="add" @click="createGroup()">
+                <img src="@/assets/Nav/GameControl/refresh.svg" class="refresh" @click="freshList()">
+            </div>
         </div>
     </div>
 </template>
@@ -24,38 +27,39 @@
                         value: ''
                     },
                     {
-                        title: '成员数量',
+                        title: '最大成员个数',
                         value: ''
                     }
-                ],
+                ]
             }
         },
         mounted() {
             this.$store.commit('pageState', 'gameControl_joinGame_joinGroup');
-            this.$store.commit('setGameControlTitle', '加入企业');
         },
         methods: {
             createGroup() {
-                this.$store.commit('controlAlert', [true, '新建企业', null, this.data, () => {
+                this.$store.commit('controlAlert', [true, 'WARN', '新建企业', null, this.data, () => {
                     Axios.post(this.URL + '/game/manage/enterprise/create', {
                         "creatorId": this.$store.state.user.id,
                         "enterpriseName": this.data[0].value,
                         "gameId": localStorage.getItem('GAME'),
                         "maxMemberNumber": this.data[1].value
                     }).then((Response) => {
-                        console.log(Response);
                         if (Response.data.code === 200) {
-                            alert('新建企业成功');
-                            this.$store.commit('controlAlert', [false]);
+                            this.$store.commit('controlAlert', [true, 'TRUE' ,'新建企业成功', null, null, null]);
                             this.freshList();
                         } else {
-                            alert('新建失败，请重试');
+                            this.$store.commit('controlAlert', [true, 'FALSE', '新建失败，您可能已经加入了一个小组', null, null, null]);
+                            this.freshList();
                         }
                     })
                 }])
             },
             freshList() {
                 vueEvent.$emit('refreshGroupList');
+            },
+            linkTo(address) {
+                history.back();
             }
         }
     }
@@ -63,24 +67,33 @@
 
 <style lang="scss" scoped>
     #joinGroup {
+        position: relative;
         width: 100%;
-        .nav {
-            width: 100%;
-            min-width: 1200px;
-            height: 70px;
-            border-bottom: 1px solid #000;
-            padding-top: 15px;
-            padding-left: 10px;
-            img {
-                width: 30px;
+        .container_default {
+            max-width: 1850px;
+            .main {
+                padding-top: 20px;
+                img {
+                    cursor: pointer;
+                    width: 30px;
+                }
+                .back {
+                    width: 34px;
+                    position: absolute;
+                    bottom: 28px;
+                    right: 130px;
+                }
+                .add {
+                    position: absolute;
+                    bottom: 30px;
+                    right: 80px;
+                }
+                .refresh {
+                    position: absolute;
+                    bottom: 30px;
+                    right: 30px;
+                }
             }
-            .input_search {
-                margin: 5px 10px 0 0;
-            }
-        }
-        .content {
-            margin-top: 50px;
-            width: 1200px;
         }
     }
 </style>

@@ -3,16 +3,19 @@
   border-collapse: collapse;
   // width: 100%;
   // display: flex;
-  width: 900px;
-  border-bottom: 1px solid rgb(180, 186, 192);
+  color: #797979;
+  width: 800px;
   tr {
     display: flex;
     flex-wrap: wrap;
     height: 50px;
+    border-bottom: 1px solid rgb(180, 186, 192);
+    &:nth-child(even) {
+      background-color: #F9F9F9;
+    }
     th,
     td {
       text-align: start;
-      border: 1px solid rgb(180, 186, 192);
       border-bottom: 0;
       padding-left: 20px;
       line-height: 50px;
@@ -20,9 +23,9 @@
       margin-right: -1px;
     }
     th {
-      background-color: #eee;
+      font-size: 14px;
       font-weight: bold;
-      border-bottom: 1px solid rgb(180, 186, 192);
+      border-bottom: 2px solid rgb(180, 186, 192);
     }
   }
 }
@@ -139,5 +142,68 @@
   }
   &:focus {
     border: 1px solid rgb(70, 184, 237);
+  }
+}
+
+// 单选框
+// .v-radio {
+//   position: relative;
+//   border-radius: 4px;
+//   width: 17px;
+//   height: 17px;
+//   &::before {
+//     content: "";
+//     position: absolute;
+//     width: 17px;
+//     height: 17px;
+//     background-color: rgb(70, 184, 237);
+//   }
+// }
+.v-radio {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  position: relative;
+}
+.v-radio:after {
+  position: absolute;
+  width: 9px;
+  height: 15px;
+  top: 0;
+  content: " ";
+  border-radius: 4px;
+  background-color: rgb(70, 184, 237);
+  color: #fff;
+  display: inline-block;
+  visibility: visible;
+  padding: 0px 3px;
+}
+.v-radio:checked:before {
+  content: url('../assets/Register/true.svg');
+  display: block;
+  position: relative;
+  top: 1px;
+  left: 2px;
+  color: #fff;
+  font-weight: 400;
+  z-index: 1;
+}
+
+.container_default {
+  position: relative;
+  background-color: #fff;
+  margin: 0 30px 0 30px;
+  max-width: 1650px;
+  min-width: 1400px;
+  min-height: 90vh;
+  // min-width: 800px;
+  margin-top: 20px;
+  .title {
+      height: 43px;
+      line-height: 43px;
+      padding-left: 10px;
+      color: #797979;
+      font-size: 14px;
+      border-bottom: 1px solid #eee;
   }
 }

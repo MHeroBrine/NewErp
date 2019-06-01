@@ -27,7 +27,8 @@
                 d="M63.156,65.437 L63.156,61.594 L121.812,61.594 L121.812,65.437 L63.156,65.437 ZM63.156,49.094 L121.812,49.094 L121.812,53.906 L63.156,53.906 L63.156,49.094 ZM63.156,35.594 L121.812,35.594 L121.812,39.469 L63.156,39.469 L63.156,35.594 ZM62.156,19.250 L98.562,19.250 L98.562,24.062 L62.156,24.062 L62.156,19.250 Z"/>
             </svg>
 
-                <router-link to="/createGame" style="margin-top: 88px;">比赛管理</router-link>
+            <a style="margin-top: 88px;" v-show="activeNow.GAMECONTROL != 'middle'">比赛管理</a>
+            <router-link to="/createGame" style="margin-top: 88px;" v-show="activeNow.GAMECONTROL == 'middle'">比赛管理</router-link>
             </li>
             <li class="card" v-bind:class="{ active: activeNow.CREATEGAME == 'middle', left: activeNow.CREATEGAME == 'left', right: activeNow.CREATEGAME == 'right' }">
     
@@ -55,7 +56,8 @@
                     d="M63.000,68.000 L63.000,64.000 L121.000,64.000 L121.000,68.000 L63.000,68.000 ZM63.000,51.000 L121.000,51.000 L121.000,56.000 L63.000,56.000 L63.000,51.000 ZM63.000,37.000 L121.000,37.000 L121.000,41.000 L63.000,41.000 L63.000,37.000 ZM62.000,20.000 L98.000,20.000 L98.000,25.000 L62.000,25.000 L62.000,20.000 Z"/>
                 </svg>
 
-                <router-link to="/createGame">创建比赛</router-link>
+                <a v-show="activeNow.CREATEGAME != 'middle'">创建比赛</a>
+                <router-link to="/createGame" v-show="activeNow.CREATEGAME == 'middle'">创建比赛</router-link>
             </li>
             <li class="card" v-bind:class="{ active: activeNow.JOINGAME == 'middle', left: activeNow.JOINGAME == 'left', right: activeNow.JOINGAME == 'right' }">
                 
@@ -84,7 +86,8 @@
                     d="M63.167,65.444 L63.167,61.594 L121.811,61.594 L121.811,65.444 L63.167,65.444 ZM63.167,49.083 L121.811,49.083 L121.811,53.895 L63.167,53.895 L63.167,49.083 ZM63.167,35.609 L121.811,35.609 L121.811,39.459 L63.167,39.459 L63.167,35.609 ZM62.156,19.248 L98.556,19.248 L98.556,24.060 L62.156,24.060 L62.156,19.248 Z"/>
                 </svg>
 
-                <router-link to="/index">加入比赛</router-link>
+                <a v-show="activeNow.JOINGAME != 'middle'">加入比赛</a>
+                <router-link to="/continueGame" v-show="activeNow.JOINGAME == 'middle'">加入比赛</router-link>
             </li>
         </ul>
     </div>
@@ -186,7 +189,6 @@
                     margin-top: 55px;
                 }
                 svg {
-                    cursor: pointer;
                     transform: scale(0.77);
                     margin-top: 110px;
                     transition: all 1s;

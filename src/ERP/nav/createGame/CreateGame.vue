@@ -1,12 +1,14 @@
 <template>
     <div id="createGame">
-        <div class="nav">
-            <img src="../../../../src/assets/icon/circle.svg" alt=""><a @click="freshList()">刷新</a>&nbsp;&nbsp;
-            <img src="../../../../src/assets/icon/plus.svg" alt=""><a @click="createGame()">新建</a>
-        </div>
-        <div class="content mg">
-            <!-- 游戏分页组件 类型为创建游戏 -->
-            <v-pagination-game type="createGame"></v-pagination-game>
+        <div class="container_default">
+            <div class="title">
+                <h3>创建比赛</h3>
+            </div>
+            <div class="main">
+                <v-pagination-game type="createGame"></v-pagination-game>
+                <img src="@/assets/Nav/GameControl/add.svg" class="add" @click="createGame()">
+                <img src="@/assets/Nav/GameControl/refresh.svg" class="refresh" @click="freshList()">
+            </div>
         </div>
     </div>
 </template>
@@ -48,22 +50,21 @@
         },
         mounted() {
             this.$store.commit('pageState', 'createGame');
-            this.$store.commit('setGameControlTitle', '创建比赛');
         },
         methods: {
             createGame() {
-                this.$store.commit('controlAlert', [true, '新建比赛', null, this.data, () => {
+                this.$store.commit('controlAlert', [true, 'WARN' ,'新建比赛', null, this.data, () => {
                     Axios.post(this.URL + '/game/manage/create', {
                         "creatorId": this.$store.state.user.id,
                         "gameName": this.data[0].value,
                         "maxEnterpriseNumber": this.data[1].value
                     }).then((Response) => {
+                        console.log(Response);
                         if (Response.data.code === 200) {
-                            alert('新建比赛成功');
-                            this.$store.commit('controlAlert', [false]);
+                            this.$store.commit('controlAlert', [true, 'TRUE', '操作成功', null, null, null]);
                             this.freshList();
                         } else {
-                            alert('新建失败，请重试');
+                            this.$store.commit('controlAlert', [true, 'FALSE', '操作失败', null, null, null]);
                         }
                     })
                 }])
@@ -78,59 +79,23 @@
 
 <style lang="scss" scoped>
     #createGame {
+        position: relative;
         width: 100%;
-        .nav {
-            width: 100%;
-            height: 70px;
-            line-height: 70px;
-            border-bottom: 1px solid #000;
-            padding-top: 15px;
-            padding-left: 10px;
+        .main {
             img {
+                cursor: pointer;
                 width: 30px;
             }
-            .createGame {
+            .add {
                 position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                z-index: 100;
-                .create {
-                    width: 800px;
-                    height: 500px;
-                    margin-top: 200px;
-                    background-color: #fff;
-                    border-radius: 20px;
-                    border: 1px solid #000;
-                    .area_1 {
-                        width: 100%;
-                        height: 70px;
-                        line-height: 70px;
-                        border-bottom: 1px solid #000;
-                        text-align: center;
-                        h3 {
-                            font-size: 22px;
-                            font-weight: bold;
-                        }
-                    }
-                    .area_2 {
-                        width: 100%;
-                        height: 430px;
-                        // line-height: 430px;
-                        text-align: center;
-                        .v-input {
-                            &:nth-of-type(1) {
-                                margin-top: 40px;
-                            }
-                        }
-                    }
-                }
+                bottom: 30px;
+                right: 80px;
             }
-        }
-        .content {
-            margin-top: 50px;
-            width: 1200px;
+            .refresh {
+                position: absolute;
+                bottom: 30px;
+                right: 30px
+            }
         }
     }
 </style>

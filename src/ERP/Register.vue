@@ -2,47 +2,37 @@
     <div id="register" class="mg center">
         <div class="form">
             <h2>注册</h2>
-            <template v-for="item in list_1">
-                <v-input1
-                    :title="item.title"
-                    v-model="item.value"
-                    :type="item.type"
-                    :RegExp="item.RegExp"
-                    :disabled="item.disabled"
-                    :placeholder="item.placeholder"
-                    :eye="item.eye"
-                />
-            </template>
 
-            <div class="select">
-                学院 <select v-model="collegeNow">
+            <div class="account">
+                <input class="v-input" placeholder="学号" v-model="studentAccount">
+                <i class="true" v-show="!isRegister && isInputOver"></i>
+                <i class="false" v-show="isRegister && isInputOver"></i>
+            </div>
+            <div class="item">
+                <select v-model="collegeNow">
+                    <option value="0" selected disabled style="display: none;">学院</option>
                     <template v-for="item in collegeList">
                         <option :value="item.id">{{ item.college }}</option>
                     </template>
                 </select>
-                <div></div>
-                专业 <select v-model="majorNow">
+                <select v-model="majorNow">
+                     <option value="0" selected disabled style="display: none;">专业</option>
                     <template v-for="item in majorList">
                         <option :value="item.id">{{ item.major }}</option>
                     </template>
                 </select>
             </div>
-
-            <template v-for="item in list_3">
-                <v-input1
-                    :title="item.title"
-                    v-model="item.value"
-                    :type="item.type"
-                    :RegExp="item.RegExp"
-                    :disabled="item.disabled"
-                    :placeholder="item.placeholder"
-                    :eye="item.eye"
-                />
-            </template>
-
-            <span><input type="checkbox" v-model="readed">我已阅读相关<a href="#" @click="showItem()">服务条款</a></span>
-
-            <v-button1 value="确认" type="primary" width="250px" @click.native="register()"></v-button1>
+            <div v-for="item in data" class="item">
+                <input :type="item.type" class="v-input" :placeholder="item.title" v-model="item.data">
+                <i v-if="item.check && Reg(item.data, item.RegExp) === true" class="true"></i>
+                <i v-if="item.check && Reg(item.data, item.RegExp) === false" class="false"></i>
+            </div>
+            <div class="radio">
+                <input type="checkbox" class="v-radio" v-model="readed">&nbsp;<p>我已阅读相关<a>《服务条款》</a></p>
+            </div>
+            <button class="v-button b-primary" @click="register()">确定</button>
+            
+            <router-link to="/login" class="returnLogin">返回登录</router-link>
         </div>
     </div>    
 </template>
@@ -53,40 +43,28 @@
     export default {
         data() {
             return {
+                data: [
+                    { title: '姓名', data: null },
+                    { title: '班级', data: null },
+                    { title: '密码', data: null, check: true, RegExp: /^[\w_-]{6,16}$/, type: 'password' },
+                    { title: '确认密码', data: null, check: true, RegExp: 'rePassword', type: 'password' },
+                ],
+                // 学生账号
+                studentAccount: null,
+                // 是否被注册
+                isRegister: null,
+                // 是否已输入完毕（指注册）
+                isInputOver: false,
+                // 密码（用于校验）
+                passwordNow: null,
                 // 相关条例
                 readed: 0,
 
                 // 当前学院，控制当前专业
-                collegeNow: 1,
-                majorNow: 1,
-
-                // 输入框
-                list_1: [
-                    {
-                        title: '学号',
-                        value: ''
-                    },
-                    {
-                        title: '姓名',
-                        value: ''
-                    }
-                ],
-                list_3: [
-                    {
-                        title: '班级',
-                        value: ''
-                    },
-                    {
-                        title: '密码',
-                        value: '',
-                        type: 'password',
-                    },
-                    {
-                        title: '确认密码',
-                        value: '',
-                        type: 'password',
-                    }
-                ]
+                collegeNow: 0,
+                majorNow: 0,
+                collegeList: [],
+                majorList: []
             }
         },
         mounted() {
@@ -100,6 +78,10 @@
             // 监听学院变化，通知专业改变
             collegeNow: function(val) {
                 this.setMajorInfo(val);
+            },
+            // 监听学号输入情况，返回是否被注册
+            studentAccount: function(val) {
+                this.checkRegister(val);
             }
         },
         methods: {
@@ -109,6 +91,7 @@
             },
             // 根据学院设置专业
             setMajorInfo(val) {
+                console.log(this.collegeList);
                 for (let item in this.collegeList) {
                     if (this.collegeList[item].id === val) {
                         this.majorList = this.collegeList[item].major;
@@ -116,46 +99,91 @@
                     }
                 }
             },
+            // 密码正则校验
+            Reg(val, Reg) {
+                if (Reg === 'rePassword' && val) {
+                    return val === this.passwordNow;
+                }
+
+                // 为空
+                if (val == null) {
+                    return null;
+                }
+
+                // 未超过6位
+                if (val.length < 6) {
+                    return null;
+                }
+
+                if (Reg.test(val)) {
+                    this.passwordNow = val;
+                    return true;
+                }
+                return false;
+            },
+            // 账号是否重复
+            checkRegister(val) {
+                if (val.length != 11) {
+                    this.isInputOver = false;
+                } else if (val.length == 11) {
+                    this.isInputOver = true;
+                    Axios.get(this.URL + '/user/student/basicInfo/exist?userAccount=' + val)
+                        .then(Response => {
+                            console.log(Response);
+                            if (Response.data.code === 204) {
+                                this.isRegister = true;
+                            } else {
+                                this.isRegister = false;
+                            }
+                        })
+                }
+            },
             // 注册
             register() {
                 if (this.readed == true) {
-                    let arr = this.list_1.concat(this.list_3);
-                    let data = {  
-                        "majorInfoId": this.majorNow,
-                        "rePassword": arr[4].value,
-                        "studentAccount": arr[0].value,
-                        "studentClass": arr[2].value,
-                        "studentName": arr[1].value,
-                        "studentPassword": arr[3].value
+                    if (this.majorNow != 0) {
+                        let data = {  
+                            "majorInfoId": this.majorNow,
+                            "rePassword": this.data[3].data,
+                            "studentAccount": this.studentAccount,
+                            "studentClass": this.data[1].data,
+                            "studentName": this.data[0].data,
+                            "studentPassword": this.data[2].data
+                        }
+                        Axios.post(this.URL + '/user/student/register', data)
+                            .then((Response) => {
+                                if (Response.data.code === 200) {
+                                    alert('注册成功，请耐心等待老师审核');
+                                    this.$router.push('/login');
+                                } else {
+                                    alert('输入信息有误，请检查后重试');
+                                }
+                            })
+                    } else {
+                        alert('请先阅读服务条款');
                     }
-                    console.log(data);
-                    Axios.post(this.URL + '/user/student/register', data)
-                        .then((Response) => {
-                            console.log(Response);
-                            if (Response.data.code === 200) {
-                                alert('注册成功，请耐心等待老师审核');
-                            } else {
-                                alert('输入信息有误，请检查后重试');
-                            }
-                        })
-                } else {
-                    alert('请先阅读服务条款');
                 }
-            }
+            },
         }
     }
 </script>
 
 <style lang="scss" scoped>
     #register {
-        margin-top: 50px;
+        width: 100%;
+        background: url('../assets/Register/background_shallow.png');
         .form {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             width: 600px;
-            height: 600px;
+            height: 640px;
             background-color: #fff;
-            border-radius: 20px;
-            border: 1px solid #000;
+            border-radius: 15px;
+            border: 3px solid rgb(222, 222, 222);
             text-align: center;
+            margin-top: 110px;
             .select {
                 line-height: 50px;
                 select {
@@ -164,19 +192,139 @@
             }
             h2 {
                 font-size: 24px;
-                font-weight: bold;
                 margin-top: 20px;
+                color: #46b8ed;
             }
-            .v-input {
-                margin: 10px;
-                margin-top: 20px;
-                &:nth-of-type(1) {
-                    margin-top: 40px;
+            .account {
+                position: relative;
+                margin-top: 16px;
+                .v-input {
+                    position: relative;
+                    width: 325px;
+                    height: 40px;
+                    padding-left: 8px;
+                    font-size: 14px;
+                    &::-webkit-input-placeholder {
+                        color: #666;
+                    }
+                }
+                .true {
+                    position: absolute;
+                    right: -27px;
+                    top: 10px;
+                    width: 18px;
+                    height: 18px;
+                    border-radius: 50%;
+                    background-color: #43B14D;
+                    &::before {
+                        position: absolute;
+                        content: url('../assets/Register/true.svg');
+                        top: 1px;
+                        left: 3px;
+                    }
+                }
+                .false {
+                    position: absolute;
+                    right: -27px;
+                    top: 10px;
+                    width: 18px;
+                    height: 18px;
+                    border-radius: 50%;
+                    background-color: #FE3824;
+                    &::before {
+                        position: absolute;
+                        content: url('../assets/Register/false.svg');
+                        transform: scale(0.8);
+                        top: 2px;
+                        left: 2.5px;
+                    }
                 }
             }
-            .select {
-                margin: 10px;
-                margin-top: 20px;
+            .item {
+                position: relative;
+                margin-top: 24px;
+                select {
+                    cursor: pointer;
+                    outline: none;
+                    box-sizing: border-box;
+                    font-size: 16px;
+                    border: 1px solid #c5c5c5;
+                    &:focus {
+                        border: 1px solid rgb(70, 184, 237);
+                    }
+                    position: relative;
+                    width: 325px;
+                    height: 40px;
+                    padding-left: 4px;
+                    font-size: 14px;
+                    color: #666;
+                    &:nth-of-type(2) {
+                        margin-top: 24px;
+                    }
+                }
+                .v-input {
+                    position: relative;
+                    width: 325px;
+                    height: 40px;
+                    padding-left: 8px;
+                    font-size: 14px;
+                    &::-webkit-input-placeholder {
+                        color: #666;
+                    }
+                }
+                .true {
+                    position: absolute;
+                    right: -27px;
+                    top: 10px;
+                    width: 18px;
+                    height: 18px;
+                    border-radius: 50%;
+                    background-color: #43B14D;
+                    &::before {
+                        position: absolute;
+                        content: url('../assets/Register/true.svg');
+                        top: 1px;
+                        left: 3px;
+                    }
+                }
+                .false {
+                    position: absolute;
+                    right: -27px;
+                    top: 10px;
+                    width: 18px;
+                    height: 18px;
+                    border-radius: 50%;
+                    background-color: #FE3824;
+                    &::before {
+                        position: absolute;
+                        content: url('../assets/Register/false.svg');
+                        transform: scale(0.8);
+                        top: 2px;
+                        left: 2.5px;
+                    }
+                }
+            }
+            .radio {
+                position: relative;
+                width: 330px;
+                height: 30px;
+                margin-top: 15px;
+                text-align: left;
+                font-size: 14px;
+                .v-radio {
+                    position: absolute;
+                    top: 1px;
+                }
+                p {
+                    left: 28px;
+                    top: 5px;
+                    position: absolute;
+                }
+            }
+            button {
+                width: 312px;
+                height: 38px;
+                margin-top: 8px;
             }
             span {
                 display: block;
@@ -188,6 +336,13 @@
             }
             .button_1 {
                 margin-top: 50px;
+            }
+            .returnLogin {
+                position: absolute;
+                bottom: 15px;
+                right: 15px;
+                font-size: 14px;
+                color: #46b8ed;
             }
         }   
     }

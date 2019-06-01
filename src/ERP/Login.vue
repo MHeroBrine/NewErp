@@ -1,7 +1,7 @@
 <template>
     <div id="Login">
         <div class="container mg">
-            <div class="form" v-bind:class="{ verify: isVerify }">
+            <div class="form" v-show="!isVerify">
                 <h2>学生端</h2>
                 <img src="../assets/Login/cap.svg" class="cap">
                 <div class="userCount">
@@ -15,14 +15,34 @@
                     <img src="../assets/Login/eye_open.svg" class="eye" v-show="eye" @click="eye = !eye">
                     <img src="../assets/Login/eye_close.svg" class="eye" v-show="!eye" @click="eye = !eye">
                 </div>
-                <div class="verifyCode" v-bind:class="{ show: !isVerify }">
+                <router-link class="register" to="/register">新用户注册</router-link>
+                <button class="v-button b-primary login" @click="login()">登录</button>
+                <div class="admin_login">
+                    <span>管理员登录</span>
+                    <img src="../assets/Login/step.svg">
+                </div>
+            </div>
+
+            <div class="form" v-show="isVerify">
+                <div class="userCount">
+                    <input class="v-input" placeholder="学号/用户名" v-model="userAccount">
+                    <img src="../assets/Login/people.svg">
+                </div>
+                <div class="password">
+                    <input class="v-input" placeholder="请输入密码" type="password" v-model="userPassword" v-show="eye">
+                    <input class="v-input" placeholder="请输入密码" type="text" v-model="userPassword" v-show="!eye">
+                    <img src="../assets/Login/lock.svg" class="lock">
+                    <img src="../assets/Login/eye_open.svg" class="eye" v-show="eye" @click="eye = !eye">
+                    <img src="../assets/Login/eye_close.svg" class="eye" v-show="!eye" @click="eye = !eye">
+                </div>
+                <div class="verifyCode">
                     <div class="main">
                         <span>验证码:</span>
                         <input type="text" class="code">
                         <img :src="URL + '/user/student/verificationCode/get'">
                     </div>
                 </div>
-                <a href="" class="register">新用户注册</a>
+                <a href="" class="register" style="top: 286px">新用户注册</a>
                 <button class="v-button b-primary login" @click="login()">登录</button>
                 <div class="admin_login">
                     <span>管理员登录</span>
@@ -77,7 +97,6 @@
                     .then((Response) => {
                         if (Response.data.code === 200) {
                             alert('登录成功');
-                            console.log(Response);
 
                             // 修改
                             this.Cookie.setCookie('userId', Response.data.data, 0.5);
@@ -111,10 +130,10 @@
         .container {
             display: flex;
             flex-direction: row-reverse;
-            width: 800px;
+            width: 800px;   
             .form {
                 position: relative;
-                margin-top: 200px;
+                margin-top: 150px;
                 width: 468px;
                 height: 456px;
                 background-color: #fff;
@@ -128,14 +147,14 @@
                 h2 {
                     transition: all 0.5s;
                     position: absolute;
-                    top: 60px;
+                    top: 65px;
                     left: 47px;
                     font-size: 30px;
                 }
                 .cap {
                     position: absolute;
                     right: 47px;
-                    top: 60px;
+                    top: 65px;
                 }
                 .userCount {
                     position: absolute;
@@ -154,7 +173,7 @@
                 }
                 .password {
                     position: absolute;
-                    top: 210px;
+                    top: 220px;
                     left: 47px;
                     input {
                         padding-left: 48px;
@@ -175,8 +194,8 @@
                 }
                 .verifyCode {
                     position: absolute;
-                    width: 250px;
-                    top: 260px;
+                    width: 270px;
+                    top: 280px;
                     left: 47px; 
                     overflow: hidden;
                     transition-delay: 0.5s;
@@ -204,25 +223,21 @@
                     font-size: 16px;
                     color: rgb(8, 175, 217);
                     right: 47px;
-                    top: 275px;
+                    top: 285px;
                     transition: all 0.5s;
-                }
-                .show {
-                    width: 0;
-                    height: 0;
                 }
                 .login {
                     position: absolute;
                     width: 374px;
                     height: 48px;
                     line-height: 10px;
-                    top: 314px;
+                    top: 322px;
                     left: 47px;
                     font-size: 24px;
                 }
                 .admin_login {
                     position: absolute;
-                    bottom: 50px;
+                    bottom: 40px;
                     right: 47px;
                     span {
                         font-size: 16px;

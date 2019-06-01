@@ -1,8 +1,11 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
+import VCharts from 'v-charts'
 import App from './App'
 import router from './router'
+
+Vue.use(VCharts)
 
 import reset from './assets/reset.css'
 import style from './assets/style.scss'
@@ -10,6 +13,12 @@ import icon from './assets/icon/icon.scss'
 
 import axios from 'axios'
 axios.defaults.withCredentials = true;
+
+if (process.env.NODE_ENV == 'development') {
+  Vue.config.devtools = true;
+} else {
+  Vue.config.devtools = false;
+}
 
 const URL = 'http://118.24.113.182:8081';
 Vue.prototype.URL = URL;

@@ -1,6 +1,88 @@
 <template>
     <div id="marketDevelop">
-        <div class="nav">
+        <div class="container_default mg">
+            <div class="title">
+                <h3>市场开发</h3>
+            </div>
+            <div class="chart">
+                <div style="min-width: 800px;">
+                    <ve-bar :data="chartData"></ve-bar>
+                </div>
+                <div style="min-width: 600px;">
+                    <ve-pie :data="chartData"></ve-pie>
+                    <!-- <ve-line :data="chartData"></ve-line> -->
+                </div>
+            </div>
+            <div class="table">
+                <table class="v-table mg">
+                    <tr>
+                        <th>市场名称</th>
+                        <th>开拓总期数</th>
+                        <th>每期开拓费用</th>
+                        <th>每期维护费用</th>
+                        <th>已拓展期数</th>
+                        <th>状态</th>
+                        <th>操作</th>
+                    </tr>
+                    <tr>
+                        <td>市场1</td>
+                        <td>2</td>
+                        <td>300</td>
+                        <td>1</td>
+                        <td>5</td>
+                        <td>维护中</td>
+                        <td>
+                            <button class="v-button b-primary">开拓市场</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>市场1</td>
+                        <td>2</td>
+                        <td>300</td>
+                        <td>1</td>
+                        <td>5</td>
+                        <td>维护中</td>
+                        <td>
+                            <button class="v-button b-primary">开拓市场</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>市场1</td>
+                        <td>2</td>
+                        <td>300</td>
+                        <td>1</td>
+                        <td>5</td>
+                        <td>维护中</td>
+                        <td>
+                            <button class="v-button b-primary">开拓市场</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>市场1</td>
+                        <td>2</td>
+                        <td>300</td>
+                        <td>1</td>
+                        <td>5</td>
+                        <td>维护中</td>
+                        <td>
+                            <button class="v-button b-primary">开拓市场</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>市场1</td>
+                        <td>2</td>
+                        <td>300</td>
+                        <td>1</td>
+                        <td>5</td>
+                        <td>维护中</td>
+                        <td>
+                            <button class="v-button b-primary">开拓市场</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <!-- <div class="nav">
             <h3>市场开发</h3>
         </div>
         <div class="container mg">
@@ -46,7 +128,7 @@
                     </tr>
                 </table>
             </div>
-        </div>
+        </div> -->
     </div>
 </template>
 
@@ -58,6 +140,17 @@
             return {
                 // table的信息
                 marketInfo: [],
+                chartData: {
+          columns: ['日期', '访问用户'],
+          rows: [
+            { '日期': '1/1', '访问用户': 1393 },
+            { '日期': '1/2', '访问用户': 3530 },
+            { '日期': '1/3', '访问用户': 2923 },
+            { '日期': '1/4', '访问用户': 1723 },
+            { '日期': '1/5', '访问用户': 3792 },
+            { '日期': '1/6', '访问用户': 4593 }
+          ]
+        }
             }
         },
         methods: {
@@ -65,10 +158,9 @@
             getMarketInfo() {
                 Axios.get(this.URL + '/game/compete/operation/market/market/infos/get?enterpriseId=' + localStorage.getItem('enterpriseId'))
                     .then(Response => {
-                        console.log(Response);
                         this.marketInfo = Response.data.data;
                     }).catch(e => {
-                        console.log(e);
+                        
                     })
             },
 
@@ -114,7 +206,7 @@
             }
         },
         mounted() {
-            this.$store.commit('pageState', 'marketDevelop')
+            this.$store.commit('pageState', 'marketDevelop');
             this.getMarketInfo();
         }
     }
@@ -123,38 +215,27 @@
 <style lang="scss" scoped>
     #marketDevelop {
         width: 100%;
-        .nav {
-            width: 100%;
-            height: 60px;   
-            border-bottom: 1px solid #000;
-            h3 {
-                line-height: 60px;
-                font-size: 22px;
-                margin-left: 20px;
-            }
-        } 
-        .container {
-            width: 1100px;
+        .container_default {
+            height: auto;
             .chart {
-                margin-top: 50px;
-                width: 1100px;
-                height: 320px;
-                border: 1px solid #000;
                 display: flex;
-                flex-wrap: wrap;
-                div {
-                    height: 100%;
-                    flex: 1;
+                flex-direction: row;
+                height: 450px;
+                margin: 0 100px 0 100px;
+                padding-top: 50px;
+                border-bottom: 1px solid #eee;
+                .p1 {
+                    width: 600px;
+                    height: 600px;
+                    border: 1px solid #000;
                 }
             }
-            .marketList {
+            .table {
                 padding-top: 20px;
-                border: 1px solid #000;
-                width: 1100px;
-                height: 300px;
-                margin-top: 50px;
-                table {
-                    width: 1050px;
+                margin: 0 100px 0 100px;
+                padding-bottom: 50px;
+                .v-table {
+                    width: 1400px;
                 }
             }
         }

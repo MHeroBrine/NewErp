@@ -1,5 +1,5 @@
 <template>
-    <div id="userInfo" class="mg center">
+    <div id="userInfo">
         <div class="form" v-if="!isChange">
             <h3 @click="test()">个人信息</h3>
             <a>学号：{{ this.$store.state.user.studentAccount }}</a>
@@ -10,7 +10,21 @@
         </div>
         <div class="form" v-if="isChange">
             <h3>个人信息</h3>
-            <v-input1 title="学号" type="password" :value="this.$store.state.user.studentAccount" disabled></v-input1>
+
+            <div class="item">
+                <span>学号</span><input type="text" class="v-input">
+            </div>
+            <div class="item">
+                <span>学院</span><input type="text" class="v-input">
+            </div>
+            <div class="item">
+                <span>专业</span><input type="text" class="v-input">
+            </div>
+            <div class="item">
+                <span>班级</span><input type="text" class="v-input">
+            </div>
+            <button class="v-button b-primary">编辑资料</button>
+            <!-- <v-input1 title="学号" type="password" :value="this.$store.state.user.studentAccount" disabled></v-input1>
             
             <div class="select">
                 学院 <select v-model="collegeNow">
@@ -24,9 +38,9 @@
                         <option :value="item.id">{{ item.major }}</option>
                     </template>
                 </select>
-            </div>
+            </div> -->
 
-            <template v-for="item in list_2">
+            <!-- <template v-for="item in list_2">
                 <v-input1
                     :title="item.title"
                     v-model="item.value"
@@ -36,12 +50,12 @@
                     :placeholder="item.placeholder"
                     :eye="item.eye"
                 />
-            </template>
+            </template> -->
             
-            <div style="margin-top: 20px;"><span>性别</span><input type="radio" name="sex" value="Man" v-model="picked">男<input type="radio" name="sex" value="Woman" v-model="picked">女</div>
+            <!-- <div style="margin-top: 20px;"><span>性别</span><input type="radio" name="sex" value="Man" v-model="picked">男<input type="radio" name="sex" value="Woman" v-model="picked">女</div>
 
             <v-button1 value="确认" type="primary" width="180px" @click.native="changeUserInfo()"></v-button1>
-            <v-button1 value="取消" type="primary" width="180px" @click.native="isChange = false"></v-button1>
+            <v-button1 value="取消" type="primary" width="180px" @click.native="isChange = false"></v-button1> -->
         </div>
     </div>
 </template>
@@ -53,7 +67,7 @@
         data() {
             return {
                 // 控制 浏览/修改信息
-                isChange: false,
+                isChange: true,
                 // 性别选择项
                 picked: this.$store.state.user.gender,
 
@@ -78,7 +92,7 @@
             }
         },
         mounted() {
-            this.$store.commit('pageState', 'navInfo');
+            this.$store.commit('pageState', 'user');
             this.collegeList = this.$store.state.college.data;
             this.setMajorInfo(this.collegeNow);
         },
@@ -127,13 +141,39 @@
 
 <style lang="scss" scoped>
     #userInfo {
+        width: 100%;
+        background-color: #F4F4F4;
         .form {
-            text-align: center;
-            width: 1000px;
-            height: 600px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 798px;
+            height: 654px;
             background-color: #fff;
-            border: 1px solid #000;
             margin-top: 100px;
+            margin-left: 60px;
+            .item {
+                margin-top: 20px;
+                span {
+                    font-size: 14px;
+                    margin-right: 20px;
+                }
+                .v-input {
+                    width: 352px;
+                    height: 42px;
+                }
+                &:nth-of-type(1) {
+                    margin-top: 0;
+                }
+            }
+            .v-button {
+                border-radius: 21px;
+                background-color: rgb(70, 184, 237);
+                width: 98px;
+                height: 42px;
+                margin-top: 74px;
+                margin-left: 280px;
+            }
             .select {
                 line-height: 50px;
                 select {
@@ -146,10 +186,9 @@
                 line-height: 70px;
             }
             h3 {
-                font-weight: bold;
-                font-size: 25px;
-                margin-top: 20px;
-                margin-bottom: 50px;
+                font-size: 24px;
+                margin-top: 90px;
+                margin-bottom: 43px;
             }
             .select {
                 margin-top: 20px;

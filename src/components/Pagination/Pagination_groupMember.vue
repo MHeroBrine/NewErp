@@ -39,7 +39,6 @@
                     .then((Response) => {
                         if (Response.data.code === 200) {
                             this.memberList = this.F.chunk(Response.data.data, 6);
-                            console.log(this.memberList);
                             this.total = this.memberList.length;
                             this.isReady = true;
                         } else {

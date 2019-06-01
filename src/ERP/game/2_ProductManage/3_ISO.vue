@@ -89,7 +89,6 @@
             start(id) {
                 Axios.put(this.URL + '/game/compete/operation/iso/iso/infos/update/start?isoDevelopId=' + id)
                     .then(Response => {
-                        console.log(Response);
                         if (Response.data.code == 200) {
                             this.getISOInfo(localStorage.getItem('enterpriseId'));
                         } else {
@@ -116,7 +115,6 @@
             develop(id) {
                 Axios.put(this.URL + '/game/compete/operation/iso/iso/infos/update/develop?isoDevelopId=' + id)
                     .then(Response => {
-                        console.log(Response);
                         if (Response.data.code == 200) {
                             this.getISOInfo(localStorage.getItem('enterpriseId'));
                         } else {

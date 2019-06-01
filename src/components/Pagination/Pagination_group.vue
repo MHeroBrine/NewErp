@@ -1,14 +1,12 @@
 <template>
-    <div class="pagination_group">
-        <template v-for="item in groupList[showingList]">
+    <div class="pagination_group" v-if="isReady">
+        <template v-for="item in groupList[page - 1]">
             <v-card-group :data="item"></v-card-group>
         </template>
         <div class="paginate mg">
-            <icon class="back_2" @click="toTopOrBottom(1)"></icon>
-            <icon class="back_1" @click="changePage(-1)"></icon>
-            <div class="count"> {{ showingList + 1 }} / {{ total }} </div>
-            <icon class="forward_1" @click="changePage(1)"></icon>
-            <icon class="forward_2" @click="toTopOrBottom(0)"></icon>
+            <template v-for="i in total">
+                <button v-bind:class="{ active: i == page }" @click="page = i">{{ i }}</button>
+            </template>
         </div>
     </div>
 </template>
@@ -21,8 +19,10 @@
         data() {
             return {
                 groupList: [],
+                page: 1,
                 total: 0,
-                showingList: 0
+                showingList: 0,
+                isReady: false
             }
         },
         mounted() {
@@ -32,6 +32,7 @@
             let that = this;
             vueEvent.$on('refreshGroupList', function() {
                 that.getGroupInfo();
+                that.isReady = false;
             });
         },
         methods: {
@@ -53,14 +54,12 @@
             getGroupInfo() {
                 Axios.get(this.URL + '/game/manage/enterprise/enterpriseInfos/get?gameId=' + this.$store.state.gameControl.gameWatching)
                     .then((Response) => {
-                        console.log(Response);
                         if (Response.data.code === 200) {
                             this.groupList = this.F.chunk(Response.data.data, 6);
                             this.total = this.groupList.length;
-                            console.log(this.groupList);
                             this.isReady = true;
                         } else {
-                            alert('信息获取失败');
+                            alert(Response.data.msg);
                         }
                     })
             }
@@ -71,24 +70,33 @@
 
 <style lang="scss" scoped>
     .pagination_group {
-        width: 1200px;
+        position: relative;
+        width: 1800px;
+        min-height: 715px;
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: row;
         .paginate {
-            display: flex;
-            justify-content: center;
-            margin-top: 80px;
-            text-align: center;
-            .count {
-                margin-left: 20px;
-                margin-right: 20px;
-                width: 50px;
-                height: 25px;
-                line-height: 25px;
-                font-size: 12px;
-                background-color: #fff;
-                border: 1px solid #000;
-            }
-            icon {
+            position: absolute;
+            bottom: -60px;
+            left: 40px;
+            button {
                 cursor: pointer;
+                width: 34px;
+                height: 34px;
+                background-color: rgb(143, 143, 226);
+                border: 0;
+                outline: none;  
+                color: #fff;
+                &:nth-of-type(1) {
+                    border-radius: 5px 0 0 5px;
+                }
+                &:nth-last-of-type(1) {
+                    border-radius: 0 5px 5px 0;
+                }
+            }
+            .active {
+                background-color: rgb(88, 88, 226);
             }
         }
     }

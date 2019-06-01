@@ -1,12 +1,13 @@
 <template>
     <div id="checkGame">
-        <div class="nav">
-            <img src="../../../../assets/icon/menu.svg" alt=""><a @click="freshList()">切换视角</a>&nbsp;&nbsp;
-            <img src="../../../../assets/icon/circle.svg" alt=""><a @click="createGame()">刷新</a>
-            <v-input-search class="fr"></v-input-search>
-        </div>
-        <div class="content mg">
-            <v-pagination-game :list="gameList" type="checkGame"></v-pagination-game>
+        <div class="container_default">
+            <div class="title">
+                <h3>查看历史比赛</h3>
+            </div>
+            <div class="main">
+                <v-pagination-game type="checkGame"></v-pagination-game>
+                <img src="@/assets/Nav/GameControl/refresh.svg" class="refresh" @click="freshList()">
+            </div>
         </div>
     </div>
 </template>
@@ -14,62 +15,7 @@
 <script>
     export default {
         data() {
-            return {
-                gameList: [
-                    {
-                        gameName: 'XXX',
-                        companyNum: 3
-                    },
-                    {
-                        gameName: 'XXX',
-                        companyNum: 5
-                    },
-                    {
-                        gameName: 'XXX',
-                        companyNum: 7
-                    },
-                    {
-                        gameName: 'XXX',
-                        companyNum: 11
-                    },
-                    {
-                        gameName: 'XXX',
-                        companyNum: 11
-                    },
-                    {
-                        gameName: 'XXX',
-                        companyNum: 11
-                    },
-                    {
-                        gameName: 'XXX',
-                        companyNum: 11
-                    },
-                    {
-                        gameName: 'XXX',
-                        companyNum: 11
-                    },
-                    {
-                        gameName: 'XXX',
-                        companyNum: 11
-                    },
-                    {
-                        gameName: 'XXX',
-                        companyNum: 11
-                    },
-                    {
-                        gameName: 'XXX',
-                        companyNum: 11
-                    },
-                    {
-                        gameName: 'XXX',
-                        companyNum: 11
-                    },
-                    {
-                        gameName: 'XXX',
-                        companyNum: 11
-                    }
-                ]
-            }
+            return {}
         },
         mounted() {
             this.$store.commit('pageState', 'gameControl_checkGame');
@@ -80,24 +26,23 @@
 
 <style lang="scss" scoped>
     #checkGame {
+        position: relative;
         width: 100%;
-        .nav {
-            width: 100%;
-            min-width: 1200px;
-            height: 70px;
-            border-bottom: 1px solid #000;
-            padding-top: 15px;
-            padding-left: 10px;
+        .main {
             img {
+                cursor: pointer;
                 width: 30px;
             }
-            .input_search {
-                margin: 5px 10px 0 0;
+            .add {
+                position: absolute;
+                bottom: 30px;
+                right: 80px;
             }
-        }
-        .content {
-            margin-top: 50px;
-            width: 1200px;
+            .refresh {
+                position: absolute;
+                bottom: 30px;
+                right: 30px
+            }
         }
     }
 </style>

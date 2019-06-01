@@ -12,7 +12,7 @@
                         {{ item.factoryType }}
                     </option>
                 </select>
-                <button class="v-button">查询</button>
+                <button class="v-button b-primary">查询</button>
             </div>
             <div class="main mg">
                 <div class="sold fr">
@@ -52,13 +52,18 @@
                         <button class="v-button b-primary" v-if="item.factoryHoldingStatus === 'LEASING' && item.developStatus === false" @click="_continue_lean(item.id)">继续</button>
                         <a @click="showFactoryLine(item.id)">↓</a>
                     </div>
-                    <div class="line">
+                    <div class="line" v-show="lines">
                         <!-- 修建状态 -->
                         <ul v-for="_item in item.prodlineDevelopDisplayVoList">
                             <li>{{ _item.prodlineType }}</li>
                             <li v-if="_item.prodlineDevelopStatus === 'DEVELOPING'">正在生产</li>
                             <li v-if="_item.prodlineDevelopStatus === 'DEVELOPPAUSE'">暂停生产</li>
                             <li v-if="_item.prodlineDevelopStatus === 'DEVELOPED'">完成生产</li>
+                            <li>正在生产产品：{{ _item.productName }}</li>
+                            <li>
+                                <button class="v-button b-primary" v-if="_item.prodlineDevelopStatus === 'DEVELOPING'" @click="pauseInstall(_item.id)">暂停</button>
+                                <button class="v-button b-primary" v-if="_item.prodlineDevelopStatus === 'DEVELOPPAUSE'" @click="continueInstall(_item.id)">继续</button>
+                            </li>
                         </ul>
                         <!-- 生产状态 -->
                         <ul v-for="_item in item.prodlineProduceDisplayVoList">
@@ -72,7 +77,7 @@
                             <li>正在生产产品：{{ _item.productName }}</li>
                             <li>
                                 <button class="v-button b-primary">转产</button>
-                                <button class="v-button b-primary">出售</button>
+                                <button class="v-button b-primary" @click="sellLine(_item.id)">出售</button>
                             </li>
                         </ul>
                     </div>
@@ -115,16 +120,20 @@
                             <h3>新建生产线</h3>
                         </div>
                         <div class="main">
-                            <p>生产线类型:<select name="" id=""></select></p>
-                            <p>产品类型：<select name="" id=""></select></p>
-                            <p>安装周期：<input type="text"></p>
-                            <p>每周安装费用：<input type="text"></p>
-                            <p>每周转产费用：<input type="text"></p>
-                            <p>生产效率：<input type="text"></p>
-                            <p>每周维护费用：<input type="text"></p>
-                            <p>每周折旧费用：<input type="text"></p>
-                            <p>残值：<input type="text"></p>
-                            <button class="v-button b-primary">确认</button><button class="v-button b-primary">取消</button>
+                            <p>生产线类型:<select v-model="lineNow">
+                                <option v-for="item in newLineInfo.newLine" :value="item.id">{{ item.prodlineType }}</option>    
+                            </select></p>
+                            <p>产品类型：<select v-model="productNow">
+                                <option v-for="item in newLineInfo.productType" :value="item.id">{{ item.productName }}</option>    
+                            </select></p>
+                            <template v-if="lineNow">
+                                <p>安装周期：{{ newLineInfo.newLine[lineNow].prodlineSetupPeriod }}</p>
+                                <p>每周安装费用：{{ newLineInfo.newLine[lineNow].prodlineSetupPeriodPrice }}</p>
+                                <p>每周维修费用：{{ newLineInfo.newLine[lineNow].prodlineMainCost }}</p>
+                                <p>每周折旧费用：{{ newLineInfo.newLine[lineNow].prodlineDepreciation }}</p>
+                                <p>残值：{{ newLineInfo.newLine[lineNow].prodlineStumpcost }}</p>
+                            </template>
+                            <button class="v-button b-primary" @click="createNewLine_confirm()">确认</button><button class="v-button b-primary" @click="exitCreateNewLine()">取消</button>
                         </div>
                     </div>
                 </div>
@@ -176,7 +185,7 @@
                 </div>
 
                 <!-- 厂房详情 -->
-                <div class="v-alert factoryDetail" v-if="factoryDetail_Develop">
+                <div class="v-alert factoryDetail" v-if="float.factoryDetail">
                     <div class="pre_container">
                         <div class="pre_title">
                             <h3>厂房信息</h3>
@@ -225,14 +234,24 @@
                 createFactoryNow: null,
                 // 已修建厂房类型
                 factoryType: [],
-                // 修建已完成厂房信息
+                // 修建已完成厂房类型信息
                 factoryType_develop: [],
                 // 修建完成厂房信息
                 factoryInfo: [],
                 // 修建中厂房信息
                 factoryInfo_Develop: [],
                 // 当前查看的厂房信息
-                factoryInfoNow: []
+                factoryInfoNow: [],
+                // 可生产的生产线的
+                newLineInfo: null,
+                // 当前选择生产的生产线
+                lineNow: null,
+                // 当前选择产品的类型
+                productNow: null,
+                // 当前选择的工厂
+                factoryNow: null,
+                // 控制显示
+                lines: true
             }
         },
         mounted() {
@@ -273,7 +292,7 @@
             // 关闭弹窗
             exitLeanFactory() {
                 this.$store.commit('controlFloatWindow');
-                this.float.newLendFactory = <false></false>;
+                this.float.newLendFactory = false;
             },
             // 确认租用厂房
             leanFactory_confirm() {
@@ -305,7 +324,97 @@
 
             // 新建生产线
             createNewLine(factoryId) {
-                
+                this.$store.commit('controlFloatWindow');
+                this.float.newLine = true;
+                this.factoryNow = factoryId;
+                if (!this.newLineInfo) {
+                    this.newLineInfo = {
+                        newLine: [],
+                        productType: []
+                    }
+
+                    Axios.get(this.URL + '/game/compete/operation/produce/factorymanagement/prodline/all/type/get')
+                        .then(Response => {
+                            if (Response.data.code === 200) {
+                                this.newLineInfo.newLine = Response.data.data;
+                            } else {
+                                alert('数据获取失败');
+                            }
+                        }).catch(e => {
+
+                        })
+
+                    Axios.get(this.URL + '/game/compete/operation/produce/productionplan/product/type/get?enterpriseId=' + localStorage.getItem('enterpriseId'))
+                        .then(Response => {
+                            if (Response.data.code === 200) {
+                                this.newLineInfo.productType = Response.data.data;
+                            } else {
+                                alert('数据获取失败');
+                            }
+                        }).catch(e => {
+
+                        })
+                }
+            },
+            // 确认新建生产线
+            createNewLine_confirm() {
+                Axios.post(this.URL + '/game/compete/operation/produce/factorymanagement/prodline/develop', Qs.stringify({
+                    'prodlineBasicId': this.lineNow,
+                    'productId': this.productNow,
+                    'factoryId': this.factoryNow,
+                    'enterpriseId': localStorage.getItem('enterpriseId')
+                })).then(Response => {
+                    if (Response.data.code === 200) {
+                        this.$store.commit('controlFloatWindow');
+                        this.float.newLine = false;
+                    } else {
+                        alert('获取数据失败');
+                    }
+                })
+            },
+            // 出售生产线
+            sellLine(prodlineProductId) {
+                Axios.post(this.URL + '/game/compete/operation/produce/factorymanagement/prodline/sell?prodlineProductId=' + prodlineProductId)
+                    .then(Response => {
+                        if (Response.data.code === 200) {
+                            
+                        } else {
+                            alert('出售失败');
+                        }
+                    }).catch(e => {
+
+                    })
+            },
+            // 关闭浮窗
+            exitCreateNewLine() {
+                this.$store.commit('controlFloatWindow');
+                this.float.newLine = false;
+            },
+            // 暂停安装生产线
+            pauseInstall(prodlineDevelopId) {
+                Axios.put(this.URL + '/game/compete/operation/produce/factorymanagement/prodline/develop/pause?prodlineDevelopId=' + prodlineDevelopId)
+                    .then(Response => {
+                        if (Response.data.code === 200) {
+                            this.getFactory();
+                        } else {
+
+                        }
+                    }).catch(e => {
+
+                    })
+            },
+            // 继续安装生产线
+            continueInstall(prodlineDevelopId) {
+                Axios.put(this.URL + '/game/compete/operation/produce/factorymanagement/prodline/develop/developing?prodlineDevelopId=' + prodlineDevelopId)
+                    .then(Response => {
+                        if (Response.data.code === 200) {
+                            this.getFactory();
+                        } else {
+
+                        }
+                    }).catch(e => {
+
+                    })
             },
 
             // 获取已修建厂房类型
@@ -341,7 +450,6 @@
                 this.factoryInfo_Develop = [];
                 Axios.get(this.URL + '/game/compete/operation/produce/productionplan/factory/display/all/get?enterpriseId=' + localStorage.getItem('enterpriseId'))
                     .then(Response => {
-                        console.log(Response);
                         if (Response.data.code === 200) {
                             for (let i = 0; i < Response.data.data.length; i ++) {
                                 this.factoryInfo.push(Response.data.data[i]);
@@ -366,21 +474,21 @@
                                 }
                             })
                     })
-                console.log(this.factoryInfo);
             },
 
             // 获取某个已修建工厂的详细信息
             getFactoryDetail(id) {
                 this.$store.commit('controlFloatWindow');
-                this.float.factoryDetail = true;
                 for(let i = 0; i < this.factoryInfo.length; i ++) {
                     if (this.factoryInfo[i].id === id) {
+                        this.float.factoryDetail = true;
                         this.factoryInfoNow = this.factoryInfo[i];
                         return;
                     }
                 }
-                for (let i = 0; i < this.factoryInfo_Develop; i ++) {
+                for (let i = 0; i < this.factoryInfo_Develop.length; i ++) {
                     if (this.factoryInfo_Develop[i].id === id) {
+                        this.float.factoryDetail_Develop = true;
                         this.factoryInfoNow = this.factoryInfo[i];
                         return;
                     }
@@ -390,6 +498,7 @@
             exitFactoryDetail() {
                 this.$store.commit('controlFloatWindow');
                 this.float.factoryDetail = false;
+                this.float.factoryDetail_Develop = false;
             },
 
             // 暂停工厂建造
@@ -544,6 +653,13 @@
                         ul {
                             width: 100%;
                             border-bottom: 3px solid #eee;
+                            &:nth-of-type(2) {
+                                margin-top: 0px;
+                                color: #000;
+                            }
+                            li {
+                                margin-top: 20px;
+                            }
                         }
                     }
                 }

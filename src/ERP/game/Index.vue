@@ -1,21 +1,17 @@
 <template>
     <div id="index">
-        <div class="nav">
-            <a>企业信息</a>&nbsp;&nbsp;
-        </div>
-        <div class="groupBackground mg">
-            <div>
+        <div class="container_default mg">
+            <div class="title">
                 <h3>企业背景</h3>
             </div>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar sic tempor. Sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci, sed rhoncus pronin sapien nunc accuan eget.</p>
-        </div>
-        <div class="icon mg">
-            <div class="mg">
-                <a href="#"><span>订单选取</span></a>
-                <a href="#"><span>原料采购</span></a>
-                <a href="#"><span>产品库存</span></a>
-                <a href="#"><span>生产线运行</span></a>
-                <a href="#"><span>发货管理</span></a>
+            <div class="info">
+                <h3>FlatLab Is A Fully Responsive Admin Dashboard Template Built With Bootstrap 3.0 Framework</h3>
+                <p class="p1">Lorem ipsum dolor sit amet dolor duis blandit vestibulum faucibus a, tortor.</p>
+                <div class="page">
+                    <p>Lorem ipsum dolor sit amet enim. Etiam ullamcorper. Suspendisse a pellentesque dui, non felis. Maecenas malesuada elit lectus felis, malesuada ultricies.
+
+                    Curabitur et ligula. Ut molestie a, ultricies porta urna. Vestibulum commodo volutpat a, convallis ac, laoreet enim. Phasellus fermentum in, dolor. Pellentesque facilisis. Nulla imperdiet sit amet magna. Vestibulum dapibus, mauris nec malesuada fames ac.</p>
+                </div>
             </div>
         </div>
     </div>
@@ -36,64 +32,32 @@
 <style lang="scss" scoped>
     #index {
         width: 100%;
-        .nav {
-            width: 100%;
-            min-width: 1200px;
-            height: 70px;
-            border-bottom: 1px solid #000;
-            padding-top: 15px;
-            padding-left: 10px;
-            img {
-                width: 30px;
-            }
-            .input_search {
-                margin: 5px 10px 0 0;
-            }
-        }
-        .groupBackground {
-            width: 1200px;
-            height: 400px;
-            background-color: #fff;
-            border: 1px solid #000;
-            margin-top: 50px;
-            div {
-                &:nth-of-type(1) {
-                    height: 50px;
-                    line-height: 50px;
-                    width: 100%;
-                    border-bottom: 1px solid #000;
-                }
-            }
-            p {
+        .container_default {
+            min-width: 1600px;
+            .info {
                 padding: 20px;
-                line-height: 25px;
-            }
-        }
-        .icon {
-            width: 1200px;
-            height: 300px;
-            background-color: #fff;
-            border: 1px solid #000;
-            margin-top: 50px;
-            div {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                width: 1000px;
-                height: 300px;
-                a {   
-                    position: relative;
-                    cursor: pointer;
-                    width: 100px;
-                    height: 100px;
-                    border-radius: 50%;
-                    background-color: grey;
-                    span {
-                        font-size: 18px;
-                        font-weight: bold;
-                        position: absolute;
-                        top: 110px;
-                        left: 10px;
+                padding-top: 30px;
+                line-height: 30px;
+                height: 270px;
+                border-bottom: 1px solid #eee;
+                color: #757579;
+                h3 {
+                    margin-top: 20px;
+                    color: #314558;
+                    width: 700px;
+                    font-size: 24px;
+                }
+                .p1 {
+                    margin-top: 10px;
+                }
+                .page {
+                    position: absolute;
+                    top: 90px;
+                    line-height: 30px;
+                    font-size: 14px;
+                    right: 80px;
+                    p {
+                        width: 700px;
                     }
                 }
             }

@@ -1,46 +1,31 @@
 <template>
     <div class="card_group">
-        <div class="fl area_1"> 
-            <img src="../../assets/logo.png" alt="">
+        <div class="area_1">
+            <div class="leader"></div>
+            <div class="info">
+                <h3>{{ data.enterpriseName }}</h3>
+                <p>组长：{{ data.ceoName }}</p>
+                <p class="create" v-if="data.enterpriseStatusEnum == 'CREATE'">准备中</p>
+                <p class="sure" v-if="data.enterpriseStatusEnum == 'SURE'">准备完毕</p>
+            </div>
+            <div class="btns">
+                <button v-if="!(isAdmin || isMember)" @click="join()" v-show="noEdit">加入小组</button>
+                <button v-if="(!isAdmin && isMember)" @click="exit()" v-show="noEdit">退出</button>
+                <button v-if="isAdmin" @click="del()" v-show="noEdit">删除</button>
+                <button v-if="isAdmin && data.enterpriseStatusEnum == 'CREATE'" @click="getReady()" v-show="noEdit">确认准备</button>
+                <button v-if="isAdmin && data.enterpriseStatusEnum == 'PLAYING'" @click="addMember()" v-show="!noEdit">添加成员</button>
+            </div>
         </div>
-        <div class="fr area_2">
-            <div class="ready">
-                <input type="checkbox" v-if="isAdmin" v-model="readyValue" :disabled="readyValue"><label>{{ groupState }}</label>
-            </div>
-            <span>比赛名称：{{ data.enterpriseName }}</span>
-            <span>成员数量：{{ data.enterpriseMemberNumber }}</span>
-        </div>
-        <div class="area_3">
-            <div v-if="isAdmin">
-                <v-button1 value="成员管理" type="primary" width="120px" height="1px" @click.native="watchMember()"></v-button1>
-                <v-button1 value="删除" type="primary" width="80px" height="1px" @click.native="del()"></v-button1>
-            </div>
-            <div v-if="isMember">
-                <v-button1 value="成员信息" type="primary" width="120px" height="1px" @click.native="watchMember()"></v-button1>
-                <v-button1 value="退出" type="primary" width="80px" height="1px" @click.native="exit()"></v-button1>
-            </div>
-            <div v-if="isNotMember">
-                <v-button1 value="成员信息" type="primary" width="120px" height="1px" @click.native="watchMember()"></v-button1>
-                <v-button1 value="加入" type="primary" width="80px" height="1px" @click.native="join()"></v-button1>
-            </div>
+        <div class="area_2">
+            <ul>
+                <li v-for="item in memberList" class="item">
+                    <div class="profile">
 
-            <div class="join" v-if="isJoin">
-                <div class="context mg">
-                    <span>加入***企业？</span>
-                    <div></div>
-                    <v-button1 value="确定" type="primary"></v-button1>
-                    <v-button1 value="取消" type="primary" @click.native="join()"></v-button1>
-                </div>
-            </div>
-
-            <div class="exit" v-if="isExit">
-                <div class="context mg">
-                    <span>退出***企业？</span>
-                    <div></div>
-                    <v-button1 value="确定" type="primary" @click.native="exitAlert()"></v-button1>
-                    <v-button1 value="取消" type="primary" @click.native="exit()"></v-button1>
-                </div>
-            </div>
+                    </div>
+                    <p>{{ item.studentName }}</p>
+                    <img src="@/assets/Nav/GameControl/false.svg" v-if="isAdmin && userId != item.userStudentId" @click="deleteMember(item.userStudentId)">
+                </li>
+            </ul>
         </div>
     </div>
 </template>
@@ -59,37 +44,41 @@
 
                 isJoin: false,
                 isExit: false,
+                noEdit: false,
 
-                groupState: null,
-                readyValue: null
+                memberList: [],
+                data_delete: [
+                    {
+                        title: '请输入密码',
+                        value: ''
+                    }
+                ],
             }
         },
         beforeMount() {
             this.permission();
-        },
-        watch: {
-            'readyValue': function(val) {
-                this.getReady(val);
-            }
+            this.editCheck();
         },
         methods: {
             join() {
-                this.$store.commit('controlAlert', [true, '是否加入该企业', null, null, () => {
+                this.$store.commit('controlAlert', [true, 'WARN', '是否加入该企业', null, null, () => {
                     Axios.post(this.URL + '/game/manage/enterprise/member/join', {
                         "enterpriseId": this.data.id,
                         "gameId": localStorage.getItem('GAME'),
                         "userId": this.$store.state.user.id
                     }).then((Response) => {
-                        if (Response.data.code === 204) {
-                            this.$store.commit('controlAlert', [true, '加入成功', null, null, null]);
+                        if (Response.data.code === 200) {
+                            this.$store.commit('controlAlert', [true, 'TRUE' ,'加入成功', null, null, null]);
+                            VueEvent.$emit('refreshGroupList');
                         } else {
-                            this.$store.commit('controlAlert', [true, Response.data.msg, null, null, null]);
+                            this.$store.commit('controlAlert', [true, 'FALSE', '加入失败', null, null, null]);
+                            VueEvent.$emit('refreshGroupList');
                         }
                     })
                 }])
             },
             exit() {
-                this.$store.commit('controlAlert', [true, '是否退出该企业', null, null, () => {
+                this.$store.commit('controlAlert', [true, 'WARN', '是否退出该企业', null, null, () => {
                     Axios.delete(this.URL + '/game/manage/enterprise/member/out', {
                         params: {
                             "userId": this.$store.state.user.id,
@@ -100,33 +89,59 @@
                         }
                     }).then((Response) => {
                         if (Response.data.code === 204) {
-                            this.$store.commit('controlAlert', [true, '退出成功', null, null, null]);
+                            this.$store.commit('controlAlert', [true, 'TRUE', '退出成功', null, null, null]);
+                            VueEvent.$emit('refreshGroupList');
                         } else {
-                            this.$store.commit('controlAlert', [true, Response.data.msg, null, null, null]);
+                            this.$store.commit('controlAlert', [true, 'FALSE', Response.data.msg, null, null, null]);
+                            VueEvent.$emit('refreshGroupList');
                         }
                     })
                 }])
             },
             del() {
-                let password = prompt("请输入你的账户密码");
-                Axios.delete(this.URL + '/game/manage/enterprise/delete', {
-                    params: {
-                        "enterpriseId": this.data.id,
-                        "userId": this.$store.state.user.id,
-                        "password": password
-                    },
-                    paramsSerializer: params => {
-                        return Qs.stringify(params, { indices: false })
-                    }
-                }).then((Response) => {
-                    // console.log(Response);
-                    if (Response.data.code === 204) {
-                        alert('删除企业成功');
-                        VueEvent.$emit('refreshGroupList');
-                    } else {
-                        alert(Response.data.msg);
-                    }
-                })
+                this.$store.commit('controlAlert', [true, 'WARN_DELETE', '是否删除该小组', null, this.data_delete, () => {
+                    Axios.delete(this.URL + '/game/manage/enterprise/delete', {
+                        params: {
+                            "enterpriseId": this.data.id,
+                            "userId": this.$store.state.user.id,
+                            "password": this.data_delete[0].value
+                        },
+                        paramsSerializer: params => {
+                            return Qs.stringify(params, { indices: false })
+                        }
+                    }).then((Response) => {
+                        if (Response.data.code === 204) {
+                            this.$store.commit('controlAlert', [true, 'TRUE', '删除成功', null, null, null]);
+                            VueEvent.$emit('refreshGroupList');
+                        } else {
+                            this.$store.commit('controlAlert', [true, 'FALSE', '删除失败', null, null, null]);
+                            VueEvent.$emit('refreshGroupList');
+                        }
+                    })
+                }])
+            },
+            // 删除成员
+            deleteMember(id) {
+                this.$store.commit('controlAlert', [true, 'WARN', '是否删除该成员', null, null, () => {
+                    Axios.delete(this.URL + '/game/manage/enterprise/member/out', {
+                        params: {
+                            "userId": id,
+                            "enterpriseId": this.data.id,
+                            "password": this.data_delete.value
+                        },
+                        paramsSerializer: params => {
+                            return Qs.stringify(params, { indices: false })
+                        }
+                    }).then((Response) => {
+                        if (Response.data.code === 204) {
+                            this.$store.commit('controlAlert', [true, 'TRUE', '删除成功', null, null, null]);
+                            VueEvent.$emit('refreshGroupList');
+                        } else {
+                            this.$store.commit('controlAlert', [true, 'FALSE', Response.data.msg, null, null, null]);
+                            VueEvent.$emit('refreshGroupList');
+                        }
+                    })
+                }])
             },
             exitAlert() {
                 alert('退出成功');
@@ -147,6 +162,7 @@
                     .then((Response) => {
                         if (Response.data.code === 200) {
                             let data = Response.data.data;
+                            this.memberList = Response.data.data;
                             if (this.isAdmin === true) {
                                 return;
                             }
@@ -166,32 +182,50 @@
             permission() {
                 if (this.data.ceoId == this.$store.state.user.id) {
                     this.isAdmin = true;
+                    this.userId = this.$store.state.user.id;
                 }
                 this.getMemberList();
-
-                if (this.data.enterpriseStatus === 'CREATE') {
-                    this.groupState = '正在准备';
-                } else if (this.data.enterpriseStatus === 'SURE') {
-                    this.readyValue = true;
-                    this.groupState = '准备完成';
-                }
             },
             // 修改比赛准备状态
-            getReady(val) {
-                // console.log(this.data);
-                if (val === true) {
+            getReady() {
+                let i = confirm('是否确认准备完成');
+                if (i === true) {
                     Axios.post(this.URL + '/game/manage/enterprise/sure', Qs.stringify({
                         'enterpriseId': this.data.id,
                         'userId': this.$store.state.user.id
                     })).then((Response) => {
-                        if (Response.data.code === 204) {
+                        if (Response.data.code === 204) {                            
                             alert('准备成功');
-                            this.groupState = '准备完成';
+                            this.data.enterpriseStatusEnum = 'SURE';
                         } else {
                             val = false;
                         }
                     })
                 }
+            },
+            // 不可编辑
+            editCheck() {
+                VueEvent.$on('noEdit', function(val) {
+                    this.noEdit = true;
+                })
+            },
+            // 组长添加成员
+            addMember() {
+                this.$store.commit('controlAlert', [true, 'WARN', '添加一个', null, null, () => {
+                    Axios.post(this.URL + '/game/manage/enterprise/member/join', {
+                        "enterpriseId": this.data.id,
+                        "gameId": localStorage.getItem('GAME'),
+                        "userId": this.$store.state.user.id
+                    }).then((Response) => {
+                        if (Response.data.code === 200) {
+                            this.$store.commit('controlAlert', [true, 'TRUE' ,'加入成功', null, null, null]);
+                            VueEvent.$emit('refreshGroupList');
+                        } else {
+                            this.$store.commit('controlAlert', [true, 'FALSE', '加入失败', null, null, null]);
+                            VueEvent.$emit('refreshGroupList');
+                        }
+                    })
+                }])
             }
         },
         props: ['data']
@@ -201,83 +235,126 @@
 <style lang="scss" scoped>
     .card_group {
         position: relative;
-        display: inline-block;
-        width: 350px;
-        height: 250px;
-        margin: 20px;
+        display: flex;
+        flex-direction: row;
+        width: 420px;
+        height: 225px;
+        margin: 40px;
+        // margin-right: 100px;
+        box-shadow: 0px 0px 10px 2px rgb(223, 220, 236);
+        // border: 1px solid #000;
         .area_1 {
-            height: 200px;
-            text-align: center;
-            border: 1px solid #000;
-            border-right: 0;
-            width: 125px;
-            line-height: 200px;
-            img {
-                width: 60px;
+            position: relative;
+            width: 240px;
+            border-right: 1px solid #eee;
+            margin: 20px;
+            line-height: 25px;
+            transition: all 0.5s;
+            .leader {
+                width: 50px;
+                height: 50px;
+                border: 2px solid #eee;
+                border-radius: 50%;
+            }
+            .info {
+                position: absolute;
+                width: 165px;
+                color: rgb(153, 153, 153);
+                top: 0px;
+                left: 60px;
+                h3 {
+                    color: rgb(95, 95, 95);
+                    font-size: 15px;
+                }
+                p {
+                    font-size: 10px;
+                }
+                .create {
+                    position: absolute;
+                    color: rgb(255, 102, 102);
+                    top: -2px;
+                    right: 0;
+                }
+                .sure {
+                    position: absolute;
+                    top: -2px;
+                    right: 0;
+                    color: rgb(88, 200, 88);
+                }
+            }
+            .btns {
+                button {
+                    cursor: pointer;
+                    // bottom: 0;
+                    border: 1px solid rgb(187, 187, 187);
+                    background-color: #fff;
+                    width: 80px;
+                    height: 30px;
+                    border-radius: 5px;
+                    color: rgb(117, 117, 117);
+                    outline: none;
+                    transition: all 0.2s;
+                    &:nth-of-type(1) {
+                        margin-right: 60px;
+                    }
+                    &:hover {
+                        color: #fff;
+                        background-color: rgb(117, 117, 117);
+                    }
+                }
+                bottom: 5px;
+                position: absolute;
             }
         }
         .area_2 {
-            height: 200px;
-            text-align: center;
-            border: 1px solid #000;
-            width: 225px;
-            padding-top: 40px;
-            span {
-                display: block;
-                margin: 15px;
-            }
-            .ready {
-                font-size: 13px;
-                color: #666;
-                position: absolute;
-                top: 0;
-                right: 0;
+            flex: 1;
+            margin-top: 20px;
+            height: 185px;
+            overflow-y: scroll;
+            ul {
+                .item {
+                    position: relative;
+                    display: flex;
+                    font-size: 12px;
+                    width: 120px;
+                    height: 25px;
+                    line-height: 25px;
+                    // border-bottom: 1px dotted #000;
+                    color: rgb(153, 153, 153);
+                    .profile {
+                        width: 25px;
+                        height: 25px;
+                        border-radius: 50%;
+                        border: 2px solid #eee;
+                        margin-right: 12px;
+                    }
+                    margin-bottom: 15px;
+                    img {
+                        cursor: pointer;
+                        position: absolute;
+                        width: 20px;
+                        right: 0;
+                        // right: 20px;
+                        top: 3px;
+                    }
+                }
             }
         }
-        .area_3 {
-            clear: both;
-            width: 400px;
-            height: 50px;
-            .join {
-                position: absolute;
-                width: 100%;
-                height: 100%;
-                top: 0;
-                left: 0;
-                z-index: 100;
-                .context {
-                    width: 450px;
-                    height: 200px;
-                    background-color: #fff;
-                    border-radius: 20px;
-                    margin-top: 400px;
-                    text-align: center;
-                    padding-top: 50px;
-                    .button_1 {
-                        margin-top: 30px;
-                    }
-                }       
-            }
-            .exit {
-                position: absolute;
-                width: 100%;
-                height: 100%;
-                top: 0;
-                left: 0;
-                z-index: 100;
-                .context {
-                    width: 450px;
-                    height: 200px;
-                    background-color: #fff;
-                    border-radius: 20px;
-                    margin-top: 400px;
-                    text-align: center;
-                    padding-top: 50px;
-                    .button_1 {
-                        margin-top: 30px;
-                    }
-                }       
-            }
+        /* 设置滚动条的样式 */
+        .area_2::-webkit-scrollbar {
+            width: 6px;
+        }
+        /* 滚动槽 */
+        .area_2::-webkit-scrollbar-track {
+            -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+            border-radius: 10px;
+        }
+        
+        /* 滚动条滑块 */
+        .area_2::-webkit-scrollbar-thumb {
+            border-radius: 10px;
+            background: rgba(0,0,0,0.1);
+            -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
         }
     }
 </style>

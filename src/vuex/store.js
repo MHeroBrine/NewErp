@@ -15,15 +15,16 @@ const global = {
         // header组件
         HEADER_LOGIN: false,
         HEADER_NAV: false,
+        HEADER_USER: false,
         HEADER_GAMECONTROL: false,
         HEADER_INDEX: false,
 
         // sidebar组件
         SIDEBAR_USER: false,
-        SIDEBAR_GAMECONTROL: false,
-            SIDEBAR_GAMECONTROL_ISREADY: false,
-            SIDEBAR_GAMECONTROL_ISRUNNING: false,
-            SIDEBAR_GAMECONTROL_ISOVER: false,
+            SIDEBAR_GAMECONTROL_CREATE: false,
+            SIDEBAR_GAMECONTROL_JOIN: false,
+            SIDEBAR_GAMECONTROL_CONTINUE: false,
+            SIDEBAR_GAMECONTROL_HISTORY: false,
         SIDEBAR_INDEX: false,
 
         // fotter组件
@@ -31,6 +32,7 @@ const global = {
 
         // alert组件
         ALERT: false,
+            ALERT_ICON: null,
             ALERT_TITLE: null,
             ALERT_CONTENT: null,
             ALERT_DATA: null,
@@ -69,26 +71,32 @@ const global = {
                     state.HEADER_NAV = true;
                     state.SIDEBAR_USER = true;
                     break;
+                case 'user':
+                    state.HEADER_USER = true;
+                    state.SIDEBAR_USER = true;
+                    break;
                 case 'createGame':
                     state.HEADER_GAMECONTROL = true;
+                    state.SIDEBAR_GAMECONTROL = true;
+                    state.SIDEBAR_GAMECONTROL_CREATE = true;
                     break;
                 case 'gameControl_joinGame':
                     state.HEADER_GAMECONTROL = true;
                     state.SIDEBAR_GAMECONTROL = true;
-                    state.SIDEBAR_GAMECONTROL_ISREADY = true;
+                    state.SIDEBAR_GAMECONTROL_JOIN = true;
                     break;
-                    case 'gameControl_joinGame_joinGroup':
-                        state.HEADER_GAMECONTROL = true;
-                        break;
+                case 'gameControl_joinGame_joinGroup':
+                    state.HEADER_GAMECONTROL = true;
+                    break;
                 case 'gameControl_continueGame':
                     state.HEADER_GAMECONTROL = true;
                     state.SIDEBAR_GAMECONTROL = true;
-                    state.SIDEBAR_GAMECONTROL_ISRUNNING = true;
+                    state.SIDEBAR_GAMECONTROL_CONTINUE = true;
                     break;
                 case 'gameControl_checkGame':
                     state.HEADER_GAMECONTROL = true;
                     state.SIDEBAR_GAMECONTROL = true;
-                    state.SIDEBAR_GAMECONTROL_ISOVER = true;
+                    state.SIDEBAR_GAMECONTROL_HISTORY = true;
                     break;
                 case 'memberList':
                     state.HEADER_GAMECONTROL = true;
@@ -192,14 +200,16 @@ const global = {
         // content: 内容
         // data: 表单输入项，需要带上标题和绑定值
         // method: 确认触发的动作
-        controlAlert(state ,[type, title, content, data, method]) {
+        controlAlert(state ,[type, icon, title, content, data, method]) {
             if (type === false) {
                 state.ALERT = false;
+                state.ALERT_ICON = icon;
                 state.ALERT_TITLE = null;
                 state.ALERT_CONTENT = null;
                 state.ALERT_DATA = null;
                 state.ALERT_METHOD = null;
             } else if (type === true) {
+                state.ALERT_ICON = icon;
                 state.ALERT_TITLE = title;
                 state.ALERT_CONTENT = content;
                 state.ALERT_DATA = data;

@@ -5,13 +5,14 @@
 
         <div class="alert" v-if="this.$store.state.global.ALERT">
             <div class="floatWindow"></div>
-            <v-alert :title="this.$store.state.global.ALERT_TITLE" :content="this.$store.state.global.ALERT_CONTENT" :data="this.$store.state.global.ALERT_DATA" :method="this.$store.state.global.ALERT_METHOD"></v-alert>
+            <v-alert :title="this.$store.state.global.ALERT_TITLE" :content="this.$store.state.global.ALERT_CONTENT" :data="this.$store.state.global.ALERT_DATA" :method="this.$store.state.global.ALERT_METHOD" :icon="this.$store.state.global.ALERT_ICON"></v-alert>
         </div>
 
         <header>
             <v-header1 v-if="this.$store.state.global.HEADER_LOGIN"></v-header1>
             <v-header2 v-if="this.$store.state.global.HEADER_NAV"></v-header2>
             <v-header3 v-if="this.$store.state.global.HEADER_GAMECONTROL"></v-header3>
+            <v-header-user v-if="this.$store.state.global.HEADER_USER"></v-header-user>
             <v-header-index v-if="this.$store.state.global.HEADER_INDEX"></v-header-index>
         </header>
         <div class="content">
@@ -22,13 +23,14 @@
             </div>
             <router-view/>
         </div>
-        <footer><v-footer v-if="this.$store.state.global.FOTTER"></v-footer></footer>
+        <!-- <footer><v-footer v-if="this.$store.state.global.FOTTER"></v-footer></footer> -->
     </div>
 </template>
 
 <script>
     import Header_login from './components/Header/Header_login.vue'
     import Header_nav from './components/Header/Header_nav.vue'
+    import Header_user from './components/Header/Header_user.vue'
     import Header_gameControl from './components/Header/Header_gameControl.vue'
     import Header_index from './components/Header/Header_index.vue'
 
@@ -55,6 +57,7 @@
             'v-header1': Header_login,
             'v-header2': Header_nav,
             'v-header3': Header_gameControl,
+            'v-header-user': Header_user,
             'v-header-index': Header_index,
             'v-sidebar-user': Sidebar_user,
             'v-sidebar-gameControl': Sidebar_gameControl,
@@ -82,7 +85,7 @@
 
         .content {
             min-width: 1400px;
-            background-color: #eee;
+            background-color: #F1F2F7;
             display: flex;
             flex-direction: row;
             flex: 1;

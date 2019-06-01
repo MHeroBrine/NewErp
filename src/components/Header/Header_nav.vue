@@ -4,8 +4,24 @@
             <h1>ERP虚拟运营系统</h1>
         </div>
         <div class="title_right">
-            <div class="user">
-                <img src="../../assets/Header/Nav_user.png" @click="showCard()"><span class="userName">用户名</span>
+            <div class="user" @mouseover="isHide = false">
+                <img src="../../assets/Header/Nav_user.png"><span class="userName">用户名</span>
+            </div>
+        </div>
+        <div class="cover" v-show="!isHide" @mouseleave="isHide = true" v-if="turn">
+
+        </div>
+        <div class="info" v-bind:class="{ show: !isHide }" @mouseenter="isHide = false" @mouseleave="isHide = true" v-if="turn">
+            <div class="main">
+                <img src="../../assets/Header/Nav_user_2.svg" alt="" class="user">
+                <span class="name"><i>姓名：</i>{{ this.$store.state.user.studentName }}</span>
+                <span class="studentAccount"><i>学号：</i>{{ this.$store.state.user.studentAccount }}</span>
+                <img src="../../assets/Header/Nav_clock.svg" class="clock">
+                <span class="game">......比赛</span>
+                <a class="exit" @click="exit()">安全退出</a>
+            </div>
+            <div class="footer">
+                <a class="link" @click="infoCenter()">个人中心 >></a>
             </div>
         </div>
     </div>
@@ -16,19 +32,25 @@
         data() {
             return {
                 data: [],
-                cardState: false
+                cardState: false,
+                // 是否展示下拉框
+                isHide: true,
+                turn: true
             }
         },
         methods: {
-            showCard() {
-                this.cardState = !this.cardState;
-            },
             exit() {
                 this.$store.commit('exit');
             },
             linkTo(address) {
                 this.$router.push(address);
             },
+            infoCenter() {
+                this.turn = false;
+                this.isHide = true;
+                this.turn = true;
+                this.$router.push('/userInfo');
+            }
         }
     }
 </script>
@@ -79,9 +101,84 @@
                 font-weight: bold;
             }
         }
-        img {
-            width: 50px;
-            height: 50px;
-        }   
+        .cover {
+            position: absolute;
+            right: 60px;
+            width: 358px;
+            height: 60px;
+        }
+        .info {
+            position: absolute;
+            width: 358px;
+            height: 0px;
+            overflow: hidden;
+            background-color: #fff;
+            box-shadow: 0px 5px 16.92px 1.08px rgba(46, 124, 160, 0.5);
+            z-index: 30;
+            right: 60px;
+            top: 60px;
+            transition: all 0.5s;
+            .main {
+                position: relative;
+                width: 100%;
+                height: 182px;
+                font-size: 12px;
+                i {
+                    color: #000;
+                    font-weight: bold;
+                }
+                // color: #aaa;
+                .user {
+                    position: absolute;
+                    left: 34px;
+                    top: 28px;
+                }
+                .name {
+                    position: absolute;
+                    left: 83px;
+                    top: 37px;
+                }
+                .studentAccount {
+                    position: absolute;
+                    top: 37px;
+                    right: 50px;
+                }
+                .continue {
+                    position: absolute;
+                    top: 37px;
+                    right: 37px;
+                }
+                .clock {
+                    position: absolute;
+                    left: 83px;
+                    top: 127px;
+                }
+                .game {
+                    position: absolute;
+                    left: 120px;
+                    top: 120px;
+                }
+                .exit {
+                    position: absolute;
+                    color: #46b8ed;
+                    right: 37px;
+                    top: 120px;
+                }
+            }
+            .footer {
+                position: relative;
+                height: 42px;
+                background-color: #E4E4E4;
+                font-size: 14px;
+                .link {
+                    position: absolute;
+                    right: 36px;
+                    top: -8px;
+                }
+            }
+        }
+        .show {
+            height: 224px;
+        }
     }
 </style>

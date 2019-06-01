@@ -1,12 +1,13 @@
 <template>
     <div id="continueGame">
-        <div class="nav">
-            <img src="../../../../assets/icon/menu.svg" alt=""><a @click="freshList()">切换视角</a>&nbsp;&nbsp;
-            <img src="../../../../assets/icon/circle.svg" alt=""><a @click="createGame()">刷新</a>
-            <v-input-search class="fr"></v-input-search>
-        </div>
-        <div class="content mg">
-            <v-pagination-game type="continueGame"></v-pagination-game>
+        <div class="container_default">
+            <div class="title">
+                <h3>继续比赛</h3>
+            </div>
+            <div class="main">
+                <v-pagination-game type="continueGame"></v-pagination-game>
+                <img src="@/assets/Nav/GameControl/refresh.svg" class="refresh" @click="freshList()">
+            </div>
         </div>
     </div>
 </template>
@@ -25,24 +26,23 @@
 
 <style lang="scss" scoped>
     #continueGame {
+        position: relative;
         width: 100%;
-        .nav {
-            width: 100%;
-            min-width: 1200px;
-            height: 70px;
-            border-bottom: 1px solid #000;
-            padding-top: 15px;
-            padding-left: 10px;
+        .main {
             img {
+                cursor: pointer;
                 width: 30px;
             }
-            .input_search {
-                margin: 5px 10px 0 0;
+            .add {
+                position: absolute;
+                bottom: 30px;
+                right: 80px;
             }
-        }
-        .content {
-            margin-top: 50px;
-            width: 1200px;
+            .refresh {
+                position: absolute;
+                bottom: 30px;
+                right: 30px
+            }
         }
     }
 </style>

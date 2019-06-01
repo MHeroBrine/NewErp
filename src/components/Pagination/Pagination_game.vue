@@ -1,15 +1,12 @@
 <template>
     <div class="pagination_game">
-
         <template v-if="isReady" v-for="item in gameList">
             <v-card-game :data="item" :type="type"></v-card-game>
         </template>
         <div class="paginate mg">
-            <icon class="back_2" @click="page = 1"></icon>
-            <icon class="back_1" @click="page --"></icon>
-            <div class="count"> {{ page }} / {{ total }} </div>
-            <icon class="forward_1" @click="page ++"></icon>
-            <icon class="forward_2" @click="page = total"></icon>
+            <template v-for="i in total">
+                <button v-bind:class="{ active: i == page }" @click="page = i">{{ i }}</button>
+            </template>
         </div>
     </div>
 </template>
@@ -58,10 +55,9 @@
                     Axios.post(this.URL + '/game/manage/gameInfos/search', {
                         "concurrentPage": value,
                         "pageSize": 6,
-                        "gameStatus": "CREATE",
+                        "gameStatusEnum": "CREATE",
                         "studentId": this.$store.state.user.id
                     }).then((Response) => {
-                        console.log(Response);
                         this.gameList = Response.data.data.pageData;
                         let totalMessage = parseInt(Response.data.data.totalMessage);
                         if (totalMessage % 6 === 0) {
@@ -77,7 +73,7 @@
                     Axios.post(this.URL + '/game/manage/gameInfos/search', {
                         "concurrentPage": value,
                         "pageSize": 6,
-                        "gameStatus": "CREATE",
+                        "gameStatusEnum": "CREATE",
                         "teacherId": this.$store.state.user.teacherId
                     }).then((Response) => {
                         this.gameList = Response.data.data.pageData;
@@ -95,7 +91,8 @@
                     Axios.post(this.URL + '/game/manage/gameInfos/search', {
                         "concurrentPage": value,
                         "pageSize": 6,
-                        "gameStatus": "PLAYING",
+                        "gameStatusEnum": "PLAYING",
+                        'studentId': this.$store.state.user.id,
                         "teacherId": this.$store.state.user.teacherId
                     }).then((Response) => {
                         this.gameList = Response.data.data.pageData;
@@ -113,7 +110,7 @@
                     Axios.post(this.URL + '/game/manage/gameInfos/search', {
                         "concurrentPage": value,
                         "pageSize": 6,
-                        "gameStatus": "OVER",
+                        "gameStatusEnum": "OVER",
                         "teacherId": this.$store.state.user.teacherId
                     }).then((Response) => {
                         this.gameList = Response.data.data.pageData;
@@ -134,24 +131,33 @@
 
 <style lang="scss" scoped>
     .pagination_game {
-        width: 1200px;
+        position: relative;
+        width: 1500px;
+        min-height: 715px;
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: row;
         .paginate {
-            display: flex;
-            justify-content: center;
-            margin-top: 80px;
-            text-align: center;
-            .count {
-                margin-left: 20px;
-                margin-right: 20px;
-                width: 50px;
-                height: 25px;
-                line-height: 25px;
-                font-size: 12px;
-                background-color: #fff;
-                border: 1px solid #000;
-            }
-            icon {
+            position: absolute;
+            bottom: -84px;
+            left: 40px;
+            button {
                 cursor: pointer;
+                width: 34px;
+                height: 34px;
+                background-color: rgb(143, 143, 226);
+                border: 0;
+                outline: none;  
+                color: #fff;
+                &:nth-of-type(1) {
+                    border-radius: 5px 0 0 5px;
+                }
+                &:nth-last-of-type(1) {
+                    border-radius: 0 5px 5px 0;
+                }
+            }
+            .active {
+                background-color: rgb(88, 88, 226);
             }
         }
     }

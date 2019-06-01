@@ -1,67 +1,40 @@
 <template>
     <div class="card">
-        <div class="fl area_1">
-            <img src="../../assets/logo.png" alt="">
+        <div class="area_1" @mouseenter="cover = !cover" @mouseleave="cover = !cover">
+            <img src="@/assets/Nav/GameControl/image.svg">
         </div>
-        <div class="fr area_2">
-            <span>比赛名称：{{ data.gameName }}</span>
-            <span>企业数量：{{ data.enterpriseNumber }}</span>
+        <div class="area_2" v-bind:class="{ blur: cover }" v-if="createGame">
+            <h4>{{ data.gameName }}</h4>
+            <img src="@/assets/Nav/GameControl/enter.svg" alt="进入比赛" class="enter" title="进入比赛" @click="createGame_enterGame()">
+            <img src="@/assets/Nav/GameControl/begin.svg" alt="开始比赛" class="begin" title="开始比赛" @click="createGame_begin()">
+            <img src="@/assets/Nav/GameControl/delete.svg" alt="删除比赛" class="delete" title="删除比赛" @click="createGame_delete_confirm()">   
         </div>
-        <div class="area_3">
-
-            <div v-if="createGame">
-                <v-button1 value="进入比赛" type="primary" width="120px" height="1px" @click.native="createGame_enterGame()"></v-button1>
-                <v-button1 value="开始" type="primary" width="80px" height="1px" @click.native="createGame_begin()"></v-button1>
-                <v-button1 value="删除" type="primary" width="80px" height="1px" @click.native="createGame_delete()"></v-button1>
-            </div>
-
-            <div v-if="joinGame">
-                <v-button1 value="比赛信息" type="primary" width="155px" height="1px" @click.native="gameInfo()"></v-button1>
-                <v-button1 value="加入比赛" type="primary" width="155px" height="1px" @click.native="joinGame_joinGame()"></v-button1>
-            </div>
-
-            <div v-if="continueGame">
-                <v-button1 value="比赛信息" type="primary" width="80px" height="1px" @click.native="gameInfo()"></v-button1>
-                <v-button1 value="成员管理" type="primary" width="80px" height="1px" @click.native="linkTo('/memberList')"></v-button1>
-                <v-button1 value="继续" type="primary" width="80px" height="1px"></v-button1>
-            </div>
-
-            <div v-if="checkGame">
-                <v-button1 value="比赛信息" type="primary" width="80px" height="1px" @click.native="gameInfo()"></v-button1>
-                <v-button1 value="成员管理" type="primary" width="80px" height="1px" @click.native="linkTo('/memberList')"></v-button1>
-                <v-button1 value="历史数据" type="primary" width="80px" height="1px" @click.native="checkGame_history()"></v-button1>
-            </div>
+        <div class="area_2" v-bind:class="{ blur: cover }" v-if="joinGame">
+            <h4>{{ data.gameName }}</h4>
+            <img src="@/assets/Nav/GameControl/enter.svg" alt="加入" class="enter" title="加入比赛" @click="joinGame_joinGame()">
         </div>
-
-        <!-- <div v-if="createGame_isBegin" class="alert">
-            <div class="contents mg">
-                <span>开始***比赛？</span>
-                <div></div>
-                <v-button1 value="确认" type="primary" @click.native="createGame_begin_confirm()"></v-button1>
-                <v-button1 value="取消" type="primary" @click.native="createGame_begin()"></v-button1>
-            </div>
-        </div> -->
-        <div v-if="createGame_isDelete" class="alert">
-            <div class="contents mg">
-                <span>删除***比赛？</span>
-                <div></div>
-                <v-button1 value="确认" type="primary" @click.native="createGame_delete_confirm()"></v-button1>
-                <v-button1 value="取消" type="primary" @click.native="createGame_delete()"></v-button1>
-            </div>
+        <div class="area_2" v-bind:class="{ blur: cover }" v-if="continueGame">
+            <h4>{{ data.gameName }}</h4>
+            <img src="@/assets/Nav/GameControl/enter.svg" alt="查看比赛" class="enter" title="查看比赛" @click="joinGame_joinGame()">
+            <img src="@/assets/Nav/GameControl/begin.svg" alt="继续游戏" class="begin" title="继续游戏" @click="joinGame_continueGame()">
         </div>
-
-        <div v-if="isGameInfo" class="GameInfo">
-            <div class="contents mg">
-                <div class="title">比赛信息</div>
-                <div class="info">
-                    <span>比赛名称：{{ data.gameName }}</span>
-                    <span>企业数量：{{ data.enterpriseNumber }}</span>
-                    <span>创建人：{{ data.creatorName }}</span>
-                    <span>持续年数：{{ data.totalYear }}</span>
-                    <span>创建时间：{{ data.gameCreateTime }}</span>
-                    <v-button1 value="返回" type="primary" width="200px" @click.native="gameInfo()"></v-button1>
-                </div>
-            </div>
+        <div class="area_2" v-bind:class="{ blur: cover }" v-if="checkGame">
+            <h4>{{ data.gameName }}</h4>
+            <img src="@/assets/Nav/GameControl/enter.svg" alt="进入比赛" class="enter" title="进入比赛">
+            <img src="@/assets/Nav/GameControl/begin.svg" alt="开始比赛" class="begin" title="开始比赛">
+            <img src="@/assets/Nav/GameControl/delete.svg" alt="删除比赛" class="delete" title="删除比赛">   
+        </div>
+        <div class="cover" v-show="cover">
+            <p><span>比赛名称</span> ： {{ data.gameName }}</p>
+            <p><span>创建者</span> ： {{ data.creatorName }}</p>
+            <p><span>创建时间</span> ： {{ data.gameCreateTime }}</p>
+            <p><span>比赛状态</span> ：
+                <template v-if="data.gameStatusEnum == 'CREATE'">创建中</template>
+                <template v-if="data.gameStatusEnum == 'SURE'">准备完成</template>
+                <template v-if="data.gameStatusEnum == 'PLAYING'">游戏中</template>
+                <template v-if="data.gameStatusEnum == 'BANKRUPT'">已破产</template>
+                <template v-if="data.gameStatusEnum == 'OVER'">已结束</template>
+            </p>
         </div>
     </div>
 </template>
@@ -84,6 +57,14 @@
                     gameCreateGame: null,
                     enterpriseNumber: null
                 },
+                data_delete: [
+                    {
+                        title: '请输入密码',
+                        value: ''
+                    }
+                ],
+                // 卡片悬浮窗
+                cover: false,
 
                 isGameInfo: false,
 
@@ -117,6 +98,7 @@
                     this.checkGame = true;
                     break;
             }
+            this.getTime();
         },
         methods: {
             reset() {
@@ -134,16 +116,15 @@
                 this.$router.push('/joinGame/joinGroup');
             },
             createGame_begin() {
-                this.$store.commit('controlAlert', [true, '是否开始 ' + this.data.gameName, null, null, () => {
+                this.$store.commit('controlAlert', [true, 'WARN', '确认开始比赛：' + this.data.gameName, null, null, () => {
                     Axios.post(this.URL + '/game/manage/begin', Qs.stringify({
                         "gameId": this.data.id,
                         "userId": this.$store.state.user.id
                     })).then((Response) => {
-                        console.log(Response);
-                        if (Response.data.code === 200) {
-                            this.$store.commit('controlAlert', [true, '比赛初始化成功', null, null, null]);
+                        if (Response.data.code === 204) {
+                            this.$store.commit('controlAlert', [true, 'TRUE', '比赛初始化成功', null, null, null]);
                         } else {
-                            this.$store.commit('controlAlert', [true, Response.data.msg, null, null, null]);
+                            this.$store.commit('controlAlert', [true, 'FALSE', Response.data.msg, null, null, null]);
                         }
                     })
                 }]);
@@ -163,53 +144,42 @@
                 this.createGame_isDelete = !this.createGame_isDelete
             },
             createGame_delete_confirm() {
-                let data = {
-                    "gameId": this.data.id,
-                    "userId": this.$store.state.user.id
-                }
-                Axios.delete(this.URL + '/game/manage/delete', {
-                    params: {
-                        "gameId": this.data.id,
-                        "userId": this.$store.state.user.id
-                    },
-                    paramsSerializer: params => {
-                        return Qs.stringify(params, { indices: false })
-                    }
-                }).then((Response) => {
-                    if (Response.data.code === 200) {
-                        alert('删除比赛成功');
-                        VueEvent.$emit('refreshList');
-                        this.createGame_delete();
-                    } else {
-                        alert('删除失败，请稍后重试');
-                    }
-                })
+                this.$store.commit('controlAlert', [true, 'WARN_DELETE', '确认删除比赛：' + this.data.gameName, null, this.data_delete, () => {
+                    Axios.delete(this.URL + '/game/manage/delete', {
+                        params: {
+                            "gameId": this.data.id,
+                            "userId": this.$store.state.user.id,
+                            "password": this.data_delete[0].value
+                        },
+                        paramsSerializer: params => {
+                            return Qs.stringify(params, { indices: false })
+                        }
+                    }).then((Response) => {
+                        if (Response.data.code === 200) {
+                            this.$store.commit('controlAlert', [true, 'TRUE', '删除比赛成功', null, null, null]);
+                            VueEvent.$emit('refreshList');
+                        } else {
+                            this.$store.commit('controlAlert', [true, 'FALSE', '删除失败', null, null, null]);
+                            VueEvent.$emit('refreshList');
+                        }
+                    })
+                }]);
             },
-
-
-            gameInfo() {
+            // 获取当前时间
+            getTime() {
                 let time = new Date(this.data.gameCreateTime);
                 this.data.gameCreateTime = time.getFullYear() + '-' + (time.getMonth() + 1) + '-' + time.getDate();
-                this.$store.commit('controlFloatWindow');
-                this.isGameInfo = !this.isGameInfo;
             },
 
             joinGame_joinGame() {
                 this.$router.push('/joinGame/joinGroup');
                 this.$store.commit('setGameWatching', this.data.id);
-            },
 
-            continueGame_gameInfo() {
-                this.$store.commit('controlFloatWindow');
-                this.continueGame_isGameInfo = !this.continueGame_isGameInfo;
             },
-
-            checkGame_gameInfo() {
-                this.$store.commit('controlFloatWindow');
-                this.checkGame_isGameInfo = !this.checkGame_isGameInfo;
-            },
-            checkGame_history() {
-                
+            joinGame_continueGame() {
+                this.$store.commit('setGameWatching', this.data.id);
+                VueEvent.$emit('noEdit', true);
+                this.$router.push('/index');
             }
         },
         props: ['title', 'number', 'type', 'data']
@@ -218,90 +188,170 @@
 
 <style lang="scss" scoped>
     .card {
-        display: inline-block;
-        width: 350px;
-        height: 250px;
-        margin: 20px;
+        position: relative;
+        display: flex;
+        flex-direction: row;
+        width: 420px;
+        height: 225px;
+        margin: 40px;
+        box-shadow: 0px 0px 10px 2px rgb(223, 220, 236);
+        // border: 1px solid #000;
         .area_1 {
-            height: 200px;
-            text-align: center;
-            border: 1px solid #000;
-            border-right: 0;
-            width: 125px;
-            line-height: 200px;
+            position: relative;
+            cursor: pointer;
+            width: 145px;
+            height: 225px;
+            background-color: rgb(190, 190, 206);
             img {
-                width: 60px;
+                position: absolute;
+                top: 42px;
+                left: 10px;
+                width: 120px;
             }
         }
         .area_2 {
-            height: 200px;
-            text-align: center;
-            border: 1px solid #000;
-            width: 225px;
-            padding-top: 40px;
+            position: relative;
+            padding: 20px;
+            padding-top: 17px;
+            line-height: 25px;
+            transition: all 0.5s;
+            h4 {
+                color: rgb(153, 153, 153);
+                font-size: 18px;
+                font-weight: bold;
+            }
             span {
-                display: block;
-                margin: 15px;
+                font-size: 12px;
+            }
+            img {
+                cursor: pointer;
+                position: absolute;
+                width: 30px;
+                bottom: 30px;
+            }
+            .enter {
+                left: 20px;
+            }
+            .begin {
+                left: 120px;
+            }
+            .delete {
+                left: 215px;
             }
         }
-        .area_3 {
-            width: 400px;
-            height: 50px;
+        .blur {
+           filter: blur(8px);
         }
-
-        .alert {
+        .cover {
+            // filter: blur(0);
             position: absolute;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
             top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 100;
-            .contents {
-                width: 450px;
-                height: 200px;
-                background-color: #fff;
-                border-radius: 20px;
-                margin-top: 400px;
-                text-align: center;
-                padding-top: 50px;
+            left: 145px;
+            width: 280px;
+            height: 225px;
+            opacity: 0.5;
+            color: #fff;
+            background-color: #000;
+            // filter: blur(5px);
+            p {
+                display: flex;
+                font-size: 14px;
+                line-height: 30px;
+                span {
+                    // display: flex;
+                    width: 65px;
+                    font-size: 14px;
+                    display: block;
+                    text-align: justify;
+                    text-align-last: justify;
+                    text-justify: distribute;
+                }
             }
         }
+        
+        // .area_1 {
+        //     height: 200px;
+        //     text-align: center;
+        //     border: 1px solid #000;
+        //     border-right: 0;
+        //     width: 125px;
+        //     line-height: 200px;
+        //     img {
+        //         width: 60px;
+        //     }
+        // }
+        // .area_2 {
+        //     height: 200px;
+        //     text-align: center;
+        //     border: 1px solid #000;
+        //     width: 225px;
+        //     padding-top: 40px;
+        //     span {
+        //         display: block;
+        //         margin: 15px;
+        //     }
+        // }
+        // .area_3 {
+        //     width: 400px;
+        //     height: 50px;
+        // }
 
-        .GameInfo {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 100;
-            .contents {
-                width: 800px;
-                height: 400px;
-                background-color: #fff;
-                border-radius: 20px;
-                margin-top: 250px;
-                .title {
-                    width: 100%;
-                    height: 70px;
-                    line-height: 70px;
-                    border-bottom: 1px solid #000;
-                    text-align: center;
-                    font-size: 22px;
-                    font-weight: bold;
-                }
-                .info {
-                    width: 100%;
-                    height: 330px;
-                    // text-align: center;
-                    padding-top: 30px;
-                    padding-left: 300px;
-                    span {
-                        display: block;
-                        line-height: 40px;
-                    }
-                }
+        // .alert {
+        //     position: absolute;
+        //     top: 0;
+        //     left: 0;
+        //     width: 100%;
+        //     height: 100%;
+        //     z-index: 100;
+        //     .contents {
+        //         width: 450px;
+        //         height: 200px;
+        //         background-color: #fff;
+        //         border-radius: 20px;
+        //         margin-top: 400px;
+        //         text-align: center;
+        //         padding-top: 50px;
+        //     }
+        // }
+
+        // .GameInfo {
+        //     position: absolute;
+        //     top: 0;
+        //     left: 0;
+        //     width: 100%;
+        //     height: 100%;
+        //     z-index: 100;
+        //     .contents {
+        //         width: 800px;
+        //         height: 400px;
+        //         background-color: #fff;
+        //         border-radius: 20px;
+        //         margin-top: 250px;
+        //         .title {
+        //             width: 100%;
+        //             height: 70px;
+        //             line-height: 70px;
+        //             border-bottom: 1px solid #000;
+        //             text-align: center;
+        //             font-size: 22px;
+        //             font-weight: bold;
+        //         }
+        //         .info {
+        //             width: 100%;
+        //             height: 330px;
+        //             // text-align: center;
+        //             padding-top: 30px;
+        //             padding-left: 300px;
+        //             span {
+        //                 display: block;
+        //                 line-height: 40px;
+        //             }
+        //         }
                 
-            }
-        }
+        //     }
+        // }
     }
 </style>

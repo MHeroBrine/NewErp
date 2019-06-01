@@ -61,7 +61,6 @@
                     }
 
                     let matches = this.RegExp.test(this.value);
-                    console.log(matches);
                     if (matches === true) {
                         this.isPass = true;
                         this.isWrong = false;
