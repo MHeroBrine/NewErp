@@ -9,11 +9,11 @@
                 <p class="sure" v-if="data.enterpriseStatusEnum == 'SURE'">准备完毕</p>
             </div>
             <div class="btns">
-                <button v-if="!(isAdmin || isMember)" @click="join()" v-show="noEdit">加入小组</button>
-                <button v-if="(!isAdmin && isMember)" @click="exit()" v-show="noEdit">退出</button>
+                <button v-if="!(isAdmin || isMember)" @click="join()" v-show="!noEdit">加入小组</button>
+                <button v-if="(!isAdmin && isMember)" @click="exit()" v-show="!noEdit">退出</button>
                 <button v-if="isAdmin" @click="del()" v-show="noEdit">删除</button>
-                <button v-if="isAdmin && data.enterpriseStatusEnum == 'CREATE'" @click="getReady()" v-show="noEdit">确认准备</button>
-                <button v-if="isAdmin && data.enterpriseStatusEnum == 'PLAYING'" @click="addMember()" v-show="!noEdit">添加成员</button>
+                <button v-if="isAdmin && data.enterpriseStatusEnum == 'CREATE'" @click="getReady()" v-show="!noEdit">确认准备</button>
+                <button v-if="isAdmin && data.enterpriseStatusEnum == 'PLAYING'" @click="addMember()" v-show="noEdit">添加成员</button>
             </div>
         </div>
         <div class="area_2">
@@ -24,6 +24,7 @@
                     </div>
                     <p>{{ item.studentName }}</p>
                     <img src="@/assets/Nav/GameControl/false.svg" v-if="isAdmin && userId != item.userStudentId" @click="deleteMember(item.userStudentId)">
+                    <img src="@/assets/Nav/GameControl/false.svg" v-if="isAdmin && userId == item.userStudentId" @click="deleteMember(item.userStudentId)">
                 </li>
             </ul>
         </div>
@@ -69,6 +70,9 @@
                     }).then((Response) => {
                         if (Response.data.code === 200) {
                             this.$store.commit('controlAlert', [true, 'TRUE' ,'加入成功', null, null, null]);
+                            localStorage.setItem('GAME_watching', localStorage.getItem('GAME'));
+                            localStorage.setItem('GAME_cache', this.$store.state.user.id);
+                            VueEvent.$emit('setReadyState');
                             VueEvent.$emit('refreshGroupList');
                         } else {
                             this.$store.commit('controlAlert', [true, 'FALSE', '加入失败', null, null, null]);
@@ -90,6 +94,7 @@
                     }).then((Response) => {
                         if (Response.data.code === 204) {
                             this.$store.commit('controlAlert', [true, 'TRUE', '退出成功', null, null, null]);
+                            localStorage.clear();
                             VueEvent.$emit('refreshGroupList');
                         } else {
                             this.$store.commit('controlAlert', [true, 'FALSE', Response.data.msg, null, null, null]);
@@ -194,9 +199,13 @@
                         'enterpriseId': this.data.id,
                         'userId': this.$store.state.user.id
                     })).then((Response) => {
-                        if (Response.data.code === 204) {                            
+                        if (Response.data.code === 204) { 
+                            // localStorage.setItem('GROUP_watching', this.data.id);                           
                             alert('准备成功');
                             this.data.enterpriseStatusEnum = 'SURE';
+                            localStorage.setItem('GAME_watching', localStorage.getItem('GAME'));
+                            localStorage.setItem('GAME_cache', this.$store.state.user.id);
+                            VueEvent.$emit('setReadyState');
                         } else {
                             val = false;
                         }
@@ -205,8 +214,10 @@
             },
             // 不可编辑
             editCheck() {
+                let that = this;
                 VueEvent.$on('noEdit', function(val) {
-                    this.noEdit = true;
+                    that.noEdit = val;
+                    console.log(that.noEdit);
                 })
             },
             // 组长添加成员
@@ -237,37 +248,37 @@
         position: relative;
         display: flex;
         flex-direction: row;
-        width: 420px;
-        height: 225px;
-        margin: 40px;
+        width: 25%;
+        margin: 30px 40px 40px 40px;
         // margin-right: 100px;
         box-shadow: 0px 0px 10px 2px rgb(223, 220, 236);
         // border: 1px solid #000;
         .area_1 {
             position: relative;
-            width: 240px;
+            width: 55%;
+            padding-bottom: 30%;
             border-right: 1px solid #eee;
-            margin: 20px;
-            line-height: 25px;
+            margin: 5%;
+            line-height: 150%;
             transition: all 0.5s;
             .leader {
-                width: 50px;
-                height: 50px;
+                width: 2.2vw;
+                height: 2.2vw;
                 border: 2px solid #eee;
                 border-radius: 50%;
             }
             .info {
                 position: absolute;
-                width: 165px;
+                width: 70%;
                 color: rgb(153, 153, 153);
                 top: 0px;
-                left: 60px;
+                left: 23%;
                 h3 {
                     color: rgb(95, 95, 95);
-                    font-size: 15px;
+                    font-size: 0.8vw;
                 }
                 p {
-                    font-size: 10px;
+                    font-size: 0.2vw;
                 }
                 .create {
                     position: absolute;
@@ -283,20 +294,18 @@
                 }
             }
             .btns {
+                width: 100%;
                 button {
                     cursor: pointer;
-                    // bottom: 0;
                     border: 1px solid rgb(187, 187, 187);
                     background-color: #fff;
-                    width: 80px;
-                    height: 30px;
+                    width: 35%;
+                    padding: 3% 0 3% 0;
                     border-radius: 5px;
+                    font-size: 0.2vw;
                     color: rgb(117, 117, 117);
                     outline: none;
                     transition: all 0.2s;
-                    &:nth-of-type(1) {
-                        margin-right: 60px;
-                    }
                     &:hover {
                         color: #fff;
                         background-color: rgb(117, 117, 117);
@@ -309,30 +318,30 @@
         .area_2 {
             flex: 1;
             margin-top: 20px;
-            height: 185px;
+            // height: 185px;
             overflow-y: scroll;
             ul {
                 .item {
                     position: relative;
                     display: flex;
-                    font-size: 12px;
-                    width: 120px;
-                    height: 25px;
-                    line-height: 25px;
+                    font-size: 0.2vw;
+                    width: 95%;
+                    height: 10%;
+                    line-height: 220%;
                     // border-bottom: 1px dotted #000;
                     color: rgb(153, 153, 153);
                     .profile {
-                        width: 25px;
-                        height: 25px;
+                        width: 1.5vw;
+                        height: 1.5vw;
                         border-radius: 50%;
                         border: 2px solid #eee;
-                        margin-right: 12px;
+                        margin-right: 6%;
                     }
-                    margin-bottom: 15px;
+                    margin-bottom: 3%;
                     img {
                         cursor: pointer;
                         position: absolute;
-                        width: 20px;
+                        width: 15%;
                         right: 0;
                         // right: 20px;
                         top: 3px;

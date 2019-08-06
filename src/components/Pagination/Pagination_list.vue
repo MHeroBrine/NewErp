@@ -1,11 +1,11 @@
 <template>
     <div class="pagination_list">
-        <div class="paginate mg">
-            <icon class="back_2" @click="toTopOrBottom(1)"></icon>
-            <icon class="back_1" @click="changePage(-1)"></icon>
-            <div class="count"> {{ pageNow }} / {{ length }} </div>
-            <icon class="forward_1" @click="changePage(1)"></icon>
-            <icon class="forward_2" @click="toTopOrBottom(0)"></icon>
+        <div class="paginate mg" v-show="state">
+            <button class="rear" @click="pageNow = 0">&lt;</button>
+            <template v-for="(i, key) in list">
+                <button v-bind:class="{ active: key == pageNow }" @click="pageNow = key" :ref="key">{{ key + 1 }}</button>
+            </template>
+            <button class="front" @click="pageNow = list.length - 1">&gt;</button>
         </div>
     </div>
 </template>
@@ -13,56 +13,106 @@
 <script>
     export default {
         data() {
-            return {}
+            return {
+                pageNow: 0,
+                list: [],
+                state: false,
+
+                // 分页尺寸
+                little: true,
+                much: false
+            }
+        },
+        mounted() {
+            const unwatch = this.$watch('data', function() {
+                this.dataDivide();
+                for (let i = 0; i < this.list.length; i ++) {
+                    if (i > 4) {
+                        setTimeout(() => {
+                            this.$refs[i][0].style = 'display: none';
+                        }, 0);
+                    }
+                }
+                setTimeout(() => {
+                    this.state = true;
+                }, 0);
+                this.$emit('change', this.list[0]);
+                unwatch();
+            })
         },
         watch: {
             'pageNow': function(val) {
-                this.$emit('change', val)
-            }
+                this.$emit('change', this.list[val]);
+                this.pageTest();
+            },
         },
         methods: {
-            // changeValue() {
-            //     this.$emit('change', ++ this.pageNow);
-            // },
-            changePage(num) {
-                this.pageNow += num;
-                if (this.pageNow === 0) {
-                    this.pageNow = 1;
-                } else if (this.pageNow > this.length) {
-                    this.pageNow -= 1;
-                }
+            // 数据分割
+            dataDivide() {
+                this.list = this.Util.chunk(this.data, this.divide);
+                this.data = this.list[0];
             },
-            toTopOrBottom(num) {
-                if (num === 1) {
-                    this.pageNow = 1;
-                } else if (num === 0) {
-                    this.pageNow = this.length;
+            // 页面长度监测（省略号）
+            pageTest() {
+                // 第一页
+                if (this.pageNow == 0) {
+                    for (let i = 0; i < this.list.length; i ++) {
+                        if (i < 5) {
+                            this.$refs[i][0].style = 'display: inline-block';
+                        } else {
+                            this.$refs[i][0].style = 'display: none';
+                        }
+                    }
+                    return;
+                }
+                // 中间页
+                if (this.list.length - this.pageNow > 4) {
+                    for (let i = 0; i < this.list.length; i ++) {
+                        if (i < this.pageNow - 1 || i > this.pageNow + 3) {
+                            this.$refs[i][0].style = 'display: none';
+                        } else {
+                            this.$refs[i][0].style = 'display: inline-block';
+                        }
+                    }
+                } else {
+                    // 最后五页
+                    for (let i = 0; i < this.list.length; i ++) {
+                        if (i < this.list.length - 5) {
+                            this.$refs[i][0].style = 'display: none';
+                        } else {
+                            this.$refs[i][0].style = 'display: inline-block';
+                        }
+                    }
                 }
             }
         },
-        props: ['length', 'pageNow']
+        props: ['data', 'divide']
     }
 </script>
 
 <style lang="scss" scoped>
     .pagination_list {
         .paginate {
-            display: flex;
-            justify-content: center;
-            margin-top: 80px;
-            text-align: center;
-            .count {
-                margin-left: 20px;
-                margin-right: 20px;
-                width: 50px;
-                height: 25px;
-                line-height: 25px;
-                font-size: 12px;
-                background-color: #fff;
-                border: 1px solid #000;
-            }
-            icon {
+            position: absolute;
+            bottom: 30px;
+            left: 40px;
+            button {
                 cursor: pointer;
+                width: 34px;
+                height: 34px;
+                background-color: rgb(143, 143, 226);
+                border: 0;
+                outline: none;  
+                color: #fff;
+                &:nth-of-type(1) {
+                    border-radius: 5px 0 0 5px;
+                }
+                &:nth-last-of-type(1) {
+                    border-radius: 0 5px 5px 0;
+                }
+            }
+            .active {
+                background-color: rgb(88, 88, 226);
             }
         }
     }

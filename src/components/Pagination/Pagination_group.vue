@@ -55,7 +55,7 @@
                 Axios.get(this.URL + '/game/manage/enterprise/enterpriseInfos/get?gameId=' + this.$store.state.gameControl.gameWatching)
                     .then((Response) => {
                         if (Response.data.code === 200) {
-                            this.groupList = this.F.chunk(Response.data.data, 6);
+                            this.groupList = this.Util.chunk(Response.data.data, 6);
                             this.total = this.groupList.length;
                             this.isReady = true;
                         } else {
@@ -70,15 +70,14 @@
 
 <style lang="scss" scoped>
     .pagination_group {
-        position: relative;
-        width: 1800px;
-        min-height: 715px;
+        max-width: 1800px;
+        padding-bottom: 50px;
         display: flex;
         flex-wrap: wrap;
         flex-direction: row;
         .paginate {
             position: absolute;
-            bottom: -60px;
+            bottom: 25px;
             left: 40px;
             button {
                 cursor: pointer;

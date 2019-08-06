@@ -1,7 +1,11 @@
 <template>
     <div class="gameControl">
         <ul class="main">
-            <li @click="linkTo('/createGame')" style="margin-top: 20px;" class="mainItem" v-bind:class="{ active: this.$store.state.global.SIDEBAR_GAMECONTROL_CREATE }">
+            <li @click="linkTo('/nav')" style="margin-top: 20px;" class="mainItem">
+                <img src="@/assets/Game/Index/index.svg">
+                <router-link to="/nav" class="home">首页</router-link>
+            </li>
+            <li @click="linkTo('/createGame')" class="mainItem" v-bind:class="{ active: this.$store.state.global.SIDEBAR_GAMECONTROL_CREATE }">
                 <img src="@/assets/Nav/GameControl/create.svg" v-show="!this.$store.state.global.SIDEBAR_GAMECONTROL_CREATE">
                 <img src="@/assets/Nav/GameControl/create_active.svg" v-show="this.$store.state.global.SIDEBAR_GAMECONTROL_CREATE">
                 <router-link to="/createGame" class="home">创建比赛</router-link>
@@ -20,10 +24,6 @@
                 <img src="@/assets/Nav/GameControl/history.svg" v-show="!this.$store.state.global.SIDEBAR_GAMECONTROL_HISTORY">
                 <img src="@/assets/Nav/GameControl/history_active.svg" v-show="this.$store.state.global.SIDEBAR_GAMECONTROL_HISTORY">
                 <router-link to="/checkGame" class="home">查看历史比赛</router-link>
-            </li>
-            <li @click="linkTo('/nav')" class="mainItem back">
-                <img src="@/assets/Nav/GameControl/back.svg" alt="">
-                <router-link to="/nav" class="home">返回首页</router-link>
             </li>
         </ul>
     </div>

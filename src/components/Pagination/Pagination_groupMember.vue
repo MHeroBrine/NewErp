@@ -30,7 +30,7 @@
         mounted() {
             this.permission();
             this.getMemberInfo();
-            // this.itemList = this.F.chunk(this.list, 6);
+            // this.itemList = this.Util.chunk(this.list, 6);
             // this.total = this.itemList.length;
         },
         methods: {
@@ -38,7 +38,7 @@
                 Axios.get(this.URL + '/game/manage/enterprise/member/enterpriseMemberInfos/get?enterpriseId=' + this.$store.state.gameControl.groupWatching)
                     .then((Response) => {
                         if (Response.data.code === 200) {
-                            this.memberList = this.F.chunk(Response.data.data, 6);
+                            this.memberList = this.Util.chunk(Response.data.data, 6);
                             this.total = this.memberList.length;
                             this.isReady = true;
                         } else {

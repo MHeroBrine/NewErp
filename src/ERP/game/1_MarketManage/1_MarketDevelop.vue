@@ -5,92 +5,17 @@
                 <h3>市场开发</h3>
             </div>
             <div class="chart">
-                <div style="min-width: 800px;">
+                <!-- <div id="myChart" :style="{width: '80%', height: '300px'}">
+
+                </div> -->
+                <div class="chart_temp">
                     <ve-bar :data="chartData"></ve-bar>
                 </div>
-                <div style="min-width: 600px;">
+                <div class="chart_temp">
                     <ve-pie :data="chartData"></ve-pie>
-                    <!-- <ve-line :data="chartData"></ve-line> -->
                 </div>
             </div>
             <div class="table">
-                <table class="v-table mg">
-                    <tr>
-                        <th>市场名称</th>
-                        <th>开拓总期数</th>
-                        <th>每期开拓费用</th>
-                        <th>每期维护费用</th>
-                        <th>已拓展期数</th>
-                        <th>状态</th>
-                        <th>操作</th>
-                    </tr>
-                    <tr>
-                        <td>市场1</td>
-                        <td>2</td>
-                        <td>300</td>
-                        <td>1</td>
-                        <td>5</td>
-                        <td>维护中</td>
-                        <td>
-                            <button class="v-button b-primary">开拓市场</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>市场1</td>
-                        <td>2</td>
-                        <td>300</td>
-                        <td>1</td>
-                        <td>5</td>
-                        <td>维护中</td>
-                        <td>
-                            <button class="v-button b-primary">开拓市场</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>市场1</td>
-                        <td>2</td>
-                        <td>300</td>
-                        <td>1</td>
-                        <td>5</td>
-                        <td>维护中</td>
-                        <td>
-                            <button class="v-button b-primary">开拓市场</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>市场1</td>
-                        <td>2</td>
-                        <td>300</td>
-                        <td>1</td>
-                        <td>5</td>
-                        <td>维护中</td>
-                        <td>
-                            <button class="v-button b-primary">开拓市场</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>市场1</td>
-                        <td>2</td>
-                        <td>300</td>
-                        <td>1</td>
-                        <td>5</td>
-                        <td>维护中</td>
-                        <td>
-                            <button class="v-button b-primary">开拓市场</button>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-        <!-- <div class="nav">
-            <h3>市场开发</h3>
-        </div>
-        <div class="container mg">
-            <div class="chart">
-                <div>图表</div>
-                <div></div>
-            </div>
-            <div class="marketList">
                 <table class="v-table mg">
                     <tr>
                         <th>市场名称</th>
@@ -128,12 +53,13 @@
                     </tr>
                 </table>
             </div>
-        </div> -->
+        </div>
     </div>
 </template>
 
 <script>
     import Axios from 'axios'
+    import vueEvent from '../../../model/VueEvent';
 
     export default {
         data() {
@@ -156,7 +82,7 @@
         methods: {
             // 获取某个企业的全部市场开拓信息
             getMarketInfo() {
-                Axios.get(this.URL + '/game/compete/operation/market/market/infos/get?enterpriseId=' + localStorage.getItem('enterpriseId'))
+                Axios.get(this.URL + '/game/compete/operation/market?enterpriseId=' + localStorage.getItem('enterpriseId'))
                     .then(Response => {
                         this.marketInfo = Response.data.data;
                     }).catch(e => {
@@ -167,9 +93,12 @@
             // 市场部分
             // 开始开拓
             start(id) {
-                Axios.put(this.URL + '/game/compete/operation/market/market/infos/update/start?marketDevelopId=' + id)
+                let i = confirm('开始开拓该市场？');
+                if (i) {
+                    Axios.put(this.URL + '/game/compete/operation/market/start?marketDevelopId=' + id)
                     .then(Response => {
                         if (Response.data.code == 200) {
+                            alert(Response.data.msg);
                             this.getMarketInfo();
                         } else {
                             alert('开拓市场失败，请稍后重试');
@@ -177,12 +106,16 @@
                     }).catch(e => {
 
                     }) 
+                }
             },
             // 暂停开拓
             pause(id) {
-                Axios.put(this.URL + '/game/compete/operation/market/market/infos/update/pause?marketDevelopId=' + id)
+                let i = confirm('暂停开拓该市场？');
+                if (i) {
+                    Axios.put(this.URL + '/game/compete/operation/market/pause?marketDevelopId=' + id)
                     .then(Response => {
                         if (Response.data.code == 200) {
+                            alert(Response.data.msg);
                             this.getMarketInfo();
                         } else {
                             alert('暂停开拓失败，请稍后重试');
@@ -190,12 +123,16 @@
                     }).catch(e => {
 
                     }) 
+                }
             },
             // 继续开拓
             develop(id) {
-                Axios.put(this.URL + '/game/compete/operation/market/market/infos/update/develop?marketDevelopId=' + id)
+                let i = confirm('继续开拓该市场？');
+                if (i) {
+                    Axios.put(this.URL + '/game/compete/operation/market/develop?marketDevelopId=' + id)
                     .then(Response => {
                         if (Response.data.code == 200) {
+                            alert(Response.data.msg);
                             this.getMarketInfo();
                         } else {
                             alert('继续开拓失败，请稍后重试');
@@ -203,10 +140,14 @@
                     }).catch(e => {
 
                     }) 
+                }
             }
         },
         mounted() {
             this.$store.commit('pageState', 'marketDevelop');
+            setTimeout(() => {
+                vueEvent.$emit('sidebarState', '/game/marketDevelop', 'marketManage', 'dev');
+            }, 1);
             this.getMarketInfo();
         }
     }
@@ -216,14 +157,18 @@
     #marketDevelop {
         width: 100%;
         .container_default {
-            height: auto;
+            height: 95%;
             .chart {
                 display: flex;
                 flex-direction: row;
+                justify-content: space-between;
                 height: 450px;
                 margin: 0 100px 0 100px;
                 padding-top: 50px;
                 border-bottom: 1px solid #eee;
+                .chart_temp {
+                    flex: 0.4;
+                }
                 .p1 {
                     width: 600px;
                     height: 600px;
@@ -231,11 +176,12 @@
                 }
             }
             .table {
-                padding-top: 20px;
+                // width: 1200px;
                 margin: 0 100px 0 100px;
+                padding-top: 20px;
                 padding-bottom: 50px;
-                .v-table {
-                    width: 1400px;
+                button {
+                    width: 80px;
                 }
             }
         }

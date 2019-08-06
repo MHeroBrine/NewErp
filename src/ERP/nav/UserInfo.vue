@@ -1,99 +1,136 @@
 <template>
     <div id="userInfo">
-        <div class="form" v-if="!isChange">
-            <h3 @click="test()">个人信息</h3>
-            <a>学号：{{ this.$store.state.user.studentAccount }}</a>
-            <a>学院：{{ this.$store.state.user.majorInfo_college_college }}</a>
-            <a>专业：{{ this.$store.state.user.majorInfo_major }}</a>
-            <a>班级：{{ this.$store.state.user.studentClass }}</a>
-            <v-button1 value="编辑资料" type="primary" @click.native="isChange = true" width="180px"></v-button1>
+        <div class="profile">
+            <div class="profile_img">
+                <div class="img">
+
+                </div>
+                <h2>{{ this.$store.state.user.studentName }}</h2>
+                <h3>{{ this.$store.state.user.studentAccount }}&nbsp; / &nbsp;{{ this.$store.state.user.studentClass }}</h3>
+            </div>
+            <ul>
+                <li v-bind:class="{ active: page.checkInfo }" @click="page.checkInfo = true; page.changeInfo = false"><img src="@/assets/Nav/UserInfo/info.svg">个人信息</li>
+                <li v-bind:class="{ active: page.changeInfo }" @click="page.checkInfo = false; page.changeInfo = true"><img src="@/assets/Nav/UserInfo/edit.svg">修改信息</li>
+                <!-- <li v-bind:class="{ active: page.profile }"><img src="@/assets/Nav/UserInfo/profile.svg">修改头像</li> -->
+            </ul>
         </div>
-        <div class="form" v-if="isChange">
-            <h3>个人信息</h3>
-
-            <div class="item">
-                <span>学号</span><input type="text" class="v-input">
+        <div class="contents">
+            <div class="info" v-show="page.checkInfo">
+                <div class="header"></div>
+                <div class="main">
+                    <h2>个人信息</h2>
+                    <ul>
+                        <div class="item">
+                            <li><span>姓名：</span>{{ this.$store.state.user.studentName }}</li>
+                            <li><span>学号：</span>{{ this.$store.state.user.studentAccount }}</li>
+                        </div>
+                        <div class="item">
+                            <li><span>班级：</span>{{ this.$store.state.user.studentClass }}</li>
+                            <li><span>性别：</span>{{ this.$store.state.user.gender == 'Man' ? '男' : '女' }}</li>
+                        </div>
+                        <div class="item">
+                            <li><span>学院：</span>{{ this.$store.state.user.majorBasicInfo.major }}</li>
+                            <li><span>专业：</span>{{ this.$store.state.user.majorBasicInfo.college.college }}</li>
+                        </div>
+                        <div class="item">
+                            <li><span>Email：</span>{{ this.$store.state.user.email || "" }}</li>
+                            <li><span>Phone：</span>{{ this.$store.state.user.phone || "" }}</li>
+                        </div>
+                    </ul>
+                </div>
             </div>
-            <div class="item">
-                <span>学院</span><input type="text" class="v-input">
+            <div class="changeInfo" v-show="page.changeInfo">
+                <div class="header">
+                    <h2>修改基本信息</h2>
+                </div>
+                <div class="main">
+                    <!-- <h2>信息修改</h2> -->
+                    <ul>
+                        <li class="item"><span>姓名</span><input type="text" class="v-input" v-model="data.studentName"></li>
+                        <li class="item"><span>学号</span><input type="text" class="v-input" v-model="data.studentAccount"></li>
+                        <li class="item"><span>班级</span><input type="text" class="v-input" v-model="data.studentClass"></li>
+                        <li class="item"><span>性别</span><select class="v-input" v-model="data.gender">
+                            <option value="Man">男</option>
+                            <option value="Woman">女</option>    
+                        </select></li>
+                        <li class="item"><span>学院</span><select class="v-input" v-model="collegeNow">
+                            <option value="0" selected disabled style="display: none;">学院</option>
+                            <template v-for="item in collegeList">
+                                <option :value="item.id">{{ item.college }}</option>
+                            </template>
+                        </select></li>
+                        <li class="item"><span>专业</span><select class="v-input" v-model="majorNow">
+                            <option value="0" selected disabled style="display: none;">专业</option>
+                            <template v-for="item in majorList">
+                                <option :value="item.id">{{ item.major }}</option>
+                            </template>
+                        </select></li>
+                        <li class="item"><span>Email</span><input type="text" class="v-input" v-model="data.email"></li>
+                        <li class="item"><span>Phone</span><input type="text" class="v-input" v-model="data.phone"></li>
+                    </ul>
+                    <button class="v-button b-success" @click="updateInfo()">保存</button>
+                    <button class="v-button b-info" @click="getInfo_default()">重置</button>
+                </div>
+                <div class="changePassword">
+                    <div class="header">
+                        <h2>修改密码</h2>
+                    </div>
+                    <div class="main">
+                        <ul>
+                            <li class="item"><span>旧密码</span><input type="password" class="v-input" v-model="password.old"></li>
+                            <li class="item"><span>新密码</span><input type="password" class="v-input" v-model="password.new"></li>
+                            <li class="item"><span>重新输入新密码</span><input type="password" class="v-input" v-model="password.reNew"></li>
+                        </ul>
+                        <button class="v-button b-primary" @click="updatePassword()">修改</button>
+                        <button class="v-button b-info" @click="resetPassword()">重置</button>
+                    </div>
+                </div>
+                <div class="changeProfile">
+                    <div class="header">
+                        <h2>修改头像</h2>
+                    </div>
+                </div>
             </div>
-            <div class="item">
-                <span>专业</span><input type="text" class="v-input">
-            </div>
-            <div class="item">
-                <span>班级</span><input type="text" class="v-input">
-            </div>
-            <button class="v-button b-primary">编辑资料</button>
-            <!-- <v-input1 title="学号" type="password" :value="this.$store.state.user.studentAccount" disabled></v-input1>
-            
-            <div class="select">
-                学院 <select v-model="collegeNow">
-                    <template v-for="item in collegeList">
-                        <option :value="item.id">{{ item.college }}</option>
-                    </template>
-                </select>
-                <div></div>
-                专业 <select v-model="majorNow">
-                    <template v-for="item in majorList">
-                        <option :value="item.id">{{ item.major }}</option>
-                    </template>
-                </select>
-            </div> -->
-
-            <!-- <template v-for="item in list_2">
-                <v-input1
-                    :title="item.title"
-                    v-model="item.value"
-                    :type="item.type"
-                    :RegExp="item.RegExp"
-                    :disabled="item.disabled"
-                    :placeholder="item.placeholder"
-                    :eye="item.eye"
-                />
-            </template> -->
-            
-            <!-- <div style="margin-top: 20px;"><span>性别</span><input type="radio" name="sex" value="Man" v-model="picked">男<input type="radio" name="sex" value="Woman" v-model="picked">女</div>
-
-            <v-button1 value="确认" type="primary" width="180px" @click.native="changeUserInfo()"></v-button1>
-            <v-button1 value="取消" type="primary" width="180px" @click.native="isChange = false"></v-button1> -->
         </div>
     </div>
 </template>
 
 <script>
+    import Qs from 'qs'
+    import VueEvent from '../../model/VueEvent'
     import Axios from 'axios'
 
     export default {
         data() {
             return {
-                // 控制 浏览/修改信息
-                isChange: true,
-                // 性别选择项
-                picked: this.$store.state.user.gender,
+                // 页面显示
+                page: {
+                    checkInfo: true,
+                    changeInfo: false
+                },
 
-                collegeNow: 1,
-                majorNow: 1,
+                // 缓存用户信息数据
+                data: [],
 
+                // 专业，学院
                 collegeList: [],
-                list_2: [
-                    {
-                        title: '班级',
-                        value: this.$store.state.user.studentClass
-                    },
-                    {
-                        title: '手机',
-                        value: this.$store.state.user.phone
-                    },
-                    {
-                        title: '邮箱',
-                        value: this.$store.state.user.email
-                    }
-                ]
+                collegeNow: 1,
+                majorNow: 1,              
+
+                // 密码项
+                password: {
+                    old: null,
+                    new: null,
+                    reNew: null
+                }
             }
         },
         mounted() {
+            this.getInfo_default();
+
             this.$store.commit('pageState', 'user');
             this.collegeList = this.$store.state.college.data;
+
             this.setMajorInfo(this.collegeNow);
         },
         watch: {
@@ -113,27 +150,62 @@
                     }
                 }
             },
-            changeUserInfo() {
-                let data = {
-                    "email": this.list_2[2].value,
-                    "gender": this.picked,
-                    "id": this.$store.state.user.id,
-                    "majorInfoId": this.majorNow,
-                    "phone": this.list_2[1].value,
-                    "studentClass": this.list_2[0].value,
-                    "userAvatarInfoId": 1
+            // 获取修改前信息默认值
+            getInfo_default() {
+                let { id, studentAccount, studentName, gender, majorBasicInfo, studentClass, email, phone, teacherId, userAvatarInfo } = this.$store.state.user;
+                if (!id && !studentAccount) {
+                    VueEvent.$on('dataComplete', () => {
+                        this.getInfo_default();
+                    });
                 }
-                Axios.post(this.URL + '/user/student/basicInfo/update', data)
-                    .then((Response) => {
-                        if (Response.data.code === 200) {
-                            this.$store.commit('controlAlert', [true, '信息修改成功']);
-                            setTimeout(() => {
-                               this.$store.commit('exit');
-                            }, 2500);
+                let data = { id, studentAccount, studentName, gender, majorBasicInfo, studentClass, email, phone, teacherId, userAvatarInfo };
+                this.collegeNow = this.$store.state.user.majorBasicInfo.college.id;
+                this.majorNow = this.$store.state.user.majorBasicInfo.id;   
+                this.data = data;
+            },
+            // 修改个人信息
+            updateInfo() {
+                Axios.post(this.URL + '/user/student/basicInfo/update', {
+                    email: this.data.email,
+                    gender: this.data.gender,
+                    id: this.data.id,
+                    majorInfoId: this.majorNow,
+                    phone: this.data.phone,
+                    studentClass: this.data.studentClass,
+                }).then(Response => {
+                    if (Response.data.code === 200) {
+                        alert(Response.data.msg);
+                        this.$store.commit('setUserInfo', [this.URL, this.Cookie.getCookie('userId')]);
+                        this.$router.push('/nav');
+                    } else {
+                        alert(Response.data.msg);
+                    }
+                })
+            },
+            // 重置密码
+            resetPassword() {
+                for (let item in this.password) {
+                    this.password[item] = null;
+                }
+            },
+            // 修改密码
+            updatePassword() {
+                if (this.password.new === this.password.reNew) {
+                    Axios.post(this.URL + '/user/student/password/update', Qs.stringify({
+                        userId: this.data.id,
+                        oldPassword: this.password.old,
+                        newPassword: this.password.new
+                    })).then(Response => {
+                        if (Response.data.code === 204) {
+                            alert('操作成功');
+                            this.$router.push('/nav');
                         } else {
-                            this.$store.commit('controlAlert', [true, '信息修改失败']);
+                            alert(Response.data.msg);
                         }
                     })
+                } else {
+                    alert('两次密码不同，请检查输入');
+                }
             }
         }
     }
@@ -141,64 +213,262 @@
 
 <style lang="scss" scoped>
     #userInfo {
+        display: flex;
+        flex-direction: row;
+        padding: 20px;
         width: 100%;
-        background-color: #F4F4F4;
-        .form {
+        .profile {
+            // width: 397px;
+            min-width: 300px;
+            flex: 0.25;
+            height: 421px;
+            .profile_img {
+                padding-top: 30px;
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                height: 268px;
+                background-color: #FF766C;
+                border-radius: 5px 5px 0 0;
+                // line-height: 100px;
+                h2 {
+                    margin-top: 20px;
+                    font-size: 22px;
+                    color: #fff;
+                    // font-weight: lighter;
+                }
+                h3 {
+                    font-size: 12px;
+                    color: #fff;
+                    margin-top: 8px;
+                }
+                .img {
+                    width: 132px;
+                    height: 132px;
+                    border: 10px solid #FF9F98;
+                    border-radius: 50%;
+                }
+            }
+            ul {
+                li {
+                    box-sizing: border-box;
+                    position: relative;
+                    width: 100%;
+                    height: 50px;
+                    line-height: 50px;
+                    padding-left: 45px;
+                    color: rgb(119, 119, 119);
+                    font-size: 14px;
+                    background-color: #fff;
+                    border-bottom: 1px solid #eee;
+                    cursor: pointer;
+                    &:hover {
+                        background-color: #F8F7F5;
+                        &::before {
+                            content: "";
+                            position: absolute;
+                            left: 0;
+                            height: 50px;
+                            width: 5px;
+                            background-color: #FF766C;
+                        }
+                    }
+                    img {
+                        top: 17px;
+                        left: 14px;
+                        position: absolute;
+                        width: 17px;
+                    }
+                }
+                .active {
+                    background-color: #F8F7F5;
+                    &::before {
+                        content: "";
+                        position: absolute;
+                        left: 0;
+                        height: 50px;
+                        width: 5px;
+                        background-color: #FF766C;
+                    }
+                }
+            }
+        }
+        .contents {
             display: flex;
             flex-direction: column;
-            align-items: center;
-            width: 798px;
-            height: 654px;
-            background-color: #fff;
-            margin-top: 100px;
-            margin-left: 60px;
-            .item {
-                margin-top: 20px;
-                span {
-                    font-size: 14px;
-                    margin-right: 20px;
+            flex: 0.75;
+            padding: 30px;
+            padding-top: 0;
+            .info {
+                width: 100%;
+                height: 350px;
+                .header {
+                    width: 100%;
+                    min-width: 500px;
+                    height: 100px;
+                    border-radius: 5px 5px 0 0;
+                    background-color: #41CAC0;
                 }
-                .v-input {
-                    width: 352px;
-                    height: 42px;
+                .main {
+                    width: 100%;
+                    height: 250px;
+                    background-color: #fff;
+                    padding: 15px;
+                    h2 {
+                        font-size: 20px;
+                        color: #666;
+                    }
+                    ul {
+                        display: flex;
+                        flex-direction: column;
+                        flex-wrap: wrap;
+                        .item {
+                            margin-top: 24px;
+                            height: 22px;
+                            font-size: 14px;
+                            display: flex;
+                            flex-direction: row;
+                            color: #aaa;
+                            li {
+                                flex: 0.5;
+                                display: flex;
+                                flex-direction: row;
+                                span {
+                                    width: 80px;
+                                }
+                            }
+                        }
+                    }
                 }
-                &:nth-of-type(1) {
-                    margin-top: 0;
+            }
+            .changeInfo {
+                width: 100%;
+                .header {
+                    width: 100%;
+                    min-width: 500px;
+                    height: 70px;
+                    border-radius: 5px 5px 0 0;
+                    background-color: #41CAC0;
+                    line-height: 70px;
+                    padding-left: 15px;
+                    h2 {
+                        color: #fff;
+                        font-size: 18px;
+                    }
+                }
+                .main {
+                    width: 100%;
+                    height: 620px;
+                    background-color: #fff;
+                    padding: 15px;
+                    color: #aaa;
+                    h2 {
+                        font-size: 20px;
+                        color: #666;
+                    }
+                    ul {
+                        display: flex;
+                        flex-direction: column;
+                        .item {
+                            height: 35px;
+                            line-height: 30px;
+                            display: flex;
+                            flex-direction: row;
+                            margin-top: 30px;
+                            &:nth-of-type(1) {
+                                margin-top: 10px;
+                            }
+                            .v-input {
+                                min-width: 300px;
+                                flex: 0.4;
+                                border-color: rgb(212, 212, 212);
+                                height: 35px;
+                                border-radius: 5px;
+                                box-sizing: border-box;
+                                padding-left: 10px;
+                                font-size: 14px;
+                            }
+                            select {
+                                cursor: pointer;
+                            }
+                            span {
+                                flex: 0.2;
+                                min-width: 150px;
+                            }
+                        }
+                    }
+                    button {
+                        margin-top: 40px;
+                        &:nth-of-type(2) {
+                            margin-left: 10px;
+                        }
+                    }
                 }
             }
-            .v-button {
-                border-radius: 21px;
-                background-color: rgb(70, 184, 237);
-                width: 98px;
-                height: 42px;
-                margin-top: 74px;
-                margin-left: 280px;
-            }
-            .select {
-                line-height: 50px;
-                select {
-                    width: 200px;
+            .changePassword {
+                width: 100%;
+                margin-top: 30px;
+                height: 323px;
+                .header {
+                    width: 100%;
+                    min-width: 500px;
+                    height: 43px;
+                    border-radius: 5px 5px 0 0;
+                    background-color: #337AB7;
+                    line-height: 43px;
+                    padding-left: 15px;
+                    h2 {
+                        color: #fff;
+                        font-size: 16px;
+                    }
+                }
+                .main {
+                    height: 280px;
+                    background-color: #fff;
+                    ul {
+                        display: flex;
+                        flex-direction: column;
+                        .item {
+                            height: 35px;
+                            line-height: 30px;
+                            display: flex;
+                            flex-direction: row;
+                            margin-top: 30px;
+                            &:nth-of-type(1) {
+                                margin-top: 10px;
+                            }
+                            .v-input {
+                                min-width: 300px;
+                                flex: 0.4;
+                                border-color: rgb(212, 212, 212);
+                                height: 35px;
+                                border-radius: 5px;
+                            }
+                            span {
+                                flex: 0.2;
+                                min-width: 150px;
+                            }
+                        }
+                    }
                 }
             }
-            a {
-                cursor: default;
-                display: block;
-                line-height: 70px;
-            }
-            h3 {
-                font-size: 24px;
-                margin-top: 90px;
-                margin-bottom: 43px;
-            }
-            .select {
-                margin-top: 20px;
-            }
-            .v-input {
-                margin-top: 20px;
-            }
-            .button_1 {
-                margin: 30px;
-                display: inline-block;
+            .changeProfile {
+                width: 100%;
+                margin-top: 30px;
+                // height: 323px;
+                .header {
+                    width: 100%;
+                    height: 43px;
+                    border-radius: 5px 5px 0 0;
+                    background-color: rgb(189, 82, 183);
+                    line-height: 43px;
+                    padding-left: 15px;
+                    h2 {
+                        color: #fff;
+                        font-size: 16px;
+                    }
+                }
             }
         }
     }

@@ -15,8 +15,8 @@ import JoinGame from '../ERP/nav/gameControl/1_JoinGame/JoinGame.vue'
     import JoinGame_Group from '../ERP/nav/gameControl/1_JoinGame/joinGroup/JoinGroup.vue' 
 import ContinueGame from '../ERP/nav/gameControl/2_ContinueGame/ContinueGame.vue'
 import CheckGame from '../ERP/nav/gameControl/3_CheckGame/CheckGame.vue'
-import MemberList from '../ERP/nav/gameControl/MemberList.vue'
-import MemberControl from '../ERP/nav/gameControl/MemberControl.vue'
+// import MemberList from '../ERP/nav/gameControl/MemberList.vue'
+// import MemberControl from '../ERP/nav/gameControl/MemberControl.vue'
 
 import Index from '../ERP/game/Index.vue'
 import Report from '../ERP/game/Report.vue'
@@ -51,6 +51,7 @@ import TaxManage from '../ERP/game/7_FinanceManage/1_TaxManage.vue'
 import AccountMoney from '../ERP/game/7_FinanceManage/2_AccountMoney.vue'
 import LoanManage from '../ERP/game/7_FinanceManage/3_LoanManage.vue'
 import FinanceForm from '../ERP/game/7_FinanceManage/4_FinanceForm.vue'
+import Axios from 'axios';
 
 const routes = new Router({
     routes: [
@@ -65,8 +66,8 @@ const routes = new Router({
             { path: '/joinGame/joinGroup', component: JoinGame_Group },
         { path: '/continueGame', component: ContinueGame },
         { path: '/checkGame', component: CheckGame },
-        { path: '/memberList', component: MemberList },
-        { path: '/memberControl', component: MemberControl },
+        // { path: '/memberList', component: MemberList },
+        // { path: '/memberControl', component: MemberControl },
 
         // game部分
         { path: '/index', component: Index },
@@ -83,7 +84,7 @@ const routes = new Router({
         { path: '/game/materialSave', component: MaterialSave },
 
         { path: '/game/storageManage', component: StorageManage },
-        { path: '/game/storageCount', component: StorageCount },
+        // { path: '/game/storageCount', component: StorageCount },
 
         { path: '/game/producePlan', component: ProducePlan },
         { path: '/game/factoryManage', component: FactoryManage },
@@ -110,7 +111,37 @@ const routes = new Router({
 routes.beforeEach((to, from, next) => {
     let userId = Cookie.getCookie('userId');
     if (userId && to.fullPath !== '/login' && to.fullPath !== '/register') {
-        next();
+        if (to.fullPath == '/joinGame/joinGroup' && localStorage.getItem('GAME')) {
+            next();
+        }
+        // 缓存存在且属于该用户
+        if (localStorage.getItem('GAME_watching') && (localStorage.getItem('GAME_cache') == userId)) {
+            Axios.get('http://118.24.113.182:8081' + '/game/manage/judge?gameId=' + localStorage.getItem('GAME_watching') + '&userId=' + userId)
+                .then(Response => {
+                    if (Response.data.code === 200) {
+                        if (Response.data.data === true) {
+                            localStorage.setItem('GAME', localStorage.getItem('GAME_watching'));
+                            alert('用户处于比赛中时，不可进入其它页面');
+                            next('/joinGame/joinGroup');
+                        } else {
+                            // 不属于该比赛
+                            localStorage.removeItem('GAME_watching');
+                            localStorage.removeItem('GAME_cache');
+                            next();
+                        }
+                    } else {
+                        // 不属于该比赛
+                        localStorage.removeItem('GAME_watching');
+                        localStorage.removeItem('GAME_cache');
+                        next();
+                    }
+                })
+        } else {
+            // 不属于该比赛
+            localStorage.removeItem('GAME_watching');
+            localStorage.removeItem('GAME_cache');
+            next();
+        }
     } else if (userId && (to.fullPath === '/login' || to.fullPath === '/register')) {
         next('/nav');
     } else if (!userId && (to.fullPath === '/login' || to.fullPath === '/register')) {
@@ -118,6 +149,10 @@ routes.beforeEach((to, from, next) => {
     } else if (!userId && (to.fullPath !== '/login' || to.fullPath !== '/register')) {
         next('/login');
     }
+})
+
+routes.afterEach((to, from, next) => {
+    window.scrollTo(0, 0);
 })
 
 export default routes

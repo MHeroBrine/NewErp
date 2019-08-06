@@ -1,74 +1,48 @@
 <template>
     <div id="storageManage">
-        <div class="nav">
-            <a href=""></a>
-            <h3>库存管理</h3>
-        </div>
-        <div class="container mg">
-            <div class="product">
-                <h3>产品库存</h3>
-                <div class="storage">
-                    <div class="storageName">
-                        <div class="item_top mg"></div>
-                    </div>
-                    <div class="storageItem">
-                        <ul class="mg">
-                            <li class="item">p1<div class="cover">库存：1</div></li>
-                            <li class="item">p2</li>
-                            <li class="item">p3</li>
-                            <li class="item">p4</li>
-                        </ul>
-                        <button class="v-button b-primary" @click="productChoose()">售卖</button>
-                    </div>
-                </div>
-
-                <div class="productChoose v-alert" v-if="float.productChoose">
-                    <div class="pre_container">
-                        <div class="pre_title">
-                            <h3>选择产品</h3>
-                        </div>
-                        <div class="main mg">
-                            <ul>
-                                <li>产品：<select name="" id=""></select></li>
-                                <li>数量：<select name="" id=""></select></li>
-                                <li>注：产品按照票价的八折出售</li>
-                                <li><button class="v-button b-primary">确定</button><button class="v-button b-primary" @click="productChoose()">取消</button></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                
-            </div>
-            <div class="material">
+        <div class="container_default">
+            <div class="title">
                 <h3>库存管理</h3>
-                <div class="storage">
-                    <div class="storageName">
-                        <div class="item_top mg"></div>
+            </div>
+            <div class="main">
+                <div class="product">
+                    <div class="top">
+                        <h3>产品仓库</h3>
                     </div>
-                    <div class="storageItem">
-                        <ul class="mg">
-                            <li class="item">R1<div class="cover">库存：1</div></li>
-                            <li class="item">R2</li>
-                            <li class="item">R3</li>
-                            <li class="item">R4</li>
+                    <div class="storage">
+                        <div class="name">
+                            <img src="@/assets/Game/Index/material.svg" alt="">
+                            <span>一号仓库</span>
+                        </div>
+                        <ul>
+                            <li v-for="item in productInfo">
+                                <div class="temp">
+                                    <img src="@/assets/Game/4_StorageManage/product.svg" alt="">
+                                    <a>{{ item.productNumber }}</a>
+                                </div>
+                                <span>{{ item.productName }}</span>
+                            </li>
                         </ul>
-                        <button class="v-button b-primary" @click="materialChoose()">售卖</button>
                     </div>
                 </div>
-
-                <div class="productChoose v-alert" v-if="float.materialChoose">
-                    <div class="pre_container">
-                        <div class="pre_title">
-                            <h3>选择原材料</h3>
+                <div class="material">
+                    <div class="top">
+                        <h3>原料仓库</h3>
+                    </div>
+                    <div class="storage">
+                        <div class="name">
+                            <img src="@/assets/Game/Index/material.svg" alt="">
+                            <span>一号仓库</span>
                         </div>
-                        <div class="main mg">
-                            <ul>
-                                <li>原材料：<select name="" id=""></select></li>
-                                <li>数量：<select name="" id=""></select></li>
-                                <li>注：原材料按照票价的七折出售</li>
-                                <li><button class="v-button b-primary">确定</button><button class="v-button b-primary" @click="materialChoose()">取消</button></li>
-                            </ul>
-                        </div>
+                        <ul>
+                            <li v-for="item in materialInfo">
+                                <div class="temp">
+                                    <img src="@/assets/Game/4_StorageManage/product.svg" alt="">
+                                    <a>{{ item.materialNumber }}</a>
+                                </div>
+                                <span>{{ item.materialName }}</span>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -77,9 +51,14 @@
 </template>
 
 <script>
+    import Axios from 'axios'
+    import vueEvent from '../../../model/VueEvent';
+
     export default {
         data() {
             return {
+                productInfo: [],
+                materialInfo: [],
                 float: {
                     productChoose: false,
                     materialChoose: false
@@ -94,10 +73,37 @@
             materialChoose() {
                 this.$store.commit('controlFloatWindow');
                 this.float.materialChoose = !this.float.materialChoose;
+            },
+            // 获取产品信息
+            getProductInfo() {
+                Axios.get(this.URL + '/game/compete/operation/stock/product?enterpriseId=' + localStorage.getItem('enterpriseId'))
+                    .then(Response => {
+                        if (Response.data.code === 200) {
+                            this.productInfo = Response.data.data;
+                        } else {
+                            alert('产品数据获取失败');
+                        }
+                    })
+            },
+            // 获取原料信息
+            getMaterialInfo() {
+                Axios.get(this.URL + '/game/compete/operation/stock/material?enterpriseId=' + localStorage.getItem('enterpriseId'))
+                    .then(Response => {
+                        if (Response.data.code === 200) {
+                            this.materialInfo = Response.data.data;
+                        } else {
+                            alert('材料数据获取失败');
+                        }
+                    })
             }
         },
         mounted() {
+            setTimeout(() => {
+                vueEvent.$emit('sidebarState', '/game/storageManage', 'storage', 'manage');
+            }, 1);
             this.$store.commit('pageState', 'storageManage');
+            this.getProductInfo();
+            this.getMaterialInfo();
         }
     }
 </script>
@@ -105,107 +111,82 @@
 <style lang="scss" scoped>
     #storageManage {
         width: 100%;
-        .nav {
-            width: 100%;
-            height: 60px;   
-            border-bottom: 1px solid #000;
-            h3 {
-                line-height: 60px;
-                font-size: 22px;
-                margin-left: 20px;
-            }
-        } 
-        .container {
-            display: flex;
-            flex-direction: column;
-            flex-wrap: wrap;
-            margin-top: 50px;
-            width: 1100px;
-            height: 750px;
-            background-color: #fff;
-            border: 1px solid #000;
-            .product, .material {
-                flex: 1;
-                padding: 15px;
+        .container_default {
+            height: 95%;
+            .main {
+                display: flex;
+                flex-direction: column;
+                padding: 40px;
                 h3 {
                     font-size: 18px;
                 }
+                .material {
+                    margin-top: 80px;
+                }
                 .storage {
                     display: flex;
-                    flex-wrap: wrap;
+                    flex-direction: row;
+                    width: 100%;
                     margin-top: 20px;
-                    width: 1060px;
-                    height: 250px;
-                    border: 1px solid #000;
-                    .storageName {
-                        display: flex;
-                        align-items: center;
-                        flex: 1.2;
-                        border-right: 1px solid #000;
-                        .item_top {
-                            width: 170px;
-                            height: 170px;
-                            border: 1px solid #000;
-                            background-color: #eee;
-                        }
-                    }
-                    .storageItem {
+                    height: 20vh;
+                    border-top: 2px solid #aaa;
+                    .name {
                         position: relative;
                         display: flex;
+                        justify-content: center;
                         align-items: center;
-                        flex: 4;
-                        ul {
-                            width: 700px;
-                            display: flex;
-                            flex-direction: row;
-                            justify-content: space-between;
-                            .item {
-                                position: relative;
-                                width: 150px;
-                                height: 150px;
-                                line-height: 150px;
-                                text-align: center;
-                                border: 1px solid #000;
-                                background-color: #eee;
-                                .cover {
-                                    position: absolute;
-                                    width: 100%;
-                                    height: 30px;
-                                    line-height: 30px;
-                                    background-color: #A1A1A1;
-                                    bottom: 0;
-                                }
-                            }
+                        flex: 0.2;
+                        padding: 20px;
+                        .temp {
+                            height: 100%;
                         }
-                        button {
+                        img {
+                            height: 100%;
+                        }
+                        span {
                             position: absolute;
+                            font-size: 18px;
                             bottom: 0;
-                            right: 0;
                         }
                     }
-                }
-
-                .productChoose {
-                    .main {
-                        width: 320px;
-                        ul {
-                            li {
-                                line-height: 50px;
-                                &:nth-of-type(1) {
-                                    margin-top: 20px;
-                                }
-                                &:nth-last-of-type(1) {
-                                    width: 320px;
-                                    text-align: center;
-                                    button {
-                                        cursor: pointer;
-                                        width: 120px;
-                                        margin: 20px;
-                                    }
-                                }
-                                select {
-                                    width: 250px;
-                                }
+                    ul {
+                        display: flex;
+                        flex-direction: row;
+                        flex: 0.8;
+                        li {
+                            position: relative;
+                            flex: 1;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            .temp {
+                                font-size: 1vw;
+                                position: relative;
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                width: 30%;
+                            }
+                            img {
+                                width: 100%;
+                            }
+                            span {
+                                position: absolute;
+                                bottom: 0;
+                            }
+                            a {
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                position: absolute;
+                                top: -10px;
+                                right: -10px;
+                                width: 35%;
+                                height: 35%;
+                                font-size: 0.8em;
+                                background-color: #52C41A;
+                                border-radius: 50%;
+                                color: #fff;
                             }
                         }
                     }

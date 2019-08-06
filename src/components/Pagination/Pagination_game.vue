@@ -26,7 +26,14 @@
             }
         },
         mounted() {
-            this.getGameInfo(1);
+            if (this.$store.state.user.id) {
+                this.getGameInfo(1);
+            } else {
+                vueEvent.$on('dataComplete', () => {
+                    this.getGameInfo(1);
+                })
+            }
+            
 
             // 监听比赛信息的修改
             let that = this;
@@ -52,12 +59,13 @@
                 this.page = value;
 
                 if (this.type === 'createGame') {
-                    Axios.post(this.URL + '/game/manage/gameInfos/search', {
+                    Axios.post(this.URL + '/game/manage/search', {
                         "concurrentPage": value,
                         "pageSize": 6,
                         "gameStatusEnum": "CREATE",
                         "studentId": this.$store.state.user.id
                     }).then((Response) => {
+                        console.log(Response);
                         this.gameList = Response.data.data.pageData;
                         let totalMessage = parseInt(Response.data.data.totalMessage);
                         if (totalMessage % 6 === 0) {
@@ -70,7 +78,7 @@
                 }
 
                 if (this.type === 'joinGame') {
-                    Axios.post(this.URL + '/game/manage/gameInfos/search', {
+                    Axios.post(this.URL + '/game/manage/search', {
                         "concurrentPage": value,
                         "pageSize": 6,
                         "gameStatusEnum": "CREATE",
@@ -88,22 +96,18 @@
                 }
 
                 if (this.type === 'continueGame') {
-                    Axios.post(this.URL + '/game/manage/gameInfos/search', {
-                        "concurrentPage": value,
-                        "pageSize": 6,
-                        "gameStatusEnum": "PLAYING",
-                        'studentId': this.$store.state.user.id,
-                        "teacherId": this.$store.state.user.teacherId
-                    }).then((Response) => {
-                        this.gameList = Response.data.data.pageData;
-                        let totalMessage = parseInt(Response.data.data.totalMessage);
-                        if (totalMessage % 6 === 0) {
-                            this.total = parseInt(totalMessage / 6);
-                        } else {
-                            this.total = parseInt((totalMessage / 6) + 1);
-                        }
-                        this.isReady = true;
-                    })
+                    Axios.get(this.URL + '/game/manage/status?userId=' + this.$store.state.user.id + '&gameStatus=PLAYING&currentPage=' + value + '&amountOfPage=6')
+                        .then(Response => {
+                            console.log(Response);
+                            this.gameList = Response.data.data.gameDetailInfoVo;
+                            let totalMessage = parseInt(Response.data.data.totalAmount);
+                            if (totalMessage % 6 === 0) {
+                                this.total = parseInt(totalMessage / 6);
+                            } else {
+                                this.total = parseInt((totalMessage / 6) + 1);
+                            }
+                            this.isReady = true;
+                        })
                 }
 
                 if (this.type === 'checkGame') {
@@ -131,15 +135,14 @@
 
 <style lang="scss" scoped>
     .pagination_game {
-        position: relative;
-        width: 1500px;
-        min-height: 715px;
+        max-width: 1600px;
+        padding-bottom: 50px;
         display: flex;
         flex-wrap: wrap;
         flex-direction: row;
         .paginate {
             position: absolute;
-            bottom: -84px;
+            bottom: 20px;
             left: 40px;
             button {
                 cursor: pointer;

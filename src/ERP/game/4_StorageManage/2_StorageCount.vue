@@ -1,31 +1,50 @@
 <template>
+
+    <!-- 已弃用 -->
+
     <div id="storageCount">
-        <div class="nav">
-            <a href=""></a>
-            <h3>库存盘点</h3>
-        </div>
-        <div class="container mg">
+        <div class="container_default">
             <div class="title">
-                <span>选择时间：</span><select name="" id=""></select><button class="v-button b-primary">确定</button>
+                <h3>库存盘点</h3>
             </div>
-            <div class="intro">
-                <h3>本期概括</h3>
-                <ul class="mg">
-                    <li>出库</li>
-                    <li>入库</li>
-                    <li>产品库存数</li>
-                </ul>
+            <div class="main">
+                <div class="top">
+                    <p>选择时间：
+                        <select class="v-select">
+                            <option value=""></option>
+                        </select>
+                    </p>
+                </div>
+                <div class="container mg">
+                    <div>
+                        <p>0.00</p>
+                        <p class="item">出库</p>
+                    </div>
+                    <div>
+                        <p>0.00</p>
+                        <p class="item">入库</p>
+                    </div>
+                    <div>
+                        <p>0.00</p>
+                        <p class="item">产品库存数</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </template>
 
 <script>
+    import vueEvent from '../../../model/VueEvent';
+
     export default {
         data() {
             return {}
         },
         mounted() {
+            setTimeout(() => {
+                vueEvent.$emit('sidebarState', '/game/storageCount', 'storage', 'count');
+            }, 1);
             this.$store.commit('pageState', 'storageCount');
         }
     }
@@ -34,57 +53,44 @@
 <style lang="scss" scoped>
     #storageCount {
         width: 100%;
-        .nav {
-            width: 100%;
-            height: 60px;   
-            border-bottom: 1px solid #000;
-            h3 {
-                line-height: 60px;
-                font-size: 22px;
-                margin-left: 20px;
-            }
-        }
-        .container {
-            margin-top: 50px;
-            width: 1100px;
-            height: 750px;
-            background-color: #fff;
-            border: 1px solid #000;
-            .title {
-                padding: 50px;
-                select {
-                    width: 150px;
+        .container_default {
+            height: 95%;
+            .main {
+                padding: 30px;
+                p {
+                    font-size: 18px;
+                    color: #666;
+                    select {
+                        width: 200px;
+                    }
                 }
-                button {
-                    width: 100px;
-                    margin-left: 50px;
-                }
-            }
-            .intro {
-                width: 100%;
-                display: flex;
-                flex-direction: column;
-                h3 {
-                    text-align: center;
-                    font-size: 22px;
-                    font-weight: bold;
-                }
-                ul {
+                .container {
+                    margin-top: 150px;
                     display: flex;
+                    flex-direction: row;
                     justify-content: space-between;
-                    width: 900px;
-                    margin-top: 50px;
-                    li {
+                    max-width: 1200px;
+                    div {
+                        display: flex;
+                        justify-content: center;
+                        flex-direction: column;
+                        line-height: 30px;
                         width: 200px;
                         height: 200px;
-                        background-color: #eee;
-                        border: 1px solid #000;
-                        border-radius: 50%;
-                        line-height: 200px;
                         text-align: center;
+                        background-color: #A9D86E;
+                        border-radius: 50%;
+                        p {
+                            // color: #000;
+                            font-size: 14px;
+                        }
+                        .item {
+                            // color: #666;
+                            font-size: 22px;
+                        }
                     }
                 }
             }
-        } 
+        }
     }
 </style>

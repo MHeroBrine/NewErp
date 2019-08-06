@@ -1,105 +1,48 @@
 <template>
     <div id="orderManage">
-        <div class="nav">
-            <a href=""></a>
-            <h3>订单获取</h3>
-        </div>
-        <div class="container mg">
-            <div class="header">
-                <a>订单获取</a>
-                <a>订单详情</a>
+        <div class="container_default">
+            <div class="title">
+                <h3>订单获取</h3>
             </div>
-            <div class="form mg">
-                <div class="turn" v-if="!page.detail">
-                    <div class="line"></div>
+            <div class="main">
+                <div class="header">
                     <ul>
-                        <li v-bind:class="{ active: page.putIn }">...<span>投放</span></li>
-                        <li v-bind:class="{ active: page.confirm }">...<span>确定</span></li>
-                        <li v-bind:class="{ active: page.wait }">...<span>等待</span></li>
-                        <li v-bind:class="{ active: page.select }">...<span>选取</span></li>
-                        <li v-bind:class="{ active: page.end }">...<span>结束</span></li>
+                        <li v-bind:class="{ active: page.putIn }"><span><a>1.</a> 投放</span></li>
+                        <li v-bind:class="{ active: page.confirm }"><span><a>2.</a> 确定</span></li>
+                        <li v-bind:class="{ active: page.wait }"><span><a>3.</a> 等待</span></li>
+                        <li v-bind:class="{ active: page.select }"><span><a>4.</a> 选取</span></li>
+                        <li v-bind:class="{ active: page.end }"><span><a>5.</a> 结束</span></li>
                     </ul>
                 </div>
-
-                <!-- Page-1 -->
-                <div class="putIn" v-if="page.putIn">
-                    <div class="putIn_form mg">
-                        <div class="item">
+                <div class="form" v-show="page.putIn">
+                    <ul>
+                        <li>
                             <span>产品</span>
-                            <input type="text" placeholder="请选择"><img src="../../../assets/icon/edit.svg" alt="" @click="chooseProduct()">
-                        
-                            <!-- 选择产品 -->
-                            <div class="v-alert" v-if="float.productList">
-                                <div class="pre_container">
-                                    <div class="pre_title">
-                                        <a @click="chooseProduct()"> <<-- </a>
-                                        <h3>选择产品</h3>
-                                    </div>
-                                    <div class="market">
-                                        <p>市场：</p><select name="" id="" v-model="marketSelected">
-                                            <option value="1">本地市场</option>
-                                            <option value="2">区域市场</option>
-                                            <option value="3">国内市场</option>
-                                            <option value="">国际市场</option>
-                                        </select>
-                                        {{ marketSelected }}
-                                    </div>
-                                    <table class="v-table mg">
-                                        <tr>
-                                            <th>编号</th>
-                                            <th>产品名称</th>
-                                            <th>操作</th>
-                                        </tr>
-                                        <tr>
-                                            <td>29674</td>
-                                            <td>P2</td>
-                                            <td><button class="v-button b-primary">选择</button></td>
-                                        </tr>
-                                        <tr>
-                                            <td>29675</td>
-                                            <td>P3</td>
-                                            <td><button class="v-button b-primary">选择</button></td>
-                                        </tr>
-                                        <tr>
-                                            <td>29676</td>
-                                            <td>P4</td>
-                                            <td><button class="v-button b-primary">选择</button></td>
-                                        </tr>
-                                        <tr>
-                                            <td>29673</td>
-                                            <td>P1</td>
-                                            <td><button class="v-button b-primary">选择</button></td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="item">
+                            <input type="text" class="v-input" v-model="AD_data.productName">
+                            <img src="@/assets/Game/1_MarketManage/edit.svg" @click="chooseProduct(); chooseMarket();">
+                        </li>
+                        <li>
                             <span>编号</span>
-                            <input type="text">
-                        </div>
-                        <div class="item">
+                            <input type="text" class="v-input" v-model="AD_data.productBasicInfoId">
+                        </li>
+                        <li>
                             <span>投放广告（万元）</span>
-                            <input type="text" placeholder="请输入投放金额"><img src="../../../assets/icon/warn.svg"  alt="" @mouseover="ADnotice = !ADnotice" @mouseout="ADnotice = !ADnotice">
-                        
-                            <!-- 广告费用 -->
-                            <div class="ADnotice" v-if="ADnotice">
-                                <h3>广告费用</h3>
+                            <input type="text" class="v-input" v-model="AD_data.money">
+                            <img src="@/assets/Game/1_MarketManage/warning.svg" alt="" @mouseover="float.note = true" @mouseout="float.note = false">
+                            <div class="hover" v-show="float.note">
                                 <p>Ⅰ.广告费有两个用途，一是获得选取订单的机会，二是判断选单的顺序。</p>
                                 <p>Ⅱ.投入1w的产品广告费就可以获得一次选择订单的机会。如果不投广告就没有选择订单的机会。一次机会允许获得一张订单。如果想要获得更多的订单机会，每增加一个机会就需要多投入2w的广告费用。比如投入1w获得一个机会，获取一张订单，投入3w获得两次机会，获得两个订单。以此类推，投入5w获得三次机会，获得三个订单。获得三次机会可以只使用一次机会。</p>
                             </div>
-                        </div>
-                    </div>
-                    <div class="confirm">
-                        <button class="v-button b-primary" @click="ADconfirm()">确定</button>
-                        <button class="v-button b-primary">返回</button>
+                        </li>
+                    </ul>
+
+                    <div class="actions">
+                        <button class="v-button b-primary" style="width: 120px;" @click="pushAD()">加入投放列表</button>
+                        <button class="v-button b-primary" @click="TipLink('confirm')">下一步</button>
                     </div>
                 </div>
-
-                <!-- Page-2 -->
-                <!-- <v-pagination-list class="confirm mg"></v-pagination-list> -->
-                <div class="confirm" v-if="page.confirm">
-                    <table class="v-table mg">
+                <div class="confirm" v-show="page.confirm">
+                    <table class="v-table">
                         <tr>
                             <th>编号</th>
                             <th>市场</th>
@@ -107,141 +50,70 @@
                             <th>广告费</th>
                             <th>操作</th>
                         </tr>
-                        <tr v-for="(item, index) in data_confirm[pageNow - 1]">
-                            <td>{{ item.id }}</td>
-                            <td>{{ item.location }}</td>
-                            <!-- 暂时解决方案 -->
-                            <td v-if="refresh">{{ item.production }}</td>
+                        <tr v-for="item in AD_data_list">
+                            <td>{{ item.productBasicInfoId }}</td>
+                            <td>{{ item.marketName }}</td>
+                            <td>{{ item.productName }}</td>
+                            <td>{{ item.money }}</td>
                             <td>
-                                <span v-if="!editable[item.id - 1]">{{ item.money }}</span>
-                                <input type="text" v-model="item.money" v-if="editable[item.id - 1]">
-                            </td>
-                            <td>
-                                <img src="../../../assets/icon/edit.svg" alt="" @click="editADcost(index)">
-                                <img src="../../../assets/icon/trash.svg" alt="">
+                                <!-- <img src="@/assets/Game/2_OrderManage/edit.svg" class="edit" alt="编辑"> -->
+                                <img src="@/assets/Game/2_OrderManage/delete.svg" class="edit" alt="删除" @click="deleteItem(item.id)">
                             </td>
                         </tr>
                     </table>
-                    <v-pagination-list 
-                    :length="data_confirm.length" 
-                    v-bind:pageNow="pageNow" 
-                    v-on:change="pageNow = $event">
-                    </v-pagination-list>
-                    <div class="confirm">
-                        <button class="v-button b-primary" @click="ADconfirm()">确定</button>
-                        <button class="v-button b-primary">上一步</button>
+
+                    <div class="actions">
+                        <button class="v-button b-primary" @click="TipLink('putIn')">上一步</button>
+                        <button class="v-button b-primary" @click="confirmAD()">下一步</button>
                     </div>
                 </div>
-
-                <!-- Page-3 -->
-                <div class="wait" v-if="page.wait">
-                    <div class="fl">
-                        <div class="item">
-                            <span>市场：</span>
-                            <ul>
-                                <li class="active">本地</li>
-                                <li>区域</li>
-                                <li>国内</li>
-                                <li>亚洲</li>
-                                <li>国际</li>
-                            </ul>
-                        </div>
-                        <div class="item">
-                            <span>产品：</span>
-                            <ul>
-                                <li class="active">P1</li>
-                                <li>P2</li>
-                                <li>P3</li>
-                                <li>P4</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="fr">
-                        <div class="time">
-                            <span>当前状态：第2位/15</span>
-                            <br><br>
-                            <span>剩余次数：1/2次</span>
-                        </div>
-                    </div>
-                    <div class="order mg">
-
-                    </div>
-                    <button class="v-button b-primary" @click="endOrder()">结束订单会</button>
-                </div>
-
-                <!-- Page-4 -->
-                <div class="select" v-if="page.select">
-                    <div class="fl">
-                        <div class="item">
-                            <span>市场：</span>
-                            <ul>
-                                <li class="active">本地</li>
-                                <li>区域</li>
-                                <li>国内</li>
-                                <li>亚洲</li>
-                                <li>国际</li>
-                            </ul>
-                        </div>
-                        <div class="item">
-                            <span>产品：</span>
-                            <ul>
-                                <li class="active">P1</li>
-                                <li>P2</li>
-                                <li>P3</li>
-                                <li>P4</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="fr">
-                        <div class="time">
-                            <span>当前状态：第1位/15</span>
-                            <br><br>
-                            <span>剩余次数：1/2次</span>
-                        </div>
-                    </div>
-                    <div class="order mg">
-                        
-                    </div>
-                    <button class="v-button b-primary" @click="endOrder()">结束订单会</button>
-                    <div class="v-alert" v-if="float.endOrder">
-                        <div class="pre_container">
-                            <div class="pre_title">
-                                <h3>结束订单会？</h3>
+                <div class="wait" v-show="page.wait">
+                    <div class="select">
+                        <div class="market">
+                            <div class="area">
+                                <p>市场：<a>区域</a><a>国内</a><a>亚洲</a><a>国际</a></p>
+                                <p>产品：<a>P1</a><a>P2</a><a>P3</a><a>P4</a></p>
                             </div>
-                            <button class="v-button b-primary">确认</button>
-                            <button class="v-button b-primary" @click="endOrder()">取消</button>
                         </div>
+                        <div class="state">
+                            <img src="@/assets/Game/1_MarketManage/wait.svg" class="wait">
+                            <p>当前状态：<a>等待中（2 / 15）</a></p>
+                            <p>剩余次数：<a>1 / 2 次</a></p>
+                            <p></p>
+                        </div>
+                    </div>
+                    <div class="main">
+
                     </div>
                 </div>
 
-                <!-- Page-5 -->
-                <div class="end" v-if="page.end">
-                    <!-- 暂时为空 -->
-                </div>
-                <!-- Page-6 -->
-                <div class="detail" v-if="page.detail">
-                    <table class="v-table mg">
-                        <tr>
-                            <th>编号</th>
-                            <th>市场</th>
-                            <th>产品</th>
-                            <th>单价</th>
-                            <th>交货时间</th>
-                            <th>账期</th>
-                            <th>罚金率</th>
-                            <th>数量</th>
-                        </tr>
-                        <tr v-for="(item, index) in data_detail[pageNow - 1]">
-                            <td>{{ item.id }}</td>
-                            <td>{{ item.market }}</td>
-                            <td>{{ item.production }}</td>
-                            <td>{{ item.price }}</td>
-                            <td>{{ item.pay }}</td>
-                            <td>{{ item.date }}</td>
-                            <td>{{ item.punish }}</td>
-                            <td>{{ item.count }}</td>
-                        </tr>
-                    </table>
+                <div class="v-alert putIn" v-show="float.productList">
+                    <div class="container mg">
+                        <img src="@/assets/Game/2_OrderManage/wrong.svg" class="exit" @click="exitProduct()">
+                        <div class="title">
+                            <h3>选择产品</h3>
+                        </div>
+                        <div class="market">
+                            <span>市场：</span>
+                            <select class="v-select" v-model="marketSelected">
+                                <option :value="item.id" v-for="item in market_AD">
+                                    {{ item.marketName }}
+                                </option>
+                            </select>
+                        </div>
+                        <table class="v-table_border mg">
+                            <tr>
+                                <th>编号</th>
+                                <th>产品名称</th>
+                                <th>操作</th>
+                            </tr>
+                            <tr v-for="item in product_AD">
+                                <td>{{ item.id }}</td>
+                                <td>{{ item.productName }}</td>
+                                <td><button class="v-button b-primary" @click="chooseAD(item.id, item.productName)">选择</button></td>
+                            </tr>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -250,6 +122,7 @@
 
 <script>
     import Axios from 'axios'
+    import vueEvent from '../../../model/VueEvent';
 
     export default {
         data() {
@@ -257,22 +130,36 @@
                 // 弹窗
                 float: {
                     productList: false,
-                    endOrder: false
+                    endOrder: false,
+                    note: false
                 },
                 // 页面
                 page: {
-                    putIn: true,
+                    putIn: false,
                     confirm: false,
                     wait: false,
-                    select: false,
+                    select: true,
                     end: false,
                     detail: false
                 },
                 // 广告费用
                 ADnotice: false,
 
-                // 查看产品项
+                // 当前选择的市场
                 marketSelected: 1,
+                // 投放广告的产品数据
+                product_AD: [],
+                // 投放广告的市场数据
+                market_AD: [],
+                // 广告数据
+                AD_data: {
+                    marketBasicInfoId: null,
+                    money: null,
+                    productBasicInfoId: null,
+                    productName: null
+                },
+                // 广告数据列表
+                AD_data_list: [],
                 // 确认部分数据
                 data_confirm: [
                     [
@@ -333,15 +220,106 @@
         mounted() {
             // 设置页面格式
             this.$store.commit('pageState', 'orderManage')
+            setTimeout(() => {
+                vueEvent.$emit('sidebarState', '/game/orderManage', 'marketManage', 'manage');
+            }, 1);
         },
         methods: {
-            // 输入框产品选择
-            chooseProduct(id, state) {
+            // 分页页数随浏览器高度变换
+            paginationWatch() {
+                let body = document.getElementsByTagName('body')[0];
+                let height = body.offsetHeight;
+                let distance = height - 969;
+                if (distance < 0) {
+                    let level = parseInt(Math.abs(distance) / 50);
+                    this.pageCount -= level;
+                }
+                if (this.pageCount < 5) {
+                    this.pageCount = 5;
+                }
+            },
+            // 市场列表
+            chooseMarket() {
+                Axios.get(this.URL + '/game/compete/operation/market/type?enterpriseId=' + localStorage.getItem('enterpriseId'))
+                    .then(Response => {
+                        if (Response.data.code === 200) {
+                            this.market_AD = Response.data.data;
+                        } else {
+                            alert('市场列表获取失败')
+                        }
+                    })
+            },
+            // 输入框产品选择列表
+            chooseProduct() {
                 this.$store.commit('controlFloatWindow');
                 this.float.productList = !this.float.productList;
-                Axios.get(this.URL + '/game/compete/operation/market/market/infos/get/status?enterpriseId=' + id + '&marketStatus=' + state)
+                Axios.get(this.URL + '/game/compete/operation/product/type?enterpriseId=' + localStorage.getItem('enterpriseId'))
                     .then(Response => {
+                        if (Response.data.code === 200) {
+                            this.product_AD = Response.data.data;
+                        } else {
+                            alert('广告产品获取失败');
+                        }
                     })
+            },
+            // 选择广告
+            chooseAD(id, name) {
+                this.AD_data.marketBasicInfoId = this.marketSelected;
+                for (let item in this.market_AD) {
+                    if (this.AD_data.marketBasicInfoId === this.market_AD[item].id) {
+                        this.AD_data.marketName = this.market_AD[item].marketName;
+                    }
+                }
+                this.AD_data.productBasicInfoId = id;
+                this.AD_data.productName = name;
+                this.exitProduct();
+            },
+            // 广告推入列表
+            pushAD() {
+                if (this.AD_data.marketBasicInfoId && this.AD_data.productBasicInfoId && this.AD_data.productName && this.AD_data.money) {
+                    let data = JSON.parse(JSON.stringify(this.AD_data))
+                    if (this.AD_data_list.length === 0) {
+                        data.id = 1;
+                    } else {
+                        data.id = (this.AD_data_list[this.AD_data_list.length - 1].id || 0) + 1; 
+                    }
+                    this.AD_data_list.push(data);
+                    for (let item in this.AD_data) {
+                        this.AD_data[item] = null;
+                    }
+                    alert('加入成功，可以继续添加其它广告');
+                } else {
+                    alert('请选择好信息再添加');
+                }
+            },
+            // 确认广告订单
+            confirmAD() {
+                let i = confirm('是否确认投放这些广告？');
+                if (i) {
+                    Axios.post(this.URL + '/game/compete/operation/order/choose/advertise?enterpriseId=' + localStorage.getItem('enterpriseId'), this.AD_data_list)
+                    .then(Response => {
+                        if (Response.data.code === 200) {
+                            alert('投放成功');
+                            this.TipLink('wait');
+                        }
+                    })
+                }
+            },
+            // 删除列表中的缓存广告
+            deleteItem(id) {
+                let i = confirm('确认删除该项吗');
+                if (i) {
+                    for (let i = 0; i < this.AD_data_list.length; i ++) {
+                        if (this.AD_data_list[i].id === id) {
+                            this.AD_data_list.splice(i, 1);
+                        }
+                    }
+                }
+            },
+            // 退出选择框
+            exitProduct() {
+                this.$store.commit('controlFloatWindow');
+                this.float.productList = !this.float.productList;
             },
             editCheck(data) {
                 let arr = [];
@@ -358,6 +336,13 @@
                 this.refresh = false;
                 this.refresh = true;
             },
+            // 进程跳转
+            TipLink(address) {
+                for (let item in this.page) {
+                    this.page[item] = false;
+                }
+                this.page[address] = true;
+            },
             // 结束订单会
             endOrder() {
                 this.$store.commit('controlFloatWindow');
@@ -370,264 +355,195 @@
 <style lang="scss" scoped>
     #orderManage {
         width: 100%;
-        .nav {
-            width: 100%;
-            height: 60px;   
-            border-bottom: 1px solid #000;
-            h3 {
-                line-height: 60px;
-                font-size: 22px;
-                margin-left: 20px;
-            }
-        } 
-        .container {
-            margin-top: 50px;
-            width: 1200px;
-            height: 700px;
-            background-color: #fff;
-            border: 1px solid #666;
-            .header {
-                text-align: center;
-                width: 100%;
-                height: 60px;
-                line-height: 60px;
-                a {
-                    padding: 20px;
+        .container_default {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            min-height: 400px;
+            height: 95%;
+
+            .actions {
+                position: absolute;
+                bottom: 20px;
+                // margin: 40px;
+                right: 30px;
+                button {
+                    // margin: 5px;
+                    width: 80px;
+                    margin-left: 10px;
                 }
             }
-            .form {
-                text-align: center;
-                width: 1000px;
-                height: 600px;
-                border: 1px solid #666;
-                .turn {
-                    position: relative;
+            .main {
+                .header {
                     width: 100%;
-                    height: 100px;
-                    line-height: 100px;
-                    .line {
-                        position: absolute;
-                        width: 900px;
-                        top: 50px;
-                        left: 50px;
-                        border-top: 1px solid #000;
-                    }
+                    height: 80px;
                     ul {
-                        top: 10px;
-                        position: absolute;
+                        margin: 20px 10px 0 10px;
                         display: flex;
-                        width: 900px;
-                        margin-left: 50px;
-                        justify-content: space-between;
+                        flex-direction: row;
                         li {
-                            position: relative;
-                            width: 80px;
-                            line-height: 80px;
-                            text-align: center;
-                            height: 80px;
+                            margin: 10px;
+                            border-radius: 5px;
                             background-color: #eee;
-                            border-radius: 50%;
-                            span {
-                                display: block;
-                                position: absolute;
-                                font-size: 16px;
-                                top: 45px;
-                                left: 25px;
+                            height: 52px;
+                            line-height: 52px;
+                            font-size: 15px;
+                            padding-left: 15px;
+                            color: rgb(139, 139, 139);
+                            text-align: left;
+                            flex: 1;
+                            a {
+                                color: rgb(139, 139, 139);
+                                font-size: 18px;
                             }
                         }
                         .active {
-                            background-color: aqua;
+                            color: #fff;
+                            background-color: #A9D86E;
+                            a {
+                                color: #fff;
+                                font-size: 18px;
+                            }
                         }
                     }
                 }
-
-                // Page-1
-                .putIn {
-                    height: 500px;
-                    .putIn_form {
-                        // display: flex;
-                        flex-wrap: wrap;
-                        flex-direction: column;
-                        margin-top: 50px;
-                        width: 880px;
-                        height: 150px;
-                        border-top: 1px solid #000;
-                        border-left: 1px solid #000;
-                        .item {
+                .form {
+                    margin: 20px 30px 0 30px;
+                    ul {
+                        li {
                             position: relative;
+                            margin-top: 20px;
                             display: flex;
-                            flex: 1;
-                            width: 100%;
-                            border-bottom: 1px solid #000;
+                            flex-direction: row;
                             span {
-                                // display: block;
-                                width: 300px;
-                                line-height: 50px;
+                                font-size: 14px;
+                                line-height: 32px;
+                                color: #666;
+                                flex: 0.2;
                             }
                             input {
-                                width: 580px;
-                                padding-left: 5px;
+                                border-color: rgb(212, 212, 212);
+                                padding-left: 10px;
+                                height: 32px;
+                                border-radius: 7px;
+                                flex: 0.8;
                             }
                             img {
+                                position: absolute;
                                 cursor: pointer;
-                                width: 35px;
-                                position: absolute;
                                 right: 5px;
-                                top: 5px;
+                                top: 2px;
+                                width: 25px;
                             }
-                            .v-alert {
-                                .pre_container {
-                                    height: 500px;
-                                }
-                                .market {
-                                    display: flex;
-                                    justify-content: center;
-                                    margin-top: 30px;
-                                }
-                                .v-table {
-                                    width: 400px;
-                                    margin-top: 50px;
-                                    th {
-                                        background-color: #eee;
-                                    }
-                                }
-                            }
-                            .ADnotice {
+                            .hover {
                                 position: absolute;
+                                width: 450px;
+                                height: 180px;
                                 background-color: #fff;
-                                right: 45px;
-                                top: -260px;
-                                border-radius: 10px;
-                                width: 800px;
-                                height: 300px;
-                                border: 1px solid #000;
-                                h3 {
-                                    margin-top: 20px;
-                                    font-weight: bold;
-                                }
-                                p {
-                                    text-align: left;
-                                    line-height: 30px;
-                                    &:nth-of-type(1) {
-                                        margin-top: 20px;
+                                right: 35px;
+                                bottom: 0;
+                                font-size: 14px;
+                                color: #666;
+                                padding: 10px;
+                                line-height: 20px;
+                                border: 1px solid #aaa;
+                                border-radius: 20px;
+                            }
+                        }
+                    }
+                }
+                .confirm {
+                    padding: 20px 50px 20px 50px;
+                    td {
+                        position: relative;
+                        img {
+                            cursor: pointer;
+                            position: absolute;
+                            width: 30px;
+                            top: 10px;
+                        }
+                        .delete {
+                            width: 30px;
+                            left: 60px;
+                        }
+                    }
+                }
+                .wait {
+                    .select {
+                        display: flex;
+                        flex-direction: row;
+                        width: 100%;
+                        height: 120px;
+                        .market {
+                            padding: 20px;
+                            flex: 0.7;
+                            .area {
+                                font-size: 14px;
+                                line-height: 30px;
+                                a {
+                                    color: #aaa;
+                                    font-size: 12px;
+                                    padding: 4px;
+                                    margin-right: 20px;
+                                    &:hover {
+                                        background-color: #aaa;
+                                        color: #fff;
                                     }
                                 }
                             }
                         }
+                        .state {
+                            position: relative;
+                            font-size: 14px;
+                            padding: 20px;
+                            flex: 0.3;
+                            line-height: 30px;
+                            a {
+                                font-size: 12px;
+                                color: #aaa;
+                            }
+                            img {
+                                position: absolute;
+                                width: 20px;
+                            }
+                            .wait {
+                                top: 25px;
+                                right: 20px;
+                            }
+                            .active {
+                                color: #1afa29;
+                            }
+                        }
                     }
-                    .confirm {
-                        margin-top: 100px;
-                        button {
-                            width: 100px;
-                            margin: 50px;
-                        }  
+                    .main {
+                        height: 240px;
+                        margin: 0 20px 20px 20px;
+                        border: 1px solid #aaa;
+                        border-radius: 5px;
                     }
                 }
 
-                // Page-2
-                .confirm {
-                    margin-top: 30px;
-                    img {
-                        width: 30px;
-                        cursor: pointer;
-                    }
-                    button {
-                        width: 100px;
-                        margin: 50px;
-                    }  
-                    input {
-                        width: 100px;
-                    }
-                }
-
-                // Page-3
-                .wait {
-                    margin-top: 30px;
-                    .item {
-                        margin-left: 30px;
-                        margin-top: 20px;
-                        display: flex;
-                        li {
-                            width: 40px;
-                            height: 20px;
-                            float: left;
+                .putIn {
+                    .container {
+                        height: 480px;
+                        .title {
+                            margin-top: 15px;
+                            padding-left: 0;
                         }
-                        .active {
-                            color: #fff;
-                            background-color: aqua;
+                        .market {
+                            height: 80px;
+                            line-height: 80px;
+                            text-align: center;
+                            font-size: 14px;
+                            .v-select {
+                                width: 250px;
+                                height: 35px;
+                            }
                         }
-                    }
-                    .time {
-                        text-align: left;
-                        padding: 5px;
-                        width: 300px;
-                        height: 60px;
-                        border: 1px solid #000;
-                        margin-top: 20px;
-                        margin-right: 30px;
-                        margin-bottom: 20px;
-                    }
-                    .order {
-                        clear: both;
-                        width: 960px;
-                        height: 300px;
-                        border: 1px solid #000;
-                    }
-                    button {
-                        width: 200px;
-                        margin-top: 20px;
-                    }
-                }
-
-                // Page-4
-                .select {
-                    margin-top: 30px;
-                    .item {
-                        margin-left: 30px;
-                        margin-top: 20px;
-                        display: flex;
-                        li {
-                            width: 40px;
-                            height: 20px;
-                            float: left;
+                        .v-table_border {
+                            margin-top: 20px;
+                            width: 500px;
                         }
-                        .active {
-                            color: #fff;
-                            background-color: aqua;
-                        }
-                    }
-                    .time {
-                        text-align: left;
-                        padding: 5px;
-                        width: 300px;
-                        height: 60px;
-                        border: 1px solid #000;
-                        margin-top: 20px;
-                        margin-right: 30px;
-                        margin-bottom: 20px;
-                    }
-                    .order {
-                        clear: both;
-                        width: 960px;
-                        height: 300px;
-                        border: 1px solid #000;
-                    }
-                    button {
-                        width: 200px;
-                        margin-top: 20px;
-                    }
-                    .v-alert {
-                        button {
-                            width: 150px;
-                            margin-top: 100px;
-                        }
-                    }
-                }
-
-                // Page-6
-                .detail {
-                    .v-table {
-                        margin-top: 20px;
                     }
                 }
             }

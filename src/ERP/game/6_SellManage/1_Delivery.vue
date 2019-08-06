@@ -1,15 +1,10 @@
 <template>
     <div id="delivery">
-        <div class="nav">
-            <a href=""></a>
-            <h3>按订单交货</h3>
-        </div>
-        <div class="container mg">
-        
-            <div class="delivery mg">
-                <div class="title">
-                    <span>原材料订购</span>&nbsp;&nbsp;<span>订单详情</span>
-                </div>
+        <div class="container_default">
+            <div class="title">
+                <h3>按订单交货</h3>
+            </div>
+            <div class="main" v-show="page.main">
                 <table class="v-table mg">
                     <tr>
                         <th>订单编号</th>
@@ -24,18 +19,61 @@
                         <th>操作</th>
                     </tr>
                 </table>
-            </div>
 
+                <v-pagination-list
+                :data="data"
+                :divide="pageCount"
+                v-on:change="data = $event">
+                </v-pagination-list>
+            </div>
+            <div class="delivery" v-show="page.delivery">
+                <div class="state mg">
+                    <div class="out">出库</div>
+                    <img src="@/assets/Game/6_SellManage/arrow.svg">
+                    <div class="in">收款</div>
+                </div>
+                <div class="detail mg">
+                    <div class="intro">
+                        <span>编号：<a>189068</a></span><span>创建人：<a>用户名</a></span><span>销售时间：<a>7</a></span>
+                    </div>
+                    <table class="v-table">
+                        <tr>
+                            <th>产品名</th>
+                            <th>市场</th>
+                            <th>数量</th>
+                            <th>单价</th>
+                            <th>金额</th>
+                            <th>已出库数</th>
+                        </tr>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 </template>
 
 <script>
+    import vueEvent from '../../../model/VueEvent';
+
     export default {
         data() {
-            return {}
+            return {
+                data: [],
+                pageCount: 10,
+
+                page: {
+                    main: false,
+                    delivery: true
+                }
+            }
+        },
+        created() {
+            this.pageCount = this.Util.paginationWatch(this.pageCount, 5);
         },
         mounted() {
+            setTimeout(() => {
+                vueEvent.$emit('sidebarState', '/game/delivery', 'sold', 'delivery');
+            }, 1);
             this.$store.commit('pageState', 'delivery');
         }
     }
@@ -44,64 +82,52 @@
 <style lang="scss" scoped>
     #delivery {
         width: 100%;
-        .nav {
-            width: 100%;
-            height: 60px;   
-            border-bottom: 1px solid #000;
-            h3 {
-                line-height: 60px;
-                font-size: 22px;
-                margin-left: 20px;
+        .container_default {
+            height: 95%;
+            .main {
+                padding: 20px 50px 20px 50px;
             }
-        } 
-        .container {
-            display: flex;
-            flex-direction: column;
-            flex-wrap: wrap;
-            margin-top: 50px;
-            width: 1100px;
-            height: 750px;
-            background-color: #fff;
-            border: 1px solid #000;
             .delivery {
-                position: relative;
-                margin-top: 50px;
-                width: 1000px;
-                height: 650px;
-                border: 1px solid #000;
-                .title {
-                    width: 1000px;
-                    text-align: center;
-                    position: absolute;
-                    top: -22px;
-                    font-size: 18px;
+                width: 100%;
+                .state {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+                    width: 700px;
+                    height: 140px;
+                    div {
+                        margin-top: 20px;
+                        width: 120px;
+                        height: 120px;
+                        border-radius: 50%;
+                        color: #fff;
+                        font-size: 22px;
+                        text-align: center;
+                        line-height: 120px;
+                    }
+                    .out {
+                        background-color: #A9D86E;
+                    }
+                    .in {
+                        color: #000;
+                        background-color: #aaa;
+                    }
                 }
-                table {
-                    margin-top: 50px;  
-                    td {
-                        &:nth-last-of-type(1) {
-                            position: relative;
-                            img {
-                                position: absolute;
-                                top: 10px;
-                                width: 30px;
-                                &:nth-of-type(1) {
-                                    left: 40px;    
-                                }
-                                &:nth-of-type(2) {
-                                    left: 80px;
-                                } 
+                .detail {
+                    width: 900px;
+                    padding: 20px;
+                    margin-top: 50px;
+                    .intro {
+                        display: flex;
+                        justify-content: space-between;
+                        span {
+                            a {
+                                font-size: 12px;
                             }
                         }
-                    } 
-                }
-                .confirm {
-                    margin-top: 100px;
-                    width: 100%;
-                    text-align: center;
-                    button {
-                        width: 120px;
-                        margin: 50px;
+                    }
+                    table {
+                        margin-top: 20px;
                     }
                 }
             }

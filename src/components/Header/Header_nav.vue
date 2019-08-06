@@ -5,7 +5,7 @@
         </div>
         <div class="title_right">
             <div class="user" @mouseover="isHide = false">
-                <img src="../../assets/Header/Nav_user.png"><span class="userName">用户名</span>
+                <span class="userName">用户名</span><img src="../../assets/Header/Nav_user.png">
             </div>
         </div>
         <div class="cover" v-show="!isHide" @mouseleave="isHide = true" v-if="turn">
@@ -79,6 +79,7 @@
         }
         .title_right {
             display: flex;
+            width: 150px;
             .user {
                 width: 100px;
                 position: relative;
@@ -93,6 +94,7 @@
                     color: #333;
                     margin-top: 2px;
                     font-size: 12px;
+                    width: 100px;
                     left: 45px;
                     position: absolute;
                 }

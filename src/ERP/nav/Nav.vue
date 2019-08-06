@@ -168,12 +168,14 @@
             position: relative;
             width: 1020px;
             display: flex;
+            margin-top: 120px;
+            padding-bottom: 700px;
             .card {
                 position: absolute;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-                margin-top: 120px;
+                // margin-top: 120px;
                 background-color: #fff;
                 box-shadow: 0px 21px 30.08px 1.92px rgba(81, 160, 196, 0.42);
                 top: 50px;

@@ -7,9 +7,9 @@ import router from './router'
 
 Vue.use(VCharts)
 
-import reset from './assets/reset.css'
-import style from './assets/style.scss'
-import icon from './assets/icon/icon.scss'
+import './assets/reset.css'
+import './assets/style.scss'
+// import './assets/icon/icon.scss'
 
 import axios from 'axios'
 axios.defaults.withCredentials = true;
@@ -24,8 +24,8 @@ const URL = 'http://118.24.113.182:8081';
 Vue.prototype.URL = URL;
 
 // Functions
-import FUNCTIONS from './ERP/Functions/Functions.js'
-Vue.prototype.F = FUNCTIONS
+import Util from './ERP/Functions/Util.js'
+Vue.prototype.Util = Util
 import COOKIE from './ERP/Functions/Cookie.js'
 Vue.prototype.Cookie = COOKIE
 import STORAGE from './ERP/Functions/Storage.js'

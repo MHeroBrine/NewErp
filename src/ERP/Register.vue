@@ -91,7 +91,6 @@
             },
             // 根据学院设置专业
             setMajorInfo(val) {
-                console.log(this.collegeList);
                 for (let item in this.collegeList) {
                     if (this.collegeList[item].id === val) {
                         this.majorList = this.collegeList[item].major;

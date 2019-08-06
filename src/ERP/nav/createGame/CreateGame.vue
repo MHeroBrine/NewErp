@@ -81,7 +81,12 @@
     #createGame {
         position: relative;
         width: 100%;
+        .container_default {
+            height: 95%;
+        }
         .main {
+            height: 85%;
+            padding-bottom: 20px;
             img {
                 cursor: pointer;
                 width: 30px;

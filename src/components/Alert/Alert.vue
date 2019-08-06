@@ -76,6 +76,7 @@
             position: relative;
             width: 550px;
             min-height: 350px;
+            padding-bottom: 40px;
             // background-color: #fff;
             background-color: #EEEFF3;
             border-radius: 10px;
@@ -101,6 +102,7 @@
                 color: #666;
             }
             .form {
+                padding-bottom: 20px;
                 text-align: center;
                 .v-input {
                     margin: 25px;
@@ -115,19 +117,19 @@
                         padding: 10px;
                         width: 300px;
                         height: 20px;
-                        margin: 20px;
+                        margin: 0px;
                         margin-top: 30px;
                         box-shadow: 0 0 10px 2px rgb(202, 202, 202);
                     }
-                    &:nth-of-type(2) {
-                        span {
-                            height: 40px;
-                            line-height: 40px;
-                        }
-                        input {
-                            margin-top: 10px;
-                        }
-                    }
+                    // &:nth-of-type(2) {
+                    //     span {
+                    //         height: 40px;
+                    //         line-height: 40px;
+                    //     }
+                    //     input {
+                    //         margin-top: 10px;
+                    //     }
+                    // }
                 }
             }
             .button {

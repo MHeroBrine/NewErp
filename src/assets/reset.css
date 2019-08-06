@@ -54,6 +54,7 @@ a {
 div {
 	box-sizing: border-box;
 }
+html,body{overflow:hidden;overflow-y:auto;}
 
 .mg {
 	margin: 0 auto;
@@ -67,5 +68,5 @@ div {
 .center {
 	display: flex;
 	justify-content: center;
-	width: 1200px;
+	width: 1000px;
 }

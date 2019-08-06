@@ -28,6 +28,9 @@
 </template>
 
 <script>
+    import Ws from './ERP/Functions/Ws'
+    import Cookie from './ERP/Functions/Cookie'
+
     import Header_login from './components/Header/Header_login.vue'
     import Header_nav from './components/Header/Header_nav.vue'
     import Header_user from './components/Header/Header_user.vue'
@@ -45,13 +48,24 @@
             return {}
         },
         methods: {},
-        beforeMount() {
+        created() {
+            if (localStorage.getItem('GAME')) {
+                Ws.initSocket(localStorage.getItem('GAME') || localStorage.getItem('GAME_watching'));
+                Ws.openSocket();
+                Ws.message();
+            }
+
             this.College.getCollegeInfo(this.URL);
             
-            this.$store.commit('refreshUserInfo');
+            if (this.Cookie.getCookie('userId')) {
+                this.$store.commit('setUserInfo', [this.URL, this.Cookie.getCookie('userId')]);
+            }
             this.$store.commit('refreshCollegeInfo');
             this.$store.commit('refreshGameInfo');
             this.$store.commit('refreshGroupInfo');
+        },
+        beforeMount() {
+            
         },
         components: {
             'v-header1': Header_login,
@@ -84,15 +98,19 @@
         }
 
         .content {
-            min-width: 1400px;
+            // min-width: 1400px;
             background-color: #F1F2F7;
             display: flex;
             flex-direction: row;
             flex: 1;
+            height: 100%;
         }
         header, footer {
             width: 100%;
-            min-width: 1400px;
+            min-width: 800px;
+        }
+        header {
+            // position: fixed;
         }
         footer {
             border-top: 1px solid #000;

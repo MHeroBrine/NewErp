@@ -1,139 +1,136 @@
 <template>
     <div id="producePlan">
-        <div class="nav">
-            <a href=""></a>
-            <h3>生产计划</h3>
-        </div>
-
-        <!-- Page-produce -->
-        <div class="container mg" v-if="page.produce">
-            <div class="produce">
+        <div class="container_default info" v-show="page.produce">
+            <div class="title">
                 <h3>生产产品</h3>
-                <div class="param">
-                    <ul class="items">
-                        <li class="v-input">
-                            <input type="text" placeholder="产品">
-                            <img src="../../../assets/icon/label.svg" alt="" @click="hovers.product = !hovers.product">
-                            <ul class="list" v-if="hovers.product">
-                                <li v-for="item in productAvailable" @click="">
-                                    产品{{ item.productName }}
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="v-input">
-                            <input type="text" placeholder="厂房">
-                            <img src="../../../assets/icon/factory.svg" alt="" @click="hovers.factory = !hovers.factory">
-                            <ul class="list" v-if="hovers.factory">
-                                <li>编号P1</li>
-                                <li>编号P2</li>
-                            </ul>
-                        </li>
-                        <li class="v-input">
-                            <input type="text" placeholder="生产线">
-                            <img src="../../../assets/icon/tool.svg" alt="" @click="hovers.line = !hovers.line">
-                            <ul class="list" v-if="hovers.line">
-                                <li>手工线1</li>
-                                <li>手工线2</li>
-                                <li>手工线3</li>
-                                <li>半自动线</li>
-                            </ul>
-                        </li>
-                    </ul>
-                    <button class="v-button b-primary">确定</button>
-                </div>
             </div>
-            <div class="show">
-                <ul>
-                    <li v-for="item in productNames" @click="checkMaterial(item.id)" :ref="'product_' + item.id">
-                        产品{{ item.productName }}
-                    </li>
-                </ul>
+            <ul class="main">
+                <li>
+                    <span>产品</span>
+                    <input type="text" class="v-input" v-model="productNameNow" readonly>
+                    <img src="@/assets/game/5_ProduceManage/product.svg" alt="产品" @click="notice.product = !notice.product">
+                    <div class="notice" v-if="notice.product" style="z-index: 120">
+                        <a v-for="item in productAvailable" @click="selectProduct(item.id, item.productName)">
+                            产品{{ item.productName }}
+                        </a>
+                    </div>
+                </li>
+                <li>
+                    <span>厂房</span>
+                    <input type="text" class="v-input" v-model="factoryNameNow" readonly>
+                    <img src="@/assets/game/5_ProduceManage/factory.svg" alt="厂房" @click="notice.factory = !notice.factory">
+                    <div class="notice" v-if="notice.factory" style="z-index: 119">
+                        <a v-show="!this.factoryAvailable == true">（请先选择产品）</a>
+                        <a v-for="(item, key) in this.factoryAvailable" @click="selectFactory(key, item.factoryType)">
+                            {{ item.factoryType }}
+                        </a>
+                    </div>
+                </li>
+                <li>
+                    <span>生产线</span>
+                    <input type="text" class="v-input" v-model="lineNameNow" readonly>
+                    <img src="@/assets/game/5_ProduceManage/tools.svg" alt="生产线" @click="notice.line = !notice.line">
+                    <div class="notice" v-if="notice.line" style="z-index: 118">
+                        <p v-show="!this.lineAvailable == true">（请先选择厂房和生产线）</p>
+                        <p v-for="(item, key) in this.lineAvailable" @click="selectLine(item.id, item.prodlineType)">
+                            {{ item.prodlineType }}
+                        </p>
+                    </div>
+                </li>
+                <button class="v-button b-primary" @click="produceStart()">确定</button>
+            </ul>
+        </div>
+        <div class="container_default show" v-show="page.produce">
+            <div class="main">
+                <div class="spans">
+                    <span class="span" v-bind:class="{ active: item.id == productWatchNow }" @click="getProductInfos(item.id)" v-for="item in productAvailable">
+                        {{ item.productName }}
+                    </span>
+                </div>
                 <div class="detail">
-                    <ul>
-                        <li class="card" v-for="item in productDetail">
-                            <p>厂房：{{ item.factoryNumber }}</p>
-                            <p>生产线：{{ item.prodlineType }}</p>
-                            <p>状态：正在生产</p>
-                            <button class="v-button b-primary">查看生产</button>
-                        </li>
-                    </ul>
+                    <div class="item" v-for="item in productWatchNowInfo">
+                        <p>厂房编号：{{ item.factoryNumber }}</p>
+                        <p>生产线：{{ item.prodlineType }}</p>
+                        <button class="v-button b-primary btn" @click="watchItem(item.id)">查看生产</button>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Page-list -->
-        <div class="factoryList mg" v-if="page.factoryList">
-            <div class="title mg">
-                <ul>
-                    <li>厂房编号</li>
-                    <li>规模</li>
-                    <li>类型</li>
-                    <li>生产线数量</li>
-                    <li>状态</li>
-                </ul>
-                <ul>
-                    <li>511</li>
-                    <li>大厂房</li>
-                    <li>非租赁</li>
-                    <li>4/6</li>
-                    <li>已修建</li>
-                </ul>
+        <div class="container_default factoryList" v-show="page.factoryList">
+            <div class="title">
+                <h3>厂房信息</h3>
             </div>
-            <div class="list mg">
-                <ul>
-                    <li>手工线</li>
-                    <li>正在生产</li>
-                    <li>已生产周期：1</li>
-                    <li>正在生产产品：P1</li>
-                    <li><button class="v-button b-primary" @click="detail()">详情</button><button class="v-button b-primary">暂停</button></li>
-                    
-                    <!-- button-详情 -->
-                    <div class="v-alert detail" v-if="float.detail">
-                        <div class="pre_container">
-                            <div class="pre_title">
-                                <h3>生产线详情</h3>
-                            </div>
-                            <div class="main">
-                                <p>生产线类型：文本标签</p>
-                                <p>产品类型：文本标签</p>
-                                <p>安装周期：文本标签</p>
-                                <p>每期安装周期：文本标签</p>
-                                <p>每周转产费用：文本标签</p>
-                                <p>生产效率：文本标签</p>
-                                <p>每周维护费用：文本标签</p>
-                                <p>每周折旧费用：文本标签</p>
-                                <p>残值：文本标签</p>
-                            </div>
-                        </div>
-                    </div>
+            <div class="main">
+                <table class="v-table_border">
+                    <tr>
+                        <th>厂房编号</th>
+                        <th>规模</th>
+                        <th>类型</th>
+                        <th>生产线数量</th>
+                        <th>状态</th>
+                        <th>操作</th>
+                    </tr>
+                    <template v-for="item in factoryData">
+                        <tr>
+                            <td class="head" @click="showFactoryLine(item.id)"><img src="@/assets/Game/5_ProduceManage/arrow.svg" class="arrow"> &nbsp;&nbsp;&nbsp;&nbsp;{{ item.factoryNumber }}</td>
+                            <td>{{ item.factoryType }}</td>
 
-                    <!-- button-暂停 -->
-                    <div class="v-alert pause" v-if="float.pause">
-                        <div class="pre_container">
-                            <div class="pre_title">
-                                <h3>暂停该生产线？</h3>
-                            </div>
-                            <div>
-                                <p>注：该生产线正在生产产品</p>
-                                <button class="v-button b-primary">继续</button>
-                                <button class="v-button b-primary">取消</button>
-                            </div>
-                        </div>
-                    </div>
+                            <td v-if="item.factoryHoldingStatus === 'HOLDING'">非租赁</td>
+                            <td v-if="item.factoryHoldingStatus === 'LEASING'">租赁</td>
+                            
+                            <td>{{ item.currentCapacity }} / {{ item.factoryCapacity }}<img src="@/assets/Game/5_ProduceManage/add_2.svg" @click="createNewLine(item.id)"></td>
+                            
+                            <td v-if="item.factoryHoldingStatus === 'HOLDING' && item.developStatus === true">拥有中</td>
+                            <td v-if="item.factoryHoldingStatus === 'HOLDING' && item.developStatus === false">已出售</td>
 
-                    <!-- button-继续 -->
-                    <div class="v-alert continue" v-if="float.continue">
-                        <div class="pre_container">
-                            <div class="pre_title">
-                                <h3>继续该生产线？</h3>
+                            <td v-if="item.factoryHoldingStatus === 'LEASING' && item.developStatus === true">租赁中</td>
+                            <td v-if="item.factoryHoldingStatus === 'LEASING' && item.developStatus === false">暂停租赁</td>
+                        
+                            <td class="btns">
+                                <div class="temp">
+                                    <button class="v-button b-primary" @click="getFactoryDetail(item.id)">详情</button>
+                                    <div class="cover"></div>
+                                    <button class="v-button b-primary" v-if="item.factoryHoldingStatus === 'HOLDING'" @click="sellFactory(item.id)">出售</button>
+                                    <button class="v-button b-primary" v-if="item.factoryHoldingStatus === 'LEASING' && item.developStatus === true" @click="pause_lean(item.id)">暂停</button>
+                                    <button class="v-button b-primary" v-if="item.factoryHoldingStatus === 'LEASING' && item.developStatus === false" @click="_continue_lean(item.id)">继续</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <!-- 修建状态 -->
+                        <ul class="second" v-for="_item in item.prodlineDevelopDisplayVoList" v-show="false" :ref="'list_' + item.id">
+                            <div class="inside">
+                                <li>{{ _item.prodlineType }}</li>
+                                <li v-if="_item.prodlineDevelopStatus === 'DEVELOPING'">正在生产</li>
+                                <li v-if="_item.prodlineDevelopStatus === 'DEVELOPPAUSE'">暂停生产</li>
+                                <li v-if="_item.prodlineDevelopStatus === 'DEVELOPED'">完成生产</li>
+                                <li>正在生产产品：{{ _item.productName }}</li>
+                                <li>已生产周期：{{ _item.developedPeriod }}</li>
+                                <li>
+                                    <button class="v-button b-primary" v-if="_item.prodlineDevelopStatus === 'DEVELOPING'" @click="pauseInstall(_item.id)">暂停生产</button>
+                                    <button class="v-button b-primary" v-if="_item.prodlineDevelopStatus === 'DEVELOPPAUSE'" @click="continueInstall(_item.id)">继续生产</button>
+                                </li>
                             </div>
-                            <div>
-                                <button class="v-button b-primary">继续</button>
-                                <button class="v-button b-primary">取消</button>
+                        </ul>
+                        <!-- 生产状态 -->
+                        <ul class="second" v-for="_item in item.prodlineProduceDisplayVoList" v-show="false" :ref="'list_' + item.id">
+                            <div class="inside">
+                                <li>{{ _item.prodlineType }}</li>
+                                <li v-if="_item.prodlineProduceStatus === 'TOPRODUCE'">待生产</li>
+                                <li v-if="_item.prodlineProduceStatus === 'DEVELOPING'">正在生产</li>
+                                <li v-if="_item.prodlineProduceStatus === 'DEVELOPPAUSE'">暂停生产</li>
+                                <li v-if="_item.prodlineProduceStatus === 'DEVELOPED'">完成生产</li>
+                                <li v-if="_item.prodlineProduceStatus === 'TRANSFERRING'">运输中</li>
+                                <!-- <li>已生产周期：{{ _item.producedPeriod }}</li> -->
+                                <li>可生产产品：{{ _item.productName }}</li>
+                                <li>
+                                    <button class="v-button b-primary">转产</button>
+                                    <button class="v-button b-primary" @click="sellLine(item.id)">出售</button>
+                                </li>
                             </div>
-                        </div>
-                    </div>
-                </ul>
+                        </ul>
+                    </template>
+                </table>
             </div>
         </div>
     </div>
@@ -141,6 +138,7 @@
 
 <script>
     import Axios from 'axios'
+    import vueEvent from '../../../model/VueEvent';
 
     export default {
         data() {
@@ -153,10 +151,24 @@
                 productDetail: [],
                 // 当前可以生产的产品
                 productAvailable: [],
-                // 准备生产的产品的数据
-                produceReady: {
-
-                },
+                // 可使用的厂房和生产线信息
+                factoryAvailable: null,
+                // 可使用生产线信息  
+                lineAvailable: null,
+                // 当前选择的生产线
+                lineNow: null,
+                // 当前查看的产品
+                productWatchNow: null,
+                // 当前查看产品的详细信息
+                productWatchNowInfo: [],
+                // 查看的生产线产品的数据
+                factoryData: [],
+                // 现选产品
+                productNameNow: null,
+                // 现选厂房
+                factoryNameNow: null,
+                // 现选生产线
+                lineNameNow: null,
                 // 页面
                 page: {
                     produce: true,
@@ -168,8 +180,8 @@
                     pause: false,
                     continue: false
                 },
-                // 鼠标下拉窗
-                hovers: {
+                // 侧拉窗(指输入框)
+                notice: {
                     product: false,
                     factory: false,
                     line: false
@@ -177,17 +189,21 @@
             }
         },
         mounted() {
+            setTimeout(() => {
+                vueEvent.$emit('sidebarState', '/game/producePlan', 'produce', 'plan');
+            }, 1);
             this.getAvailableProduct();
-            this.getProduct();
+            // this.getProduct();
             this.$store.commit('pageState', 'producePlan');
         },
         methods: {
             // 获取可生产的产品
             getAvailableProduct() {
-                Axios.get(this.URL + '/game/compete/operation/produce/productionplan/product/type/get?enterpriseId=' + localStorage.getItem('enterpriseId'))
+                Axios.get(this.URL + '/game/compete/operation/produce/productionplan/product/type?enterpriseId=' + localStorage.getItem('enterpriseId'))
                     .then(Response => {
                         if (Response.data.code === 200) {
                             this.productAvailable = Response.data.data;
+                            this.getProductInfos(this.productAvailable[0].id);
                         } else {
                             alert('数据获取失败');
                         }
@@ -195,7 +211,7 @@
             },
             // 获取产品信息
             getProduct() {
-                Axios.get(this.URL + '/game/compete/operation/product/product/infos/get?enterpriseId=' + localStorage.getItem('enterpriseId'))
+                Axios.get(this.URL + '/game/compete/operation/product/product/infos?enterpriseId=' + localStorage.getItem('enterpriseId'))
                     .then(Response => {
                         if (Response.data.code === 200) {
                             this.productNames = Response.data.data;
@@ -206,227 +222,335 @@
                         
                     })
             },
-            // 查看某一产品生产情况
-            checkMaterial(id) {
-                if (this.productNow === id) {
-                    return;
+            // 选择产品
+            selectProduct(id, name) {
+                this.notice.product = false;
+                this.productNameNow = '产品' + name;
+                Axios.get(this.URL + '/game/compete/operation/produce/productionplan/prodline/type?enterpriseId=' + localStorage.getItem('enterpriseId') + '&productId=' + id)
+                    .then(Response => {
+                        if (Response.data.code === 200) {
+                            this.factoryAvailable = Response.data.data;
+                        } else {
+                            alert('数据获取失败');
+                        }
+                    })
+            },
+            // 选择厂房
+            selectFactory(key, name) {
+                console.log(name);
+                this.notice.factory = false;
+                this.factoryNameNow = name;
+                this.lineAvailable = this.factoryAvailable[key].prodlineTypeVoList;
+                console.log(this.lineAvailable);
+            },
+            // 选择生产线
+            selectLine(id, name) {
+                this.notice.line = false;
+                this.lineNameNow = name;
+                this.lineNow = id;
+            },
+            // 开始生产
+            produceStart() {
+                if (!this.lineNow) {
+                    alert('请先选择生产线');
                 } else {
-                    if (this.productNow !== null) {
-                        this.$refs['product_' + this.productNow][0].style.color = "#000";
-                    }
-                    this.productNow = id;
-                    this.$refs['product_' + id][0].style.color = "blue";
-                    Axios.get(this.URL + '/game/compete/operation/produce/productionplan/prodline/produce/get?enterpriseId=' + localStorage.getItem('enterpriseId') + '&productId=' + id)
+                    Axios.put(this.URL + '/game/compete/operation/produce/productionplan/prodline/produce?prodlineId=' + this.lineNow)
                         .then(Response => {
                             if (Response.data.code === 200) {
-                                this.productDetail = Response.data.data;
+                                alert(Response.data.msg);
+                                this.productNameNow = null;
+                                this.factoryNameNow = null;
+                                this.lineNameNow = null;
+                                this.getProductInfos(this.productWatchNow);
                             } else {
-                                alert('数据获取失败');
+                                alert(Response.data.msg);
                             }
-                        }).catch(e => {
-                            
                         })
                 }
-            }
+            },
+            
+            // 获取产品的生产信息
+            getProductInfos(id) {
+                this.productWatchNow = id;
+                Axios.get(this.URL + '/game/compete/operation/produce/productionplan/prodline/produce?enterpriseId=' + localStorage.getItem('enterpriseId') + '&productId=' + id)
+                    .then(Response => {
+                        if (Response.data.code === 200) {
+                            this.productWatchNowInfo = Response.data.data;
+                        } else {
+                            alert('数据获取失败');
+                        }
+                    })
+            },
+            // 查看某一产品具体生产情况
+            watchItem(id) {
+                this.page.produce = false;
+                this.page.factoryList = true;
+                Axios.get(this.URL + '/game/compete/operation/produce/productionplan/factory/display?prodlineProduceId=' + id)
+                    .then(Response => {
+                        if (Response.data.code === 200) {
+                            console.log(Response.data);
+                            this.factoryData = [Response.data.data];
+                        } else {
+                            alert('数据获取失败');
+                        }
+                    })
+            },
+            showFactoryLine(factoryId) {    
+                for (let i = 0; i < this.$refs['list_' + factoryId].length; i ++) {
+                    if (this.$refs['list_' + factoryId][i].style.display == 'none') {
+                        this.$refs['list_' + factoryId][i].style.display = 'block';
+                    } else {
+                        this.$refs['list_' + factoryId][i].style.display = 'none';
+                    }
+                }
+            },
         }
     }
 </script>
 
 <style lang="scss" scoped>
     #producePlan {
-        width: 100%;
-        .nav {
-            width: 100%;
-            height: 60px;   
-            border-bottom: 1px solid #000;
-            h3 {
-                line-height: 60px;
-                font-size: 22px;
-                margin-left: 20px;
+       width: 100%;
+       padding-bottom: 20px;
+        .container_default {
+            height: 300px;
+            h4 {
+                font-size: 14px;
             }
         }
-        .container {
-            display: flex;
-            flex-direction: column;
-            flex-wrap: wrap;
-            margin-top: 50px;
-            width: 1100px;
-            height: 750px;
-            background-color: #fff;
-            border: 1px solid #000;
-            .produce, .show {
-                margin: 20px;
-                flex: 1;
+        .info { 
+            height: 320px;
+            button {
+                position: absolute;
+                left: 10px;
+                bottom: 10px;
+                width: 120px;
             }
-            .produce {
-                display: flex;
-                flex-direction: column;
-                border: 4px solid #666;
-                h3 {
-                    height: 60px;
-                    line-height: 60px;
-                    padding-left: 20px;
-                    font-size: 22px;
-                    font-weight: bold;
-                    border-bottom: 1px solid #eee;
-                }
-                .param {
+            ul {
+                li {
                     position: relative;
-                    flex: 1;
-                    .items {
-                        display: flex;
-                        flex-direction: row;
-                        flex-wrap: wrap;
-                        width: 800px;
-                        li {
-                            position: relative;
-                            flex: 1;
-                            width: 300px;
-                            margin: 20px;
-                            input {
-                                font-size: 18px;
-                                width: 250px;
-                                height: 40px;
-                            }
-                            img {
-                                cursor: pointer;
-                                width: 30px;
-                            }
-                        }
-                        .list {
-                            position: absolute;
-                            width: 100px;
-                            height: 100px;
-                            border: 1px solid #000;
-                            left: 100px;
-                            top: 20px;
-                            z-index: 50;
-                            background-color: #fff;
-                            li {
-                                line-height: 1px;
-                            }
-                        }
+                    width: 100%;
+                    height: 70px;
+                    line-height: 70px;
+                    padding-left: 20px;
+                    span {
+                        font-size: 14px;
                     }
-                    button {
+                    input {
+                        padding-left: 5px;
                         position: absolute;
+                        top: 17.5px;
+                        left: 85px;
+                        font-size: 14px;
+                        border-radius: 8px;
+                        width: 385px;
+                        height: 35px;
+                    }
+                    img {
+                        position: absolute;
+                        cursor: pointer;
+                        top: 25px;
+                        left: 440px;
+                        width: 20px;
+                    }
+                    .notice {
+                        position: absolute;
+                        background-color: #fff;
+                        padding: 5px;
+                        line-height: 22px;
+                        font-size: 12px;
+                        padding-left: 10px;
+                        color: #666;
+                        top: 17px;
+                        left: 490px;
                         width: 120px;
-                        bottom: 10px;
-                        right: 10px;
+                        height: 100px;
+                        border: 1px solid #aaa;
+                        // border-radius: 10px;
+                        a {
+                            display: block;
+                        }
+                        &::before {
+                            content: '';
+                            position: absolute;
+                            top: 0px;
+                            left: -15px;
+                            border-right: 15px solid #aaa;
+                            border-top: 10px solid transparent;
+                            border-bottom: 10px solid transparent;
+                        }
+                        &::after {
+                            content: '';
+                            position: absolute;
+                            top: 0px;
+                            left: -15px;
+                            border-right: 18px solid #fff;
+                            border-top: 10px solid transparent;
+                            border-bottom: 10px solid transparent;
+                        }
+                        p {
+                            cursor: pointer;
+                        }
                     }
                 }
             }
-            .show {
+        }
+        .show {
+            padding: 20px;
+            .main {
+                position: relative;
                 display: flex;
                 flex-direction: row;
-                ul {
-                    li {
-                        cursor: pointer;
-                        margin-top: 50px;
-                        &:nth-of-type(1) {
-                            margin-top: 0;
+            }
+            .spans {
+                width: 150px;
+                height: 100%;
+                .span {
+                    position: absolute;
+                    display: block;
+                    width: 90px;
+                    height: 40px;
+                    color: #fff;
+                    line-height: 40px;
+                    text-align: center;
+                    font-size: 18px;
+                    background-color: #AEB2B7;
+                    cursor: pointer;
+                    &:nth-of-type(2) {
+                        margin-top: 70px;
+                    }
+                    &:nth-of-type(3) {
+                        margin-top: 140px;
+                    }
+                    &:nth-of-type(4) {
+                        margin-top: 210px;
+                    }
+                    &::before {
+                        content: '';
+                        position: absolute;
+                        width: 0;
+                        height: 0;
+                        right: -20px;
+                        border-left: 20px solid #AEB2B7;
+                        border-top: 20px solid transparent;
+                        border-bottom: 20px solid transparent;
+                    }
+                    &:hover {
+                        background-color: #46b8ed;
+                        &::before {
+                            content: '';
+                            position: absolute;
+                            width: 0;
+                            height: 0;
+                            right: -20px;
+                            border-left: 20px solid #46b8ed;
+                            border-top: 20px solid transparent;
+                            border-bottom: 20px solid transparent;
                         }
                     }
-                }   
-                .detail {
-                    width: 950px;
-                    height: 250px;
-                    border: 3px solid #eee;
-                    margin-left: 50px;
-                    ul {
-                        display: flex;
-                        .card {
-                            position: relative;
-                            width: 180px;
-                            height: 90px;
-                            border: 2px solid #eee;
-                            margin: 20px;
-                            padding: 6px;
-                            line-height: 20px;
-                            button {
-                                position: absolute;
-                                right: 4px;
-                                padding: 0;
-                            }
-                        }
+                }
+                .active {
+                    background-color: #46b8ed;
+                    &::before {
+                        content: '';
+                        position: absolute;
+                        width: 0;
+                        height: 0;
+                        right: -20px;
+                        border-left: 20px solid #46b8ed;
+                        border-top: 20px solid transparent;
+                        border-bottom: 20px solid transparent;
                     }
+                }
+            }
+            .detail {
+                display: flex;
+                flex-wrap: wrap;
+                width: 100%;
+                height: 270px;
+                border: 1px solid #aaa;
+                border-radius: 15px;
+                padding: 20px;
+                overflow: auto;
+                .item {
+                    position: relative;
+                    width: 160px;
+                    height: 90px;
+                    margin: 0 0 20px 20px;
+                    border: 1px solid #000;
+                    border-radius: 10px;
+                    line-height: 20px;
+                    padding: 10px;
+                    p {
+                        font-size: 12px;
+                    }
+                }
+                .btn {
+                    position: absolute;
+                    font-size: 12px;
+                    border-radius: 5px;
+                    min-height: 20px;
+                    height: 30px;
+                    line-height: 0px;
+                    right: 5px;
+                    bottom: 5px;
                 }
             }
         }
-        
         .factoryList {
-            display: flex;
-            flex-direction: column;
-            flex-wrap: wrap;
-            margin-top: 50px;
-            width: 1100px;
-            height: 750px;
-            background-color: #fff;
-            border: 1px solid #000; 
-            .title {
-                width: 1000px;
-                height: 100px;
-                background-color: #eee;
-                margin-top: 30px;
-                border: 1px solid #000;
-                ul {
+            height: 95%;
+            .main {
+                padding: 0 20px 0 20px;
+                table {
+                    min-width: 800px;
                     margin-top: 20px;
-                    width: 800px;
-                    display: flex;
-                    flex-wrap: wrap;
-                    &:nth-of-type(2) {
-                        margin-top: 30px;
-                        color: #777777;
-                    }
-                    li {
-                        text-align: center;
-                        flex: 1;
-                    }
-                }
-            }
-            .list {
-                width: 1000px;
-                ul {
-                    margin: 0 auto;
-                    margin-top: 20px;
-                    width: 900px;
-                    display: flex;
-                    flex-wrap: wrap;
-                    border-bottom: 1px solid #666;
-                    padding-bottom: 10px;
-                    li {
-                        line-height: 30px;
-                        padding-left: 20px;
-                        flex: 1;
-                    }
-                    .detail {
-                        .pre_container {
-                            height: auto;
-                            .main {
-                                text-align: center;
-                                line-height: 50px;
-                            }   
+                    tr {
+                        border: 1px solid rgb(180, 186, 192);
+                        td {
+                            position: relative;
                         }
-                    }
-                    .pause {
-                        text-align: center;
-                        line-height: 50px;
-                        .pre_container {
-                            width: 400px;
-                            height: 170px;
+                        img {
+                            position: absolute;
+                            cursor: pointer;
+                            top: 16px;
+                            left: 65px;
+                            width: 18px;
+                        }
+                        .btns {
+                            width: 100%;
+                            display: flex;
+                            flex-direction: row;
+                            align-items: center;
+                            .temp {
+                                display: flex;
+                                flex: 0.9;
+                            }
+                            .cover {
+                                flex: 0.1;
+                            }
                             button {
-                                width: 120px;
+                                flex: 1;
+                                height: 40px;
                             }
                         }
+                        th, td {
+                            border: 0;
+                        }
+                        cursor: pointer;
+                        &:hover {
+                            background-color: rgb(235, 247, 255);
+                        }
+                        &:nth-of-type(1) {
+                            cursor: default;
+                        }
                     }
-                    .continue {
-                        text-align: center;
-                        line-height: 50px;
-                        .pre_container {
-                            width: 400px;
-                            height: 170px;
-                            button {
-                                width: 120px;
-                            }
+                    .head {
+                        position: relative;
+                        .arrow {
+                            position: absolute;     
+                            width: 15px;
+                            top: 18px;
+                            left: 15px;
                         }
                     }
                 }

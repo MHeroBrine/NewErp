@@ -13,9 +13,17 @@
 </template>
 
 <script>
+    import vueEvent from '../../../../model/VueEvent';
+
     export default {
         data() {
             return {}
+        },
+        methods: {
+            freshList() {
+                // 调用分页组件函数 获取游戏信息
+                vueEvent.$emit('refreshGameList');
+            },
         },
         mounted() {
             this.$store.commit('pageState', 'gameControl_continueGame');
@@ -28,6 +36,9 @@
     #continueGame {
         position: relative;
         width: 100%;
+        .container_default {
+            height: 95%;
+        }
         .main {
             img {
                 cursor: pointer;

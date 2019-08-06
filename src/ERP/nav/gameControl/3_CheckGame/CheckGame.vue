@@ -28,6 +28,9 @@
     #checkGame {
         position: relative;
         width: 100%;
+        .container_default {
+            height: 95%;
+        }
         .main {
             img {
                 cursor: pointer;

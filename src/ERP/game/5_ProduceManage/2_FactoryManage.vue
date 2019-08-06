@@ -1,215 +1,195 @@
 <template>
     <div id="factoryManage">
-        <div class="nav">
-            <a href=""></a>
-            <h3>厂房管理</h3>
-        </div>
-        <div class="container mg">
-            <div class="search">
-                <span>类型：</span>
-                <select v-model="factoryTypeNow">
-                    <option v-for="item in factoryType" v-bind:value="item.id">
-                        {{ item.factoryType }}
-                    </option>
-                </select>
-                <button class="v-button b-primary">查询</button>
+        <div class="container_default">
+            <div class="title">
+                <h3>厂房管理</h3>
             </div>
-            <div class="main mg">
-                <div class="sold fr">
-                    <a @click="createFactory()">新建厂房</a>
-                    <a @click="leanFactory()">租用厂房</a>
+            <div class="main">
+                <div class="search">
+                    <!-- <span>厂房列表</span> -->
+                    <div class="icon" @click="createFactory()">
+                        <p>新建厂房</p>
+                        <img src="@/assets/Game/5_ProduceManage/add.svg">
+                    </div>
+                    <div class="icon" @click="leanFactory()">
+                        <p>租借厂房</p>
+                        <img src="@/assets/Game/5_ProduceManage/loan.svg">
+                    </div>
+                    <!-- <select class="v-select">
+                        <option value="1">请选择分类</option>
+                    </select> -->
                 </div>
+                <table class="v-table_border">
+                    <tr>
+                        <th>厂房编号</th>
+                        <th>规模</th>
+                        <th>类型</th>
+                        <th>生产线数量</th>
+                        <th>状态</th>
+                        <th>操作</th>
+                    </tr>
+                    <template v-for="item in factoryInfo">
+                        <tr>
+                            <td class="head" @click="showFactoryLine(item.id)"><img src="@/assets/Game/5_ProduceManage/arrow.svg" class="arrow"> &nbsp;&nbsp;&nbsp;&nbsp;{{ item.factoryNumber }}</td>
+                            <td>{{ item.factoryType }}</td>
 
-                <div class="title mg" v-for="item in factoryInfo">
-                    <div class="main">
-                        <ul>
-                            <li>厂房编号</li>
-                            <li>规模</li>
-                            <li>类型</li>
-                            <li>生产线数量</li>
-                            <li>状态</li>
-                        </ul>
-                        <ul>
-                            <li>{{ item.factoryNumber }}</li>
-                            <li>{{ item.factoryType }}</li>
-
-                            <li v-if="item.factoryHoldingStatus === 'HOLDING'">非租赁</li>
-                            <li v-if="item.factoryHoldingStatus === 'LEASING'">租赁</li>
+                            <td v-if="item.factoryHoldingStatus === 'HOLDING'">非租赁</td>
+                            <td v-if="item.factoryHoldingStatus === 'LEASING'">租赁</td>
                             
-                            <li>{{ item.factoryCapacity }}<img src="../../../assets/icon/plus.svg" alt="" @click="createNewLine(item.id)"></li>
-                        
-                            <li v-if="item.factoryHoldingStatus === 'HOLDING' && item.developStatus === true">拥有中</li>
-                            <li v-if="item.factoryHoldingStatus === 'HOLDING' && item.developStatus === false">已出售</li>
+                            <td>{{ item.currentCapacity }} / {{ item.factoryCapacity }}<img src="@/assets/Game/5_ProduceManage/add_2.svg" @click="createNewLine(item.id)"></td>
+                            
+                            <td v-if="item.factoryHoldingStatus === 'HOLDING' && item.developStatus === true">拥有中</td>
+                            <td v-if="item.factoryHoldingStatus === 'HOLDING' && item.developStatus === false">已出售</td>
 
-                            <li v-if="item.factoryHoldingStatus === 'LEASING' && item.developStatus === true">租赁中</li>
-                            <li v-if="item.factoryHoldingStatus === 'LEASING' && item.developStatus === false">暂停租赁</li>
-                        </ul>
-                    </div>
-                    <div class="btns">
-                        <button class="v-button b-primary" @click="getFactoryDetail(item.id)">详情</button>
-                        <button class="v-button b-primary" v-if="item.factoryHoldingStatus === 'HOLDING'" @click="sellFactory(item.id)">出售</button>
-                        <button class="v-button b-primary" v-if="item.factoryHoldingStatus === 'LEASING' && item.developStatus === true" @click="pause_lean(item.id)">暂停</button>
-                        <button class="v-button b-primary" v-if="item.factoryHoldingStatus === 'LEASING' && item.developStatus === false" @click="_continue_lean(item.id)">继续</button>
-                        <a @click="showFactoryLine(item.id)">↓</a>
-                    </div>
-                    <div class="line" v-show="lines">
+                            <td v-if="item.factoryHoldingStatus === 'LEASING' && item.developStatus === true">租赁中</td>
+                            <td v-if="item.factoryHoldingStatus === 'LEASING' && item.developStatus === false">暂停租赁</td>
+                        
+                            <td class="btns">
+                                <div class="temp">
+                                    <button class="v-button b-primary" @click="getFactoryDetail(item.id)">详情</button>
+                                    <div class="cover"></div>
+                                    <button class="v-button b-primary" v-if="item.factoryHoldingStatus === 'HOLDING'" @click="sellFactory(item.id)">出售</button>
+                                    <button class="v-button b-primary" v-if="item.factoryHoldingStatus === 'LEASING' && item.developStatus === true" @click="pause_lean(item.id)">暂停</button>
+                                    <button class="v-button b-primary" v-if="item.factoryHoldingStatus === 'LEASING' && item.developStatus === false" @click="_continue_lean(item.id)">继续</button>
+                                </div>
+                            </td>
+                        </tr>
                         <!-- 修建状态 -->
-                        <ul v-for="_item in item.prodlineDevelopDisplayVoList">
-                            <li>{{ _item.prodlineType }}</li>
-                            <li v-if="_item.prodlineDevelopStatus === 'DEVELOPING'">正在生产</li>
-                            <li v-if="_item.prodlineDevelopStatus === 'DEVELOPPAUSE'">暂停生产</li>
-                            <li v-if="_item.prodlineDevelopStatus === 'DEVELOPED'">完成生产</li>
-                            <li>正在生产产品：{{ _item.productName }}</li>
-                            <li>
-                                <button class="v-button b-primary" v-if="_item.prodlineDevelopStatus === 'DEVELOPING'" @click="pauseInstall(_item.id)">暂停</button>
-                                <button class="v-button b-primary" v-if="_item.prodlineDevelopStatus === 'DEVELOPPAUSE'" @click="continueInstall(_item.id)">继续</button>
-                            </li>
+                        <ul class="second" v-for="_item in item.prodlineDevelopDisplayVoList" v-show="false" :ref="'list_' + item.id">
+                            <div class="inside">
+                                <li>{{ _item.prodlineType }}</li>
+                                <li v-if="_item.prodlineDevelopStatus === 'DEVELOPING'">正在生产</li>
+                                <li v-if="_item.prodlineDevelopStatus === 'DEVELOPPAUSE'">暂停生产</li>
+                                <li v-if="_item.prodlineDevelopStatus === 'DEVELOPED'">完成生产</li>
+                                <li>正在生产产品：{{ _item.productName }}</li>
+                                <li>已生产周期：{{ _item.developedPeriod }}</li>
+                                <li>
+                                    <button class="v-button b-primary" v-if="_item.prodlineDevelopStatus === 'DEVELOPING'" @click="pauseInstall(_item.id)">暂停生产</button>
+                                    <button class="v-button b-primary" v-if="_item.prodlineDevelopStatus === 'DEVELOPPAUSE'" @click="continueInstall(_item.id)">继续生产</button>
+                                </li>
+                            </div>
                         </ul>
                         <!-- 生产状态 -->
-                        <ul v-for="_item in item.prodlineProduceDisplayVoList">
-                            <li>{{ _item.prodlineType }}</li>
-                            <li v-if="_item.prodlineProduceStatus === 'TOPRODUCE'">待生产</li>
-                            <li v-if="_item.prodlineProduceStatus === 'DEVELOPING'">正在生产</li>
-                            <li v-if="_item.prodlineProduceStatus === 'DEVELOPPAUSE'">暂停生产</li>
-                            <li v-if="_item.prodlineProduceStatus === 'DEVELOPED'">完成生产</li>
-                            <li v-if="_item.prodlineProduceStatus === 'TRANSFERRING'">运输中</li>
-                            <li>已生产周期：{{ _item.producedPeriod }}</li>
-                            <li>正在生产产品：{{ _item.productName }}</li>
-                            <li>
-                                <button class="v-button b-primary">转产</button>
-                                <button class="v-button b-primary" @click="sellLine(_item.id)">出售</button>
-                            </li>
+                        <ul class="second" v-for="_item in item.prodlineProduceDisplayVoList" v-show="false" :ref="'list_' + item.id">
+                            <div class="inside">
+                                <li>{{ _item.prodlineType }}</li>
+                                <li v-if="_item.prodlineProduceStatus === 'TOPRODUCE'">待生产</li>
+                                <li v-if="_item.prodlineProduceStatus === 'DEVELOPING'">正在生产</li>
+                                <li v-if="_item.prodlineProduceStatus === 'DEVELOPPAUSE'">暂停生产</li>
+                                <li v-if="_item.prodlineProduceStatus === 'DEVELOPED'">完成生产</li>
+                                <li v-if="_item.prodlineProduceStatus === 'TRANSFERRING'">运输中</li>
+                                <!-- <li>已生产周期：{{ _item.producedPeriod }}</li> -->
+                                <li>可生产产品：{{ _item.productName }}</li>
+                                <li>
+                                    <button class="v-button b-primary">转产</button>
+                                    <button class="v-button b-primary" @click="sellLine(item.id)">出售</button>
+                                </li>
+                            </div>
                         </ul>
-                    </div>
-                </div>
-                
-                <div class="title mg" v-for="item in factoryInfo_Develop">
-                    <div>
-                        <ul class="develop">    
-                            <li>规模</li>
-                            <li></li>
-                            <li>类型</li>
-                            <li></li>
-                            <li>状态</li>
-                        </ul>
-                        <ul class="develop">
-                            <li>{{ item.factoryType }}</li>
-                            <li></li>
+                    </template>
+                </table>
+            </div>
 
-                            <li v-if="item.factoryHoldingStatus === 'HOLDING'">非租赁</li>
-                            <li v-if="item.factoryHoldingStatus === 'LEASING'">租赁</li>
-                            
-                            <li></li>
-
-                            <li v-if="item.developStatus == true">建造中</li>
-                            <li v-if="item.developStatus == false">暂停建造</li>
-                        </ul>
+            <!-- 新建厂房 -->
+            <div class="v-alert newFactory" v-if="float.newFactory">
+                <div class="container">
+                    <div class="title">
+                        <h3>新建厂房</h3>
                     </div>
-                    <div>
-                        <button class="v-button b-primary" @click="getFactoryDetail(item.id)">详情</button>
-                        
-                        <button class="v-button b-primary" v-if="item.developStatus == true" @click="pause_develop(item.id)">暂停</button>
-                        <button class="v-button b-primary" v-if="item.developStatus == false" @click="_continue_develop(item.id)">继续</button>
-                    </div>
-                </div>
-
-                <!-- 新建生产线 -->
-                <div class="v-alert newLine" v-if="float.newLine">
-                    <div class="pre_container">
-                        <div class="pre_title">
-                            <h3>新建生产线</h3>
-                        </div>
-                        <div class="main">
-                            <p>生产线类型:<select v-model="lineNow">
-                                <option v-for="item in newLineInfo.newLine" :value="item.id">{{ item.prodlineType }}</option>    
-                            </select></p>
-                            <p>产品类型：<select v-model="productNow">
-                                <option v-for="item in newLineInfo.productType" :value="item.id">{{ item.productName }}</option>    
-                            </select></p>
-                            <template v-if="lineNow">
-                                <p>安装周期：{{ newLineInfo.newLine[lineNow].prodlineSetupPeriod }}</p>
-                                <p>每周安装费用：{{ newLineInfo.newLine[lineNow].prodlineSetupPeriodPrice }}</p>
-                                <p>每周维修费用：{{ newLineInfo.newLine[lineNow].prodlineMainCost }}</p>
-                                <p>每周折旧费用：{{ newLineInfo.newLine[lineNow].prodlineDepreciation }}</p>
-                                <p>残值：{{ newLineInfo.newLine[lineNow].prodlineStumpcost }}</p>
-                            </template>
-                            <button class="v-button b-primary" @click="createNewLine_confirm()">确认</button><button class="v-button b-primary" @click="exitCreateNewLine()">取消</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 新建厂房 -->
-                <div class="v-alert newFactory" v-if="float.newFactory">
-                    <div class="pre_container">
-                        <div class="pre_title">
-                            <h3>新建厂房</h3>
-                        </div>
-                        <div class="main">
-                            <p>厂房类型：
-                                <select v-model="createFactoryNow">
-                                    <option v-for="item in factoryType" v-bind:value="item.id">
-                                        {{ item.factoryType }}
-                                    </option> 
-                                </select>
-                            </p>
-                            <p>修建工期：<span>文本标签</span></p>
-                            <p>完工时间：<span>文本标签</span></p>
-                            <p>每期修建费用：<span>文本标签</span></p>
-                            <p>每期折旧费用：<span>文本标签</span></p>
+                    <div class="main">
+                        <p><span>厂房类型：</span>
+                            <select v-model="createFactoryNow" class="v-select">
+                                <option v-for="item in factoryType" v-bind:value="item.id">
+                                    {{ item.factoryType }}
+                                </option> 
+                            </select>
+                        </p>
+                        <p><span>修建工期：</span>文本</p>
+                        <p><span>完工时间：</span>文本</p>
+                        <p><span>每期修建费用：</span>文本</p>
+                        <p><span>每期折旧费用：</span>文本</p>
+                        <div class="button">
                             <button class="v-button b-primary" @click="createFactory_confirm()">确认</button>
                             <button class="v-button b-primary" @click="exitCreateFactory()">取消</button>
                         </div>
                     </div>
                 </div>
-
-                <!-- 租用厂房 -->
-                <div class="v-alert newFactory" v-if="float.newLendFactory">
-                    <div class="pre_container">
-                        <div class="pre_title">
-                            <h3>租用厂房</h3>
-                        </div>
-                        <div class="main">
-                            <p>厂房类型：
-                                <select v-model="createFactoryNow">
-                                    <option v-for="item in factoryType" v-bind:value="item.id">
-                                        {{ item.factoryType }}
-                                    </option> 
-                                </select>
-                            </p>
-                            <p>每期租金：<span>文本标签</span></p>
-                            <p>注：一年起租，租满一年的厂房在满年（如第一年的第一期租用，到第二年第二期为满年）进行退租处理。未处理，默认在满年续租。</p>
+            </div>
+            <!-- 租用厂房 -->
+            <div class="v-alert newFactory" v-if="float.newLendFactory">
+                <div class="container">
+                    <div class="title">
+                        <h3>租用厂房</h3>
+                    </div>
+                    <div class="main">
+                        <p><span>厂房类型：</span>
+                            <select v-model="createFactoryNow">
+                                <option v-for="item in factoryType" v-bind:value="item.id">
+                                    {{ item.factoryType }}
+                                </option> 
+                            </select>
+                        </p>
+                        <p><span>每期租金：</span>文本标签</p>
+                        <p><span>注：</span>一年起租，租满一年的厂房在满年（如第一年的第一期租用，到第二年第二期为满年）进行退租处理。未处理，默认在满年续租。</p>
+                        <div class="button">
                             <button class="v-button b-primary" @click="leanFactory_confirm()">确认</button>
                             <button class="v-button b-primary" @click="exitLeanFactory()">取消</button>
                         </div>
                     </div>
                 </div>
-
-                <!-- 厂房详情 -->
-                <div class="v-alert factoryDetail" v-if="float.factoryDetail">
-                    <div class="pre_container">
-                        <div class="pre_title">
-                            <h3>厂房信息</h3>
+            </div>
+            <!-- 新建生产线 -->
+            <div class="v-alert newFactory newLine" v-if="float.newLine">
+                <div class="container">
+                    <div class="title">
+                        <h3>新建生产线</h3>
+                    </div>
+                    <div class="main">
+                        <p><span>生产线类型:</span><select v-model="lineNow" class="v-select">
+                            <option v-for="item in newLineInfo.newLine" :value="item.id">{{ item.prodlineType }}</option>    
+                        </select></p>
+                        <p><span>产品类型：</span><select v-model="productNow" class="v-select">
+                            <option v-for="item in newLineInfo.productType" :value="item.id">{{ item.productName }}</option>    
+                        </select></p>
+                        <template v-if="lineNow">
+                            <p><span>安装周期：</span>{{ newLineInfo.newLine[lineNow].prodlineSetupPeriod }}</p>
+                            <p><span>每周安装费用：</span>{{ newLineInfo.newLine[lineNow].prodlineSetupPeriodPrice }}</p>
+                            <p><span>每周维修费用：</span>{{ newLineInfo.newLine[lineNow].prodlineMainCost }}</p>
+                            <p><span>每周折旧费用：</span>{{ newLineInfo.newLine[lineNow].prodlineDepreciation }}</p>
+                            <p><span>残值：</span>{{ newLineInfo.newLine[lineNow].prodlineStumpcost }}</p>
+                        </template>
+                        <div class="button">
+                            <button class="v-button b-primary" @click="createNewLine_confirm()">确认</button><button class="v-button b-primary" @click="exitCreateNewLine()">取消</button>
                         </div>
-                        <div class="main">
-                            <p>厂房编号：{{ factoryInfoNow.factoryNumber }}</p>
-                            <p>规模：{{ factoryInfoNow.factoryType }}</p>
+                    </div>
+                </div>
+            </div>
+            <!-- 厂房详情 -->
+            <div class="v-alert newFactory" v-if="float.factoryDetail">
+                <div class="container">
+                    <div class="title">
+                        <h3>厂房信息</h3>
+                    </div>
+                    <div class="main">
+                        <p><span>厂房编号：</span>{{ factoryInfoNow.factoryNumber }}</p>
+                        <p><span>规模：</span>{{ factoryInfoNow.factoryType }}</p>
 
-                            <p v-if="factoryInfoNow.factoryHoldingStatus === 'HOLDING'">类型：非租赁</p>
-                            <p v-if="factoryInfoNow.factoryHoldingStatus === 'LEASING'">类型：租赁</p>
+                        <p v-if="factoryInfoNow.factoryHoldingStatus === 'HOLDING'"><span>类型：</span>非租赁</p>
+                        <p v-if="factoryInfoNow.factoryHoldingStatus === 'LEASING'"><span>类型：</span>租赁</p>
 
-                            <p v-if="factoryInfoNow.factoryHoldingStatus === 'HOLDING' && factoryInfoNow.developStatus === true">状态：拥有中</p>
-                            <p v-if="factoryInfoNow.factoryHoldingStatus === 'HOLDING' && factoryInfoNow.developStatus === false">状态：已出售</p>
+                        <p v-if="factoryInfoNow.factoryHoldingStatus === 'HOLDING' && factoryInfoNow.developStatus === true"><span>状态：</span>拥有中</p>
+                        <p v-if="factoryInfoNow.factoryHoldingStatus === 'HOLDING' && factoryInfoNow.developStatus === false"><span>状态：</span>已出售</p>
 
-                            <p v-if="factoryInfoNow.factoryHoldingStatus === 'LEASING' && factoryInfoNow.developStatus === true">状态：租赁中</p>
-                            <p v-if="factoryInfoNow.factoryHoldingStatus === 'HOLDING' && factoryInfoNow.developStatus === false">状态：暂停租赁</p>
-                            
-                            <p>可容纳生产线数：{{ factoryInfoNow.factoryCapacity }}</p>
-                            <p>每期折旧费用：{{ factoryInfoNow.factoryDepreciation }}</p>
+                        <p v-if="factoryInfoNow.factoryHoldingStatus === 'LEASING' && factoryInfoNow.developStatus === true"><span>状态：</span>租赁中</p>
+                        <p v-if="factoryInfoNow.factoryHoldingStatus === 'HOLDING' && factoryInfoNow.developStatus === false"><span>状态：</span>暂停租赁</p>
+                        
+                        <p><span>可容纳生产线数：</span>{{ factoryInfoNow.factoryCapacity }}</p>
+                        <p><span>每期折旧费用：</span>{{ factoryInfoNow.factoryDepreciation }}</p>
+                        <div class="button">
                             <button class="v-button b-primary" @click="exitFactoryDetail()">确定</button>
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
@@ -218,6 +198,7 @@
 <script>
     import Axios from 'axios'
     import Qs from 'qs'
+    import vueEvent from '../../../model/VueEvent';
 
     export default {
         data() {
@@ -255,6 +236,9 @@
             }
         },
         mounted() {
+            setTimeout(() => {
+                vueEvent.$emit('sidebarState', '/game/factoryManage', 'produce', 'manage');
+            }, 1);
             this.$store.commit('pageState', 'factoryManage');
             this.getFactoryType();
             this.getFactory();
@@ -322,6 +306,15 @@
 
             },
 
+            showFactoryLine(factoryId) {    
+                for (let i = 0; i < this.$refs['list_' + factoryId].length; i ++) {
+                    if (this.$refs['list_' + factoryId][i].style.display == 'none') {
+                        this.$refs['list_' + factoryId][i].style.display = 'block';
+                    } else {
+                        this.$refs['list_' + factoryId][i].style.display = 'none';
+                    }
+                }
+            },
             // 新建生产线
             createNewLine(factoryId) {
                 this.$store.commit('controlFloatWindow');
@@ -333,7 +326,7 @@
                         productType: []
                     }
 
-                    Axios.get(this.URL + '/game/compete/operation/produce/factorymanagement/prodline/all/type/get')
+                    Axios.get(this.URL + '/game/compete/operation/produce/factorymanagement/prodline/type?gameId=' +  localStorage.getItem('GAME'))
                         .then(Response => {
                             if (Response.data.code === 200) {
                                 this.newLineInfo.newLine = Response.data.data;
@@ -344,7 +337,7 @@
 
                         })
 
-                    Axios.get(this.URL + '/game/compete/operation/produce/productionplan/product/type/get?enterpriseId=' + localStorage.getItem('enterpriseId'))
+                    Axios.get(this.URL + '/game/compete/operation/produce/productionplan/product/type?enterpriseId=' + localStorage.getItem('enterpriseId'))
                         .then(Response => {
                             if (Response.data.code === 200) {
                                 this.newLineInfo.productType = Response.data.data;
@@ -365,6 +358,7 @@
                     'enterpriseId': localStorage.getItem('enterpriseId')
                 })).then(Response => {
                     if (Response.data.code === 200) {
+                        alert(Response.data.msg);
                         this.$store.commit('controlFloatWindow');
                         this.float.newLine = false;
                     } else {
@@ -395,6 +389,7 @@
                 Axios.put(this.URL + '/game/compete/operation/produce/factorymanagement/prodline/develop/pause?prodlineDevelopId=' + prodlineDevelopId)
                     .then(Response => {
                         if (Response.data.code === 200) {
+                            alert(Response.data.msg);
                             this.getFactory();
                         } else {
 
@@ -408,6 +403,7 @@
                 Axios.put(this.URL + '/game/compete/operation/produce/factorymanagement/prodline/develop/developing?prodlineDevelopId=' + prodlineDevelopId)
                     .then(Response => {
                         if (Response.data.code === 200) {
+                            alert(Response.data.msg);
                             this.getFactory();
                         } else {
 
@@ -419,8 +415,9 @@
 
             // 获取已修建厂房类型
             getFactoryType() {
-                Axios.get(this.URL + '/game/compete/operation/produce/factorymanagement/factory/type/all/get')
+                Axios.get(this.URL + '/game/compete/operation/produce/factorymanagement/factory/type?gameId=' + localStorage.getItem('GAME'))
                     .then(Response => {
+                        console.log(Response);
                         if (Response.data.code === 200) {
                             this.factoryType = Response.data.data;
                         } else {
@@ -432,7 +429,7 @@
             },
             // 获取未修建厂房类型
             getFactoryType_develop() {
-                Axios.get(this.URL + '/game/compete/operation/produce/factorymanagement/factory/type/all/get')
+                Axios.get(this.URL + '/game/compete/operation/produce/factorymanagement/factory/type?gameId=' + localStorage.getItem('GAME'))
                     .then(Response => {
                         if (Response.data.code === 200) {
                             this.factoryType_develop = Response.data.data;
@@ -448,7 +445,7 @@
             getFactory() {
                 this.factoryInfo = [];
                 this.factoryInfo_Develop = [];
-                Axios.get(this.URL + '/game/compete/operation/produce/productionplan/factory/display/all/get?enterpriseId=' + localStorage.getItem('enterpriseId'))
+                Axios.get(this.URL + '/game/compete/operation/produce/productionplan/factory/display/all?enterpriseId=' + localStorage.getItem('enterpriseId'))
                     .then(Response => {
                         if (Response.data.code === 200) {
                             for (let i = 0; i < Response.data.data.length; i ++) {
@@ -458,11 +455,11 @@
                             alert('数据获取失败');
                         }
                     }).then(() => {
-                        Axios.get(this.URL + '/game/compete/operation/produce/factorymanagement/factory/develop/all/get?enterpriseId=' + localStorage.getItem('enterpriseId'))
+                        Axios.get(this.URL + '/game/compete/operation/produce/factorymanagement/factory/develop/all/?enterpriseId=' + localStorage.getItem('enterpriseId'))
                             .then(Response => {
                                 if (Response.data.code === 200) {
                                     for (let i = 0; i < Response.data.data.length; i ++) {
-                                        Axios.get(this.URL + '/game/compete/operation/produce/factorymanagement/factory/develop/detail/get?factoryDevelopId=' + Response.data.data[i].id)
+                                        Axios.get(this.URL + '/game/compete/operation/produce/factorymanagement/factory/develop/detail?factoryDevelopId=' + Response.data.data[i].id)
                                             .then(Response => {
                                                 if (Response.data.code === 200) {
                                                     this.factoryInfo_Develop.push(Response.data.data);
@@ -506,6 +503,7 @@
                 Axios.put(this.URL + '/game/compete/operation/produce/factorymanagement/factory/develop/pause?factoryDevelopId=' + factoryDevelopId)
                     .then(Response => {
                         if (Response.data.code === 200) {
+                            alert(Response.data.msg);
                             for (let i = 0; i < this.factoryInfo_Develop.length; i ++) {
                                 if (this.factoryInfo_Develop[i].id === factoryDevelopId) {
                                     this.factoryInfo_Develop[i].developStatus = !this.factoryInfo_Develop[i].developStatus;
@@ -523,6 +521,7 @@
                 Axios.put(this.URL + '/game/compete/operation/produce/factorymanagement/factory/develop/developing?factoryDevelopId=' + factoryDevelopId)
                     .then(Response => {
                         if (Response.data.code === 200) {
+                            alert(Response.data.msg);
                             for (let i = 0; i < this.factoryInfo_Develop.length; i ++) {
                                 if (this.factoryInfo_Develop[i].id === factoryDevelopId) {
                                     this.factoryInfo_Develop[i].developStatus = !this.factoryInfo_Develop[i].developStatus;
@@ -541,6 +540,7 @@
                 Axios.put(this.URL + '/game/compete/operation/produce/factorymanagement/factory/lease/pause?factoryId=' + factoryId)
                     .then(Response => {
                         if (Response.data.code === 200) {
+                            alert(Response.data.msg);
                             for (let i = 0; i < this.factoryInfo.length; i ++) {
                                 if (this.factoryInfo[i].id === factoryId) {
                                     this.factoryInfo[i].developStatus = !this.factoryInfo[i].developStatus;
@@ -558,6 +558,7 @@
                 Axios.put(this.URL + '/game/compete/operation/produce/factorymanagement/factory/lease/leasing?factoryId=' + factoryId)
                     .then(Response => {
                         if (Response.data.code === 200) {
+                            alert(Response.data.msg);
                             for (let i = 0; i < this.factoryInfo.length; i ++) {
                                 if (this.factoryInfo[i].id === factoryId) {
                                     this.factoryInfo[i].developStatus = !this.factoryInfo[i].developStatus;
@@ -577,151 +578,133 @@
 <style lang="scss" scoped>
     #factoryManage {
         width: 100%;
-        .nav {
-            width: 100%;
-            height: 60px;   
-            border-bottom: 1px solid #000;
-            h3 {
-                line-height: 60px;
-                font-size: 22px;
-                margin-left: 20px;
+        .container_default {
+            height: 95%;
+            .main {
+                display: flex;
+                flex-direction: column;
+                margin: 0 50px 0 50px;
+                padding-top: 20px;
+                padding-bottom: 50px;
+                .search {
+                    position: relative;
+                    height: 40px;
+                    line-height: 30px;
+                    .icon {
+                        cursor: pointer;
+                        position: absolute;
+                        width: 120px;
+                        top: 0;
+                        border-radius: 5px;
+                        height: 40px;
+                        line-height: 40px;
+                        padding-left: 40px;
+                        font-size: 14px;
+                        color: #fff;
+                        right: 0px;
+                        background-color: #1296db;
+                        img {
+                            width: 20px;
+                            left: 5px;
+                            top: 10px;
+                            position: absolute;
+                        }
+                        &:nth-of-type(1) {
+                            right: 150px;
+                        }
+                    }
+                    span {
+                        font-size: 18px;
+                    }
+                    select {
+                        position: absolute;
+                        top: -1px;
+                        left: 150px;
+                        font-size: 12px;
+                        padding-left: 5px;
+                        width: 240px;   
+                        height: 35px;
+                    }
+                }
+                table {
+                    min-width: 800px;
+                    margin-top: 20px;
+                    tr {
+                        border: 1px solid rgb(180, 186, 192);
+                        td {
+                            position: relative;
+                        }
+                        img {
+                            position: absolute;
+                            cursor: pointer;
+                            top: 16px;
+                            left: 65px;
+                            width: 18px;
+                        }
+                        .btns {
+                            width: 100%;
+                            display: flex;
+                            flex-direction: row;
+                            align-items: center;
+                            .temp {
+                                display: flex;
+                                flex: 0.9;
+                            }
+                            .cover {
+                                flex: 0.1;
+                            }
+                            button {
+                                flex: 1;
+                                height: 40px;
+                            }
+                        }
+                        th, td {
+                            border: 0;
+                        }
+                        cursor: pointer;
+                        &:hover {
+                            background-color: rgb(235, 247, 255);
+                        }
+                        &:nth-of-type(1) {
+                            cursor: default;
+                        }
+                    }
+                    .head {
+                        position: relative;
+                        .arrow {
+                            position: absolute;     
+                            width: 15px;
+                            top: 18px;
+                            left: 15px;
+                        }
+                    }
+                }
+            }
+            .newFactory {
+                .main {
+                    font-size: 14px;
+                    line-height: 45px;
+                    display: flex;
+                    p {
+                        display: flex;
+                        span {
+                            width: 120px;
+                            display: block;
+                            text-align: right;
+                            margin-right: 10px;
+                        }
+                        select {
+                            margin-top: 13px;
+                            height: 25px;
+                        }
+                        
+                    }
+                }
             }
         }
-        .container {
-            margin-top: 50px;
-            width: 1100px;
-            min-height: 750px;
-            padding-bottom: 30px;
-            background-color: #fff;
-            border: 1px solid #000;
-            .search {
-                width: 100%;
-                height: 50px;
-                border-bottom: 1px solid #000;
-                padding-left: 20px;
-            }
-            .main {
-                width: 1050px;
-                .sold {
-                    margin-top: 20px;
-                    margin-bottom: 20px;
-                }
-                .title {
-                    margin-top: 20px;
-                    display: flex;
-                    clear: both;
-                    width: 1000px;
-                    border: 1px solid #000;
-                    flex-wrap: wrap;
-                    flex-direction: row;
-                    .main {
-                        background-color: #eee;
-                    }
-                    .btns {
-                        background-color: #eee;
-                    }
-                    div {
-                        &:nth-of-type(1) {
-                            flex: 3;
-                        }
-                        &:nth-of-type(2) {
-                            flex: 1;
-                            line-height: 100px;
-                        }
-                        ul {
-                            margin-top: 20px;
-                            width: 800px;
-                            display: flex;
-                            flex-wrap: wrap;
-                            &:nth-of-type(2) {
-                                margin-top: 30px;
-                                color: #777777;
-                            }
-                            li {
-                                text-align: center;
-                                flex: 1;
-                                img {
-                                    cursor: pointer;
-                                    position: absolute;
-                                    width: 20px;
-                                }
-                            }
-                        }
-                    }
-                    .line {
-                        width: 100%;
-                        ul {
-                            width: 100%;
-                            border-bottom: 3px solid #eee;
-                            &:nth-of-type(2) {
-                                margin-top: 0px;
-                                color: #000;
-                            }
-                            li {
-                                margin-top: 20px;
-                            }
-                        }
-                    }
-                }
-                .newLine {
-                    .pre_container {
-                        width: 800px;
-                        height: auto;
-                        padding-bottom: 30px;
-                    }
-                    .main {
-                        width: 800px;
-                        text-align: center;
-                        p {
-                            line-height: 50px;
-                        }
-                        select, input {
-                            width: 250px;
-                        }
-                    }
-                }
-                .newFactory {
-                    .pre_container {
-                        width: 800px;
-                        height: auto;
-                        padding-bottom: 30px;
-                    }
-                    .main {
-                        width: 800px;
-                        text-align: center;
-                        p {
-                            line-height: 50px;
-                        }
-                        select, input {
-                            width: 250px;
-                        }
-                    }
-                }
-                .newLendFactory {
-                    .pre_container {
-                        width: 800px;
-                    }
-                    .main {
-                        width: 800px;
-                        text-align: center;
-                        p {
-                            line-height: 30px;
-                        }
-                        button {
-                            width: 120px;
-                        }
-                    }
-                }
-                .factoryDetail {
-                    .pre_container {
-                        width: 800px;
-                    }
-                    .main {
-                        text-align: center;
-                        width: 800px;
-                        line-height: 30px;
-                    }
-                }
+        .newLine {
+            .v-select {
+                width: 80px;
             }
         }
     }

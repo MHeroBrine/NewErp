@@ -15,7 +15,7 @@
         </div>
         <div class="area_2" v-bind:class="{ blur: cover }" v-if="continueGame">
             <h4>{{ data.gameName }}</h4>
-            <img src="@/assets/Nav/GameControl/enter.svg" alt="查看比赛" class="enter" title="查看比赛" @click="joinGame_joinGame()">
+            <img src="@/assets/Nav/GameControl/enter.svg" alt="查看比赛" class="enter" title="查看比赛">
             <img src="@/assets/Nav/GameControl/begin.svg" alt="继续游戏" class="begin" title="继续游戏" @click="joinGame_continueGame()">
         </div>
         <div class="area_2" v-bind:class="{ blur: cover }" v-if="checkGame">
@@ -40,6 +40,7 @@
 </template>
 
 <script>
+    import Ws from '../../ERP/Functions/Ws'
     import VueEvent from '../../model/VueEvent.js'
     import Axios from 'axios'
     import Qs from 'qs'
@@ -113,6 +114,7 @@
 
             createGame_enterGame() {
                 this.$store.commit('setGameWatching', this.data.id);
+                VueEvent.$emit('noEdit', false);
                 this.$router.push('/joinGame/joinGroup');
             },
             createGame_begin() {
@@ -172,12 +174,23 @@
             },
 
             joinGame_joinGame() {
+                VueEvent.$emit('noEdit', false);
                 this.$router.push('/joinGame/joinGroup');
                 this.$store.commit('setGameWatching', this.data.id);
-
+                // Ws.initSocket(localStorage.getItem('GAME'));
+                Ws.openSocket();
+                Ws.message();
             },
             joinGame_continueGame() {
                 this.$store.commit('setGameWatching', this.data.id);
+                Axios.get(this.URL + '/game/manage/enterprise/member/enterpriseMember/enterprise?gameId=' + localStorage.getItem('GAME') + '&userId=' + this.Cookie.getCookie('userId'))
+                    .then(Response => {
+                        if (Response.data.code === 200) {
+                            localStorage.setItem('enterpriseId', Response.data.data.id);
+                        } else {
+                            alert('企业信息获取失败');
+                        }
+                    })
                 VueEvent.$emit('noEdit', true);
                 this.$router.push('/index');
             }
@@ -191,33 +204,34 @@
         position: relative;
         display: flex;
         flex-direction: row;
-        width: 420px;
-        height: 225px;
+        width: 25%;
+        min-width: 260px;
         margin: 40px;
         box-shadow: 0px 0px 10px 2px rgb(223, 220, 236);
         // border: 1px solid #000;
         .area_1 {
             position: relative;
             cursor: pointer;
-            width: 145px;
-            height: 225px;
+            width: 35%;
+            padding-bottom: 50%;
+            // height: 100%;
+            // padding-bottom: 80%;
             background-color: rgb(190, 190, 206);
             img {
                 position: absolute;
-                top: 42px;
-                left: 10px;
-                width: 120px;
+                top: 20%;
+                left: 10%;
+                width: 80%;
             }
         }
         .area_2 {
+            width: 65%;
             position: relative;
-            padding: 20px;
-            padding-top: 17px;
-            line-height: 25px;
+            padding: 4%;
             transition: all 0.5s;
             h4 {
                 color: rgb(153, 153, 153);
-                font-size: 18px;
+                font-size: 1vw;
                 font-weight: bold;
             }
             span {
@@ -226,17 +240,17 @@
             img {
                 cursor: pointer;
                 position: absolute;
-                width: 30px;
-                bottom: 30px;
+                width: 11%;
+                bottom: 10%;
             }
             .enter {
-                left: 20px;
+                left: 5%;
             }
             .begin {
-                left: 120px;
+                left: 45%;
             }
             .delete {
-                left: 215px;
+                left: 85%;
             }
         }
         .blur {
@@ -247,23 +261,23 @@
             position: absolute;
             display: flex;
             flex-direction: column;
-            padding: 20px;
+            padding: 4%;
             top: 0;
-            left: 145px;
-            width: 280px;
-            height: 225px;
+            left: 35%;
+            width: 65%;
+            height: 100%;
             opacity: 0.5;
             color: #fff;
             background-color: #000;
             // filter: blur(5px);
             p {
                 display: flex;
-                font-size: 14px;
-                line-height: 30px;
+                font-size: 0.7vw;
+                line-height: 1.6vw;
                 span {
                     // display: flex;
-                    width: 65px;
-                    font-size: 14px;
+                    width: 4vw;
+                    font-size: 0.7vw;
                     display: block;
                     text-align: justify;
                     text-align-last: justify;
@@ -271,87 +285,5 @@
                 }
             }
         }
-        
-        // .area_1 {
-        //     height: 200px;
-        //     text-align: center;
-        //     border: 1px solid #000;
-        //     border-right: 0;
-        //     width: 125px;
-        //     line-height: 200px;
-        //     img {
-        //         width: 60px;
-        //     }
-        // }
-        // .area_2 {
-        //     height: 200px;
-        //     text-align: center;
-        //     border: 1px solid #000;
-        //     width: 225px;
-        //     padding-top: 40px;
-        //     span {
-        //         display: block;
-        //         margin: 15px;
-        //     }
-        // }
-        // .area_3 {
-        //     width: 400px;
-        //     height: 50px;
-        // }
-
-        // .alert {
-        //     position: absolute;
-        //     top: 0;
-        //     left: 0;
-        //     width: 100%;
-        //     height: 100%;
-        //     z-index: 100;
-        //     .contents {
-        //         width: 450px;
-        //         height: 200px;
-        //         background-color: #fff;
-        //         border-radius: 20px;
-        //         margin-top: 400px;
-        //         text-align: center;
-        //         padding-top: 50px;
-        //     }
-        // }
-
-        // .GameInfo {
-        //     position: absolute;
-        //     top: 0;
-        //     left: 0;
-        //     width: 100%;
-        //     height: 100%;
-        //     z-index: 100;
-        //     .contents {
-        //         width: 800px;
-        //         height: 400px;
-        //         background-color: #fff;
-        //         border-radius: 20px;
-        //         margin-top: 250px;
-        //         .title {
-        //             width: 100%;
-        //             height: 70px;
-        //             line-height: 70px;
-        //             border-bottom: 1px solid #000;
-        //             text-align: center;
-        //             font-size: 22px;
-        //             font-weight: bold;
-        //         }
-        //         .info {
-        //             width: 100%;
-        //             height: 330px;
-        //             // text-align: center;
-        //             padding-top: 30px;
-        //             padding-left: 300px;
-        //             span {
-        //                 display: block;
-        //                 line-height: 40px;
-        //             }
-        //         }
-                
-        //     }
-        // }
     }
 </style>

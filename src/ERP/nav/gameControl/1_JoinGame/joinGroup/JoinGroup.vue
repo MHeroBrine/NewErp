@@ -34,6 +34,7 @@
             }
         },
         mounted() {
+            this.memberTest();
             this.$store.commit('pageState', 'gameControl_joinGame_joinGroup');
         },
         methods: {
@@ -47,6 +48,9 @@
                     }).then((Response) => {
                         if (Response.data.code === 200) {
                             this.$store.commit('controlAlert', [true, 'TRUE' ,'新建企业成功', null, null, null]);
+                            localStorage.setItem('GAME_watching', localStorage.getItem('GAME'));
+                            localStorage.setItem('GAME_cache', this.$store.state.user.id);
+                            vueEvent.$emit('setReadyState');
                             this.freshList();
                         } else {
                             this.$store.commit('controlAlert', [true, 'FALSE', '新建失败，您可能已经加入了一个小组', null, null, null]);
@@ -55,11 +59,55 @@
                     })
                 }])
             },
+            // 检测用户是否为该企业成员
+            memberTest() {
+                // 先派出已开始的比赛
+                Axios.post(this.URL + '/game/manage/search', {
+                    "concurrentPage": 1,
+                    "gameId": localStorage.getItem('GAME'),
+                    "pageSize": 1
+                }).then(Response => {
+                    if (Response.data.code === 200) {
+                        if (Response.data.data.pageData.gameStatusEnum === 'PLAYING' || Response.data.data.pageData.gameStatusEnum === 'OVER') {
+                            // 不计入
+                            return;
+                        } else {
+                            Axios.get(this.URL + '/game/manage/judge?gameId=' + localStorage.getItem('GAME') + '&userId=' + this.$store.state.user.id)
+                                .then(Response => {
+                                    if (Response.data.code === 200) {
+                                        if (Response.data.data === true) {
+                                            localStorage.setItem('GAME_watching', localStorage.getItem('GAME'));
+                                            localStorage.setItem('GAME_cache', this.$store.state.user.id);
+                                            vueEvent.$emit('setReadyState');
+                                            alert('重连成功');
+                                        }
+                                    }
+                                })
+                        }
+                    }
+                })
+            },
             freshList() {
                 vueEvent.$emit('refreshGroupList');
             },
             linkTo(address) {
-                history.back();
+                if (localStorage.getItem('GAME_watching')) {
+                    Axios.post(this.URL + '/game/manage/search', {
+                        "concurrentPage": 1,
+                        "gameId": localStorage.getItem('GAME_watching'),
+                        "gameStatusEnum": "CREATE",
+                        "pageSize": 1
+                    }).then(Response => {
+                        if (Response.data.code === 200) {
+                            alert('你已处于准备中，不可退出');
+                            return;
+                        } else {
+                            history.back();
+                        }
+                    })
+                } else {
+                    history.back();
+                }
             }
         }
     }
@@ -70,7 +118,7 @@
         position: relative;
         width: 100%;
         .container_default {
-            max-width: 1850px;
+            height: 95%;
             .main {
                 padding-top: 20px;
                 img {

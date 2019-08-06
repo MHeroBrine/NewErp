@@ -24,6 +24,8 @@
             </div>
 
             <div class="form" v-show="isVerify">
+                <h2>学生端</h2>
+                <img src="../assets/Login/cap.svg" class="cap">
                 <div class="userCount">
                     <input class="v-input" placeholder="学号/用户名" v-model="userAccount">
                     <img src="../assets/Login/people.svg">
@@ -38,8 +40,8 @@
                 <div class="verifyCode">
                     <div class="main">
                         <span>验证码:</span>
-                        <input type="text" class="code">
-                        <img :src="URL + '/user/student/verificationCode/get'">
+                        <input type="text" class="code" v-model="verifyCode">
+                        <img :src="verifyCodeUrl" @click="verify()">
                     </div>
                 </div>
                 <a href="" class="register" style="top: 286px">新用户注册</a>
@@ -79,7 +81,7 @@
                 let data;
 
                 // 需要验证码时更新提交格式
-                if (this.verifyCode === '') {
+                if (!this.verifyCode) {
                     data = {
                         userAccount: this.userAccount,
                         userPassword: this.userPassword
@@ -103,10 +105,10 @@
                             this.$store.commit('setUserInfo', [this.URL, Response.data.data]);
                             
                             this.$router.push('/nav');
-                        } else if (Response.data.code === 401) {
+                        } else if (Response.data.code === 400 && Response.data.data) {
                             alert('账户密码有误，请检查后重试');
-                        } else if (Response.data.code === 400) {
-                            alert('验证码输入错误');
+                        } else if (Response.data.code === 400 && !Response.data.data) {
+                            alert('验证码错误');
                             this.verify();
                         }
                     })
@@ -114,6 +116,7 @@
             // 获取验证码
             verify() {
                 this.verifyCodeUrl = this.URL + '/user/student/verificationCode/get?d=' + Math.random()*100;
+                this.isVerify = true;
             }
         },
         mounted() {
@@ -131,13 +134,15 @@
             display: flex;
             flex-direction: row-reverse;
             width: 800px;   
+            padding-bottom: 80px;
             .form {
                 position: relative;
-                margin-top: 150px;
+                margin-top: 10rem;
                 width: 468px;
                 height: 456px;
                 background-color: #fff;
                 border-radius: 20px;
+                // margin-bottom: 100px;
                 div {
                     transition: all 0.5s;
                 }

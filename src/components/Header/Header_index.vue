@@ -4,7 +4,7 @@
             <h1>ERP虚拟运营系统</h1>
         </div>
         <i><img src="@/assets/Game/Index/quit.svg"></i>
-        <i><img src="@/assets/Game/Index/next.svg"></i>
+        <i><img src="@/assets/Game/Index/next.svg" @click="advance()"></i>
         
         <div class="title_right">
             <div class="user" @mouseover="isHide = false">
@@ -32,6 +32,8 @@
 </template>
 
 <script>
+    import Axios from 'axios'
+
     export default {
         data() {
             return {
@@ -56,6 +58,17 @@
             endGame() {
                 this.$store.commit('controlFloatWindow');
                 this.isEnd = !this.isEnd;
+            },
+            // 周期推进
+            advance() {
+                Axios.get(this.URL + '/game/compete/operation/advance?enterpriseId=' + localStorage.getItem('enterpriseId'))
+                    .then(Response => {
+                        if (Response.data.code === 200) {
+                            alert(Response.data.msg);
+                        } else {
+                            alert(Response.data.msg);
+                        }
+                    })
             },
             editReport() {
                 this.$router.push('/report');
@@ -95,6 +108,7 @@
             top: 15px;
             // border-radius: 50%;
             img {
+                cursor: pointer;
                 position: absolute;
                 top: 6px;
                 left: 6px;
@@ -114,6 +128,7 @@
         }
         .title_right {
             display: flex;
+            width: 150px;
             .user {
                 width: 100px;
                 position: relative;
@@ -128,6 +143,7 @@
                     color: #333;
                     margin-top: 2px;
                     font-size: 12px;
+                    width: 100px;
                     left: 45px;
                     position: absolute;
                 }

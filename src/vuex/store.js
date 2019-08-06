@@ -5,6 +5,8 @@ import Axios from 'axios'
 
 import router from '../router/index.js'
 
+import VueEvent from '../model/VueEvent'
+
 import Cookie from '../ERP/Functions/Cookie.js'
 import Storage from '../ERP/Functions/Storage.js'
 
@@ -72,7 +74,7 @@ const global = {
                     state.SIDEBAR_USER = true;
                     break;
                 case 'user':
-                    state.HEADER_USER = true;
+                    state.HEADER_GAMECONTROL = true;
                     state.SIDEBAR_USER = true;
                     break;
                 case 'createGame':
@@ -232,16 +234,19 @@ const user = {
         studentAccount: null,
         studentName: null,
         gender: null,
-        majorInfo_id: null,
-        majorInfo_major: null,
-        majorInfo_college_id: null,
-        majorInfo_college_college: null,
+        majorBasicInfo: {
+            id: null,
+            major: null,
+            college: {
+                college: null,
+                id: null
+            }
+        },
         studentClass: null,
         email: null,
         phone: null,
         teacherId: null,
-        userAvatarInfo_id: null,
-        userAvatarInfo_avatarLocation: null,
+        userAvatarInfo: null,
     },
     mutations: {
         // 存储用户数据
@@ -250,20 +255,12 @@ const user = {
             Axios.get(url + '/user/student/basicInfo/get?userId=' + id)
                 .then((Response) => {
                     if (Response.data.code === 200) {
-                        Storage.saveInStorage('USER', Response.data.data);
-                        let temp = Storage.readFromStorage('USER');
-                        for (let item in temp) {
-                            state[item] = temp[item];
+                        for (let item in Response.data.data) {
+                            state[item] = Response.data.data[item];
                         }
-                        Axios.post(url + '/game/manage/gameInfos/search', {
-                            "concurrentPage": 1,
-                            "pageSize": 100,
-                            "studentId": state.id
-                        }).then((Response) => {
-                            if (Response.data.code === 200) {
-                                console.log(Response);
-                            }
-                        })
+                        VueEvent.$emit('dataComplete');
+                    } else {
+                        alert('获取用户信息失败，请尝试重新登录')
                     }
                 })
         },

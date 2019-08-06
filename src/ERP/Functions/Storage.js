@@ -29,7 +29,15 @@ let Storage = {
     },
 
     cleanStorage() {
+        let game = null,
+            id = null;
+        if (localStorage.getItem('GAME_watching')) {
+            game = localStorage.getItem('GAME_watching');
+            id = localStorage.getItem('GAME_cache');
+        }
         localStorage.clear();
+        localStorage.setItem('GAME_watching', game);
+        localStorage.setItem('GAME_cache', id);
     }
 }
 
