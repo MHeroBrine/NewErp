@@ -63,10 +63,10 @@
                                 <h4>{{ item.meterialName }}</h4>
                                 <input type="text" class="money" oninput="javascript:this.value=this.value.replace(/[^\d]/g,'')" v-model="item.purchaseNumber" v-on:keyup="totalCount()">&nbsp;&nbsp;&nbsp;<a style="font-size: 12px;">X</a>&nbsp;&nbsp;<span>￥{{ item.price }}</span>
                             </div>
-                            <span class="total">￥{{ item.purchaseNumber * item.price }}</span>
+                            <span class="total">￥{{ (item.purchaseNumber * item.price).toFixed(2) }}</span>
                         </li>
                     </ul>
-                    <span class="result">合计：￥{{ total }}</span>
+                    <span class="result">合计：￥{{ total.toFixed(2) }}</span>
                     <button class="v-button b-primary orderInfo" @click="back()">查看现有订单</button>
                     <button class="v-button b-primary purchase" @click="selectTransport()">购买</button>
                 </div>
@@ -74,7 +74,7 @@
 
             <!-- 订单详情 -->
             <div class="orderDetail" v-if="page.orderDetail">
-                <table class="v-table">
+                <table class="v-table" v-if="page.orderDetail">
                     <tr>
                         <th>编号</th>
                         <th>原材料名</th>
@@ -107,7 +107,8 @@
                 <v-pagination-list
                 :data="orderDetailInfo"
                 :divide="pageCount"
-                v-on:change="orderDetailInfo = $event">
+                v-on:change="orderDetailInfo = $event"
+                v-if="page.orderDetail">
                 </v-pagination-list>
             </div>
 
@@ -241,14 +242,22 @@
                 })
             },
             // 获取所有已有订单信息（页面异步）
-            _getOrderInfo() {
+            _getOrderInfo(state) {
                 Axios.post(this.URL + '/game/compete/operation/stock/material/order/all', Qs.stringify({
                     enterpriseId: localStorage.getItem('enterpriseId')
                 })).then(Response => {
                     if (Response.data.code === 200) {
                         this.page.orderDetail = false;
                         this.orderDetailInfo = Response.data.data;
-                        this.back();
+                        if (state) {
+                            this.back();
+                        } else {
+                            location.reload();
+                            this.$nextTick(() => {
+                                this.page.orderDetail = true;
+                            })
+                            // this.page.orderDetail = true;
+                        }
                     } else {
                         alert('订单获取失败');
                     }
@@ -257,7 +266,7 @@
             // 添加进购物车
             shopAdd(data) {
                 for (let i = 0; i < this.purchaseList.length; i ++) {
-                    if (this.purchaseList[i].materialBasicId === data.id) {
+                    if (this.purchaseList[i].materialBasicId === data.materialBasicId) {
                         this.purchaseList[i].purchaseNumber ++;
                         this.totalCount();
                         return;
@@ -266,7 +275,7 @@
                 let info = {
                     enterpriseId: localStorage.getItem('enterpriseId'),
                     meterialName: data.materialName,
-                    materialBasicId: data.id,
+                    materialBasicId: data.materialBasicId,
                     price: data.materialPrice,
                     purchaseNumber: 1,
                     transportBasicId: null
@@ -296,7 +305,7 @@
                                 this.purchaseList = [];
                                 this.total = 0;
                                 this.selectTransport();
-                                this._getOrderInfo();
+                                this._getOrderInfo(true);
                             } else {
                                 alert('选择失败，请稍后重试');
                             }
@@ -336,11 +345,11 @@
                 })).then(Response => {
                     if (Response.data.code === 200) {
                         alert(Response.data.msg);
-                        this.getOrderInfo();
+                        this._getOrderInfo();
                         this.review();
                     } else {
                         alert('操作失败');
-                        this.getOrderInfo();
+                        this._getOrderInfo();
                         this.review();
                     }
                 })

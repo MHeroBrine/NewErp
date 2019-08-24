@@ -58,11 +58,12 @@
                         <ul class="second" v-for="_item in item.prodlineDevelopDisplayVoList" v-show="false" :ref="'list_' + item.id">
                             <div class="inside">
                                 <li>{{ _item.prodlineType }}</li>
-                                <li v-if="_item.prodlineDevelopStatus === 'DEVELOPING'">正在生产</li>
-                                <li v-if="_item.prodlineDevelopStatus === 'DEVELOPPAUSE'">暂停生产</li>
-                                <li v-if="_item.prodlineDevelopStatus === 'DEVELOPED'">完成生产</li>
-                                <li>正在生产产品：{{ _item.productName }}</li>
-                                <li>已生产周期：{{ _item.developedPeriod }}</li>
+                                <li v-if="_item.prodlineDevelopStatus === 'DEVELOPING'">正在生产(线)</li>
+                                <li v-if="_item.prodlineDevelopStatus === 'DEVELOPPAUSE'">暂停生产(线)</li>
+                                <li v-if="_item.prodlineDevelopStatus === 'DEVELOPED'">完成生产(线)</li>
+                                <li v-if="_item.prodlineDevelopStatus !== 'DEVELOPED'">完成生产(线)</li>
+                                <li>可生产产品：{{ _item.productName }}</li>
+                                <li>已修建周期：{{ _item.developedPeriod }}</li>
                                 <li>
                                     <button class="v-button b-primary" v-if="_item.prodlineDevelopStatus === 'DEVELOPING'" @click="pauseInstall(_item.id)">暂停生产</button>
                                     <button class="v-button b-primary" v-if="_item.prodlineDevelopStatus === 'DEVELOPPAUSE'" @click="continueInstall(_item.id)">继续生产</button>
@@ -73,16 +74,17 @@
                         <ul class="second" v-for="_item in item.prodlineProduceDisplayVoList" v-show="false" :ref="'list_' + item.id">
                             <div class="inside">
                                 <li>{{ _item.prodlineType }}</li>
-                                <li v-if="_item.prodlineProduceStatus === 'TOPRODUCE'">待生产</li>
-                                <li v-if="_item.prodlineProduceStatus === 'DEVELOPING'">正在生产</li>
-                                <li v-if="_item.prodlineProduceStatus === 'DEVELOPPAUSE'">暂停生产</li>
-                                <li v-if="_item.prodlineProduceStatus === 'DEVELOPED'">完成生产</li>
-                                <li v-if="_item.prodlineProduceStatus === 'TRANSFERRING'">运输中</li>
-                                <!-- <li>已生产周期：{{ _item.producedPeriod }}</li> -->
-                                <li>可生产产品：{{ _item.productName }}</li>
+                                <li v-if="_item.prodlineProduceStatus === 'TOPRODUCE'">待生产(产)</li>
+                                <li v-if="_item.prodlineProduceStatus === 'PRODUCEING'">正在生产(产)</li>
+                                <li v-if="_item.prodlineProduceStatus === 'PRODUCEPAUSE'">暂停生产(产)</li>
+                                <li v-if="_item.prodlineProduceStatus === 'PRODUCED'">完成生产(产)</li>
+                                <li v-if="_item.prodlineProduceStatus === 'TRANSFERRING'">运输中(产)</li>
+                                <li>正在生产产品：{{ _item.productName }}</li>
+                                <li>已生产周期：{{ _item.producedPeriod }}</li>
                                 <li>
-                                    <button class="v-button b-primary">转产</button>
-                                    <button class="v-button b-primary" @click="sellLine(item.id)">出售</button>
+                                    <button class="v-button b-primary" v-if="_item.prodlineProduceStatus === 'PRODUCEING' || _item.prodlineProduceStatus === 'PRODUCEPAUSE'">转产</button>
+                                    <button class="v-button b-primary" v-if="_item.prodlineProduceStatus === 'PRODUCEING' || _item.prodlineProduceStatus === 'PRODUCEPAUSE'" @click="sellLine(item.id)">出售</button>
+                                    <button class="v-button b-primary" v-if="_item.prodlineProduceStatus === 'PRODUCED'" @click="productBack(_item.id)">收取产品</button>
                                 </li>
                             </div>
                         </ul>

@@ -3,8 +3,8 @@
         <div class="title">
             <h1>ERP虚拟运营系统</h1>
         </div>
-        <i><img src="@/assets/Game/Index/quit.svg"></i>
-        <i><img src="@/assets/Game/Index/next.svg" @click="advance()"></i>
+        <i title="退出比赛"><img src="@/assets/Game/Index/quit.svg" @click="quit()" alt="退出比赛"></i>
+        <i title="周期推进"><img src="@/assets/Game/Index/next.svg" @click="advance()" alt="周期推进"></i>
         
         <div class="title_right">
             <div class="user" @mouseover="isHide = false">
@@ -19,9 +19,8 @@
                 <img src="@/assets/Header/Nav_user_2.svg" alt="" class="user">
                 <span class="name">姓名：{{ this.$store.state.user.studentName }}</span>
                 <span class="studentAccount">学号：{{ this.$store.state.user.studentAccount }}</span>
-                <a class="continue">继续</a>
                 <img src="@/assets/Header/Nav_clock.svg" class="clock">
-                <span class="game">......比赛</span>
+                <span class="game">第 {{ this.$store.state.game.year }} 年 - 第 {{ this.$store.state.game.period }} 周期</span>
                 <a class="exit" @click="exit()">安全退出</a>
             </div>
             <div class="footer">
@@ -52,6 +51,13 @@
             exit() {
                 this.$store.commit('exit');
             },
+            quit() {
+                let i = confirm('是否退出游戏，返回主界面？');
+                if (i) {
+                    this.$router.push('/nav');
+                    localStorage.clear();
+                }
+            },
             linkTo(address) {
                 this.$router.push(address);
             },
@@ -61,14 +67,24 @@
             },
             // 周期推进
             advance() {
-                Axios.get(this.URL + '/game/compete/operation/advance?enterpriseId=' + localStorage.getItem('enterpriseId'))
-                    .then(Response => {
-                        if (Response.data.code === 200) {
-                            alert(Response.data.msg);
-                        } else {
-                            alert(Response.data.msg);
-                        }
-                    })
+                let i = confirm('是否结束本周期，进入下个周期？');
+                if (i) {
+                    Axios.get(this.URL + '/game/compete/operation/advance?enterpriseId=' + localStorage.getItem('enterpriseId'))
+                        .then(Response => {
+                            if (Response.data.code === 204) {
+                                this.$store.commit('getPeriod', this.URL);
+                                this.$router.push('/index');
+                                // location.reload();
+                                alert(Response.data.msg);
+                            } else if (Response.data.code === 200) {
+                                alert(Response.data.msg);
+                                localStorage.clear();
+                                this.$router.push('/index');
+                            } else {
+                                alert(Response.data.msg);
+                            }
+                        })
+                }
             },
             editReport() {
                 this.$router.push('/report');

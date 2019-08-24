@@ -46,7 +46,7 @@
                 data: [
                     { title: '姓名', data: null },
                     { title: '班级', data: null },
-                    { title: '密码', data: null, check: true, RegExp: /^[\w_-]{6,16}$/, type: 'password' },
+                    { title: '密码（长度6-18位）', data: null, check: true, RegExp: /^[\w_-]{6,16}$/, type: 'password' },
                     { title: '确认密码', data: null, check: true, RegExp: 'rePassword', type: 'password' },
                 ],
                 // 学生账号
@@ -122,9 +122,9 @@
             },
             // 账号是否重复
             checkRegister(val) {
-                if (val.length != 11) {
+                if (val.length != 10) {
                     this.isInputOver = false;
-                } else if (val.length == 11) {
+                } else if (val.length == 10 && /^[0-9]{10}$/.test(val)) {
                     this.isInputOver = true;
                     Axios.get(this.URL + '/user/student/basicInfo/exist?userAccount=' + val)
                         .then(Response => {

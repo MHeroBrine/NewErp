@@ -47,6 +47,7 @@
             console.log(this.icon);
         },
         watch: {
+            // 监听alert，无数据弹窗定时关闭
             method: function(val) {
                 if (val === null) {
                     setTimeout(() => {

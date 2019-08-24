@@ -4,17 +4,6 @@
             <div class="title">
                 <h3>市场开发</h3>
             </div>
-            <div class="chart">
-                <!-- <div id="myChart" :style="{width: '80%', height: '300px'}">
-
-                </div> -->
-                <div class="chart_temp">
-                    <ve-bar :data="chartData"></ve-bar>
-                </div>
-                <div class="chart_temp">
-                    <ve-pie :data="chartData"></ve-pie>
-                </div>
-            </div>
             <div class="table">
                 <table class="v-table mg">
                     <tr>
@@ -64,19 +53,7 @@
     export default {
         data() {
             return {
-                // table的信息
-                marketInfo: [],
-                chartData: {
-          columns: ['日期', '访问用户'],
-          rows: [
-            { '日期': '1/1', '访问用户': 1393 },
-            { '日期': '1/2', '访问用户': 3530 },
-            { '日期': '1/3', '访问用户': 2923 },
-            { '日期': '1/4', '访问用户': 1723 },
-            { '日期': '1/5', '访问用户': 3792 },
-            { '日期': '1/6', '访问用户': 4593 }
-          ]
-        }
+                marketInfo: []
             }
         },
         methods: {
@@ -176,10 +153,7 @@
                 }
             }
             .table {
-                // width: 1200px;
-                margin: 0 100px 0 100px;
-                padding-top: 20px;
-                padding-bottom: 50px;
+                padding: 20px 50px 20px 50px;
                 button {
                     width: 80px;
                 }

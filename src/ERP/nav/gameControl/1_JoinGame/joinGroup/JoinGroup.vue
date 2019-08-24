@@ -3,6 +3,7 @@
         <div class="container_default">
             <div class="title">
                 <h3>加入企业</h3>
+                <button class="v-button b-primary begin" @click="begin()">开始比赛</button>
             </div>
             <div class="main">
                 <v-pagination-group></v-pagination-group>
@@ -17,6 +18,7 @@
 <script>
     import Axios from 'axios'
     import vueEvent from '../../../../../model/VueEvent';
+    import Ws from '../../../../Functions/Ws'
 
     export default {
         data() {
@@ -50,6 +52,9 @@
                             this.$store.commit('controlAlert', [true, 'TRUE' ,'新建企业成功', null, null, null]);
                             localStorage.setItem('GAME_watching', localStorage.getItem('GAME'));
                             localStorage.setItem('GAME_cache', this.$store.state.user.id);
+                            Ws.initSocket(localStorage.getItem('GAME_watching'));
+                            Ws.openSocket();
+                            Ws.message();
                             vueEvent.$emit('setReadyState');
                             this.freshList();
                         } else {
@@ -59,8 +64,25 @@
                     })
                 }])
             },
+            // 开始比赛
+            begin() {
+                let i = confirm('是否开始比赛');
+                if (i) {
+                    Axios.post(this.URL + '/game/manage/begin?gameId=' + localStorage.getItem('GAME_watching') + '&userId=' + this.$store.state.user.id)
+                        .then(Response => {
+                            if (Response.data.code === 204) {
+                                alert(Response.data.msg);
+                            } else {
+                                alert(Response.data.msg);
+                            }
+                        })
+                }
+            },
             // 检测用户是否为该企业成员
             memberTest() {
+                if (localStorage.getItem('GAME_watching')) {
+                    return;
+                }
                 // 先派出已开始的比赛
                 Axios.post(this.URL + '/game/manage/search', {
                     "concurrentPage": 1,
@@ -78,6 +100,9 @@
                                         if (Response.data.data === true) {
                                             localStorage.setItem('GAME_watching', localStorage.getItem('GAME'));
                                             localStorage.setItem('GAME_cache', this.$store.state.user.id);
+                                            Ws.initSocket(localStorage.getItem('GAME_watching'));
+                                            Ws.openSocket();
+                                            Ws.message();
                                             vueEvent.$emit('setReadyState');
                                             alert('重连成功');
                                         }
@@ -119,6 +144,12 @@
         width: 100%;
         .container_default {
             height: 95%;
+            .begin {
+                position: absolute;
+                top: 10px;
+                width: 100px;
+                right: 10px;
+            }
             .main {
                 padding-top: 20px;
                 img {

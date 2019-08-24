@@ -35,6 +35,7 @@
     import Axios from 'axios'
     import Qs from 'qs'
     import VueEvent from '../../model/VueEvent.js'
+    import Ws from '../../ERP/Functions/Ws'
 
     export default {
         data() {
@@ -72,6 +73,9 @@
                             this.$store.commit('controlAlert', [true, 'TRUE' ,'加入成功', null, null, null]);
                             localStorage.setItem('GAME_watching', localStorage.getItem('GAME'));
                             localStorage.setItem('GAME_cache', this.$store.state.user.id);
+                            Ws.initSocket(localStorage.getItem('GAME_watching'));
+                            Ws.openSocket();
+                            Ws.message();
                             VueEvent.$emit('setReadyState');
                             VueEvent.$emit('refreshGroupList');
                         } else {

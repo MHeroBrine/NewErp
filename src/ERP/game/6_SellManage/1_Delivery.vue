@@ -15,8 +15,19 @@
                         <th>总金额</th>
                         <th>交货时间</th>
                         <th>账期</th>
-                        <th>罚金率</th>
+                        <!-- <th>罚金率</th> -->
                         <th>操作</th>
+                    </tr>
+                    <tr v-for="item in data">
+                        <td>{{ item.id }}</td>
+                        <td>{{ item.marketType.marketName }}</td>
+                        <td>{{ item.productType.productName }}</td>
+                        <td>{{ item.productNumber }}</td>
+                        <td>{{ item.productPrice }}</td>
+                        <td>{{ item.totalPrice }}</td>
+                        <td>{{ item.orderEndPeriod }}</td>
+                        <td>{{ item.deliveryPeriod }}</td>
+                        <td><button class="v-button b-primary" @click="handle(item.id)">交货</button></td>
                     </tr>
                 </table>
 
@@ -53,6 +64,7 @@
 </template>
 
 <script>
+    import Axios from 'axios'
     import vueEvent from '../../../model/VueEvent';
 
     export default {
@@ -62,8 +74,8 @@
                 pageCount: 10,
 
                 page: {
-                    main: false,
-                    delivery: true
+                    main: true,
+                    delivery: false
                 }
             }
         },
@@ -71,10 +83,39 @@
             this.pageCount = this.Util.paginationWatch(this.pageCount, 5);
         },
         mounted() {
+            this.getOrder();
             setTimeout(() => {
                 vueEvent.$emit('sidebarState', '/game/delivery', 'sold', 'delivery');
             }, 1);
             this.$store.commit('pageState', 'delivery');
+        },
+        methods: {
+            // 获取未交货的订单
+            getOrder() {
+                Axios.get(this.URL + '/game/compete/operation/order/status?enterpriseId=' + localStorage.getItem('enterpriseId') + '&orderStatus=false')
+                    .then(Response => {
+                        if (Response.data.code === 200) {
+                            this.data = Response.data.data;
+                        } else {
+                            alert(Response.data.msg);
+                        }
+                    })
+            },
+            // 交货
+            handle(id) {
+                let i = confirm('是否确认交货');
+                if (i) {
+                    Axios.post(this.URL + '/game/compete/operation/order/delivery?orderId=' + id)
+                        .then(Response => {
+                            if (Response.data.code === 200) {
+                                alert('交货成功');
+                                this.getOrder();
+                            } else {
+                                alert(Response.data.msg);
+                            }
+                        })
+                }
+            }
         }
     }
 </script>

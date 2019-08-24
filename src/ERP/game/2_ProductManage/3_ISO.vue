@@ -44,19 +44,19 @@
                                 维护中
                             </td>
                             <td v-if="item.isoStatus == 'TODEVELOP'">
-                                未探究
+                                未认证
                             </td>
                             <td v-if="item.isoStatus == 'DEVELOPING'">
-                                研究中
+                                认证中
                             </td>
                             <td v-if="item.isoStatus == 'DEVELOPPAUSE'">
-                                暂停研究
+                                暂停认证
                             </td>
                             <td>
-                                <button class="v-button b-primary" v-if="item.isoStatus == 'TODEVELOP'" @click="start(item.id)">开始研究</button>
-                                <button class="v-button b-primary" v-if="item.isoStatus == 'DEVELOPING'" @click="pause(item.id)">暂停研究</button>
-                                <button class="v-button b-primary" v-if="item.isoStatus == 'DEVELOPPAUSE'" @click="develop(item.id)">继续研究</button>
-                                <button class="v-button b-info b-disabled" v-if="item.isoStatus == 'DEVELOPED'">已研究</button>
+                                <button class="v-button b-primary" v-if="item.isoStatus == 'TODEVELOP'" @click="start(item.id)">开始认证</button>
+                                <button class="v-button b-primary" v-if="item.isoStatus == 'DEVELOPING'" @click="pause(item.id)">暂停认证</button>
+                                <button class="v-button b-primary" v-if="item.isoStatus == 'DEVELOPPAUSE'" @click="develop(item.id)">继续认证</button>
+                                <button class="v-button b-info b-disabled" v-if="item.isoStatus == 'DEVELOPED'">已认证</button>
                             </td>
                         </tr>
                     </table>

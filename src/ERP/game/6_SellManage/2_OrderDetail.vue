@@ -15,8 +15,19 @@
                         <th>总金额</th>
                         <th>交货时间</th>
                         <th>账期</th>
-                        <th>罚金率</th>
-                        <th>操作</th>
+                        <!-- <th>罚金率</th> -->
+                        <!-- <th>操作</th> -->
+                    </tr>
+                    <tr v-for="item in data">
+                        <td>{{ item.id }}</td>
+                        <td>{{ item.marketType.marketName }}</td>
+                        <td>{{ item.productType.productName }}</td>
+                        <td>{{ item.productNumber }}</td>
+                        <td>{{ item.productPrice }}</td>
+                        <td>{{ item.totalPrice }}</td>
+                        <td>{{ item.orderEndPeriod }}</td>
+                        <td>{{ item.deliveryPeriod }}</td>
+                        <!-- <td><button class="v-button b-primary" @click="handle(item.id)">交货</button></td> -->
                     </tr>
                 </table>
 
@@ -48,6 +59,19 @@
                 vueEvent.$emit('sidebarState', '/game/orderDetail', 'sold', 'detail');
             }, 1);
             this.$store.commit('pageState', 'delivery');
+        },
+        methods: {
+            // 获取未交货的订单
+            getOrder() {
+                Axios.get(this.URL + '/game/compete/operation/order/status?enterpriseId=' + localStorage.getItem('enterpriseId') + '&orderStatus=true')
+                    .then(Response => {
+                        if (Response.data.code === 200) {
+                            this.data = Response.data.data;
+                        } else {
+                            alert(Response.data.msg);
+                        }
+                    })
+            },
         }
     }
 </script>

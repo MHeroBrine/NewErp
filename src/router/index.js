@@ -6,7 +6,7 @@ Vue.use(Router)
 
 import Login from '../ERP/Login.vue'
 import Register from '../ERP/Register.vue'
-import Setpassword from '../ERP/nav/SetPassword.vue'
+// import Setpassword from '../ERP/nav/SetPassword.vue'
 
 import Nav from '../ERP/nav/Nav.vue'
 import UserInfo from '../ERP/nav/UserInfo.vue'
@@ -15,11 +15,12 @@ import JoinGame from '../ERP/nav/gameControl/1_JoinGame/JoinGame.vue'
     import JoinGame_Group from '../ERP/nav/gameControl/1_JoinGame/joinGroup/JoinGroup.vue' 
 import ContinueGame from '../ERP/nav/gameControl/2_ContinueGame/ContinueGame.vue'
 import CheckGame from '../ERP/nav/gameControl/3_CheckGame/CheckGame.vue'
+import Report from '../ERP/nav/gameControl/Report.vue'
+import CheckReport from '../ERP/nav/gameControl/CheckReport.vue'
 // import MemberList from '../ERP/nav/gameControl/MemberList.vue'
 // import MemberControl from '../ERP/nav/gameControl/MemberControl.vue'
 
 import Index from '../ERP/game/Index.vue'
-import Report from '../ERP/game/Report.vue'
 
 // 1_MarketManage
 import MarketDevelop from '../ERP/game/1_MarketManage/1_MarketDevelop.vue'
@@ -57,7 +58,7 @@ const routes = new Router({
     routes: [
         { path: '/login', component: Login },
         { path: '/register', component: Register },
-        { path: '/setPassword', component: Setpassword },
+        // { path: '/setPassword', component: Setpassword },
 
         { path: '/nav', component: Nav },
         { path: '/userInfo', component: UserInfo },
@@ -66,12 +67,13 @@ const routes = new Router({
             { path: '/joinGame/joinGroup', component: JoinGame_Group },
         { path: '/continueGame', component: ContinueGame },
         { path: '/checkGame', component: CheckGame },
+        { path: '/report', component: Report },
+        { path: '/checkReport', component: CheckReport },
         // { path: '/memberList', component: MemberList },
         // { path: '/memberControl', component: MemberControl },
 
         // game部分
         { path: '/index', component: Index },
-        { path: '/report', component: Report },
 
         { path: '/game/marketDevelop', component: MarketDevelop },
         { path: '/game/orderManage', component: OrderManage },

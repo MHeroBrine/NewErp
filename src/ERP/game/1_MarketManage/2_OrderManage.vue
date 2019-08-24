@@ -3,6 +3,8 @@
         <div class="container_default">
             <div class="title">
                 <h3>订单获取</h3>
+                <button v-show="page.select" style="position: absolute; right: 10px; top: 10px; width: 100px;" class="v-button b-primary" @click="selectOver()">结束选单</button>
+                <button v-show="page.wait" style="position: absolute; right: 10px; top: 10px; width: 100px;" class="v-button b-primary" @click="orderOver()">退出订单会</button>
             </div>
             <div class="main">
                 <div class="header">
@@ -19,7 +21,7 @@
                         <li>
                             <span>产品</span>
                             <input type="text" class="v-input" v-model="AD_data.productName">
-                            <img src="@/assets/Game/1_MarketManage/edit.svg" @click="chooseProduct(); chooseMarket();">
+                            <img src="@/assets/Game/1_MarketManage/edit.svg" @click="chooseProduct()">
                         </li>
                         <li>
                             <span>编号</span>
@@ -71,20 +73,110 @@
                     <div class="select">
                         <div class="market">
                             <div class="area">
-                                <p>市场：<a>区域</a><a>国内</a><a>亚洲</a><a>国际</a></p>
-                                <p>产品：<a>P1</a><a>P2</a><a>P3</a><a>P4</a></p>
+                                <p>市场：
+                                    <a v-for="item in market_AD" @click="orderFilter('market', item.id)">
+                                        {{ item.marketName }}
+                                    </a>
+                                </p>
+                                <p>产品：
+                                    <a v-for="item in product_AD" @click="orderFilter('product', item.id)"> 
+                                        {{ item.productName }}
+                                    </a>
+                                </p>
                             </div>
                         </div>
                         <div class="state">
-                            <img src="@/assets/Game/1_MarketManage/wait.svg" class="wait">
-                            <p>当前状态：<a>等待中（2 / 15）</a></p>
-                            <p>剩余次数：<a>1 / 2 次</a></p>
+                            <p>当前状态：
+                                <a class="waiting">等待中</a>
+                            </p>
+                            <!-- <a>剩余次数：<a>1 / 2 次</a></p> -->
                             <p></p>
                         </div>
                     </div>
                     <div class="main">
-
+                        <ul>
+                            <li class="card" v-for="item in orderShow">
+                                <div class="info">
+                                    <span class="ID">{{ item.orderId }}</span>
+                                    <p class="value">￥{{ item.price }}</p>
+                                    <div class="infos">
+                                        <p>数量:{{ item.productNumber }}</p>
+                                        <p>交货期:{{ item.deliveryPeriod }}</p>
+                                        <p>账期:{{ item.moneyTime }}</p>
+                                    </div>
+                                </div>
+                                <div class="buy">
+                                    <!-- <button @click="selectOrder(item.orderId)">购买</button> -->
+                                </div>
+                            </li>
+                        </ul>
                     </div>
+                    <!-- <  -->
+                </div>
+                <div class="wait" v-show="page.select">
+                    <div class="select">
+                        <div class="market">
+                            <div class="area">
+                                <p>市场：
+                                    <a v-for="item in market_AD" @click="orderFilter('market', item.id)">
+                                        {{ item.marketName }}
+                                    </a>
+                                </p>
+                                <p>产品：
+                                    <a v-for="item in product_AD" @click="orderFilter('product', item.id)"> 
+                                        {{ item.productName }}
+                                    </a>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="state">
+                            <p>当前状态：
+                                <a class="playing">选单中</a>
+                            </p>
+                            <!-- <p>剩余次数：<a>1 / 2 次</a></p> -->
+                            <p></p>
+                        </div>
+                    </div>
+                    <div class="main">
+                        <ul>
+                            <li class="card" v-for="item in orderShow">
+                                <div class="info">
+                                    <span class="ID">{{ item.orderId }}</span>
+                                    <p class="value">￥{{ item.price }}</p>
+                                    <div class="infos">
+                                        <p>数量:{{ item.productNumber }}</p>
+                                        <p>交货期:{{ item.deliveryPeriod }}</p>
+                                        <p>账期:{{ item.moneyTime }}</p>
+                                    </div>
+                                </div>
+                                <div class="buy">
+                                    <button @click="selectOrder(item.orderId)">购买</button>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="end" v-show="page.end">
+                    <table class="v-table_border">
+                        <tr>
+                            <th>编号</th>
+                            <th>市场</th>
+                            <th>产品</th>
+                            <th>单价</th>
+                            <th>交货时间</th>
+                            <th>账期</th>
+                            <th>数量</th>
+                        </tr>
+                        <tr v-for="item in orderAll">
+                            <td>{{ item.orderNumber }}</td>
+                            <td>{{ item.marketType.marketName }}</td>
+                            <td>{{ item.productType.productName }}</td>
+                            <td>{{ item.productPrice }}</td>
+                            <td>{{ item.orderEndPeriod }}</td>
+                            <td>{{ item.deliveryPeriod }}</td>
+                            <td>{{ item.productNumber }}</td>
+                        </tr>
+                    </table>
                 </div>
 
                 <div class="v-alert putIn" v-show="float.productList">
@@ -135,10 +227,10 @@
                 },
                 // 页面
                 page: {
-                    putIn: false,
+                    putIn: true,
                     confirm: false,
                     wait: false,
-                    select: true,
+                    select: false,
                     end: false,
                     detail: false
                 },
@@ -160,51 +252,14 @@
                 },
                 // 广告数据列表
                 AD_data_list: [],
-                // 确认部分数据
-                data_confirm: [
-                    [
-                        {
-                            id: "1",
-                            location: '本地',
-                            production: 'P1',
-                            money: '1W'
-                        },
-                        {
-                            id: "2",
-                            location: '本地',
-                            production: 'P1',
-                            money: '1W'
-                        },
-                        {
-                            id: "3",
-                            location: '本地',
-                            production: 'P1',
-                            money: '1W'
-                        },
-                    ],
-                    [
-                        {
-                            id: "4",
-                            location: '本地',
-                            production: 'P1',
-                            money: '1W'
-                        }
-                    ]
-                ],
-                data_detail: [
-                    [
-                        {
-                            id: '189068',
-                            market: '本地市场',
-                            production: 'P1',
-                            price: '1',
-                            pay: '7',
-                            date: '2',
-                            punish: '5%',
-                            count: '1'
-                        }
-                    ]
-                ],
+                // 获取的订单数据
+                orderData: [],
+                // 筛选后的订单数据
+                orderShow: [],
+                // 所有订单
+                orderAll: [],
+                // 当前状态
+                state: false,
                 // 确定页面，当前显示页
                 pageNow: 1,
                 // 可编辑设置
@@ -218,11 +273,24 @@
             this.editCheck(this.data_confirm);
         },
         mounted() {
+            let that = this;
             // 设置页面格式
+            this.chooseMarket();
+            this.getMarketInfo();
+            this.enterpriseTurn();
             this.$store.commit('pageState', 'orderManage')
             setTimeout(() => {
                 vueEvent.$emit('sidebarState', '/game/orderManage', 'marketManage', 'manage');
             }, 1);
+            vueEvent.$on('changeOrderState', function(val) {
+                that.state = val;
+                setTimeout(() => {
+                    that.TipLink('select');
+                }, 0);
+            })
+            vueEvent.$on('getOrderByYear', function() {
+                that.getOrderByYear();
+            })
         },
         methods: {
             // 分页页数随浏览器高度变换
@@ -253,6 +321,9 @@
             chooseProduct() {
                 this.$store.commit('controlFloatWindow');
                 this.float.productList = !this.float.productList;
+            },
+            // 获取产品信息
+            getMarketInfo() {
                 Axios.get(this.URL + '/game/compete/operation/product/type?enterpriseId=' + localStorage.getItem('enterpriseId'))
                     .then(Response => {
                         if (Response.data.code === 200) {
@@ -301,9 +372,110 @@
                         if (Response.data.code === 200) {
                             alert('投放成功');
                             this.TipLink('wait');
+                        } else if (Response.data.code === 500) {
+                            // 结束
+                            alert(Response.data.msg);
+                        } else {
+                            // 已投放 用于重连
+                            alert(Response.data.msg);
+                            this.TipLink('wait');
+                            this.$store.commit('getPeriod', this.URL);
                         }
                     })
                 }
+            },
+            // 检测是否轮到某企业选单
+            enterpriseTurn() {
+                Axios.get(this.URL + '/game/compete/operation/order/choose/turn?enterpriseId=' + localStorage.getItem('enterpriseId'))
+                    .then(Response => {
+                        if (Response.data.code === 200) {
+                            if (Response.data.data === true) {
+                                this.stat = true;
+                                this.TipLink('select');
+                                this.getOrderByYear();
+                            }
+                        }
+                    })
+            },
+            // 获取某年的订单
+            getOrderByYear() {
+                Axios.get(this.URL + '/game/compete/operation/order/choose/all?gameId=' + localStorage.getItem('GAME') + '&year=' + (this.$store.state.game.year || localStorage.getItem('YEAR')))
+                    .then(Response => {
+                        if (Response.data.code === 200) {
+                            this.orderData = Response.data.data;
+                        } else {
+                            alert(Response.data.msg);
+                        }
+                        console.log(Response);
+                    })
+            },
+            // 根据条件筛选订单
+            orderFilter(type, index) {
+                if (type == 'market') {
+                    this.orderShow = this.orderData.filter((obj) => {
+                        return obj.marketBasicInfoId === index;
+                    })
+                } else if (type == 'product') {
+                    this.orderShow = this.orderData.filter((obj) => {
+                        return obj.productBasicInfoId === index;
+                    })
+                }
+            },
+            // 选取订单
+            selectOrder(id) {
+                let i = confirm('是否选取该订单');
+                if (i) {
+                    Axios.post(this.URL + '/game/compete/operation/order/choose/choose?enterpriseId=' + localStorage.getItem('enterpriseId') + '&gameOrderId=' + id)
+                        .then(Response => {
+                            if (Response.data.code === 200) {
+                                alert(Response.data.msg);
+                                this.TipLink('wait');
+                            } else {
+                                alert(Response.data.msg);
+                            }
+                        })
+                }
+            },
+            // 结束选单
+            selectOver() {
+                let i = confirm('是否结束该轮选单');
+                if (i) {
+                    Axios.get(this.URL + '/game/compete/operation/order/choose/finish?enterpriseId=' + localStorage.getItem('enterpriseId'))
+                        .then(Response => {
+                            if (Response.data.code === 200) {
+                                alert('结束选单成功');
+                                this.TipLink('end');
+                            } else {
+                                alert(Response.data.msg);
+                            }
+                        })
+                }
+            },
+            // 退出订单会
+            orderOver() {
+                let i = confirm('确认退出订单会？');
+                if (i) {
+                    Axios.get(this.URL + '/game/compete/operation/order/choose/drop?enterpriseId=' + localStorage.getItem('enterpriseId'))
+                        .then(Response => {
+                            if (Response.data.code === 204) {
+                                alert(Response.data.msg);
+                                this.TipLink('end');
+                            } else {
+                                alert(Response.data.msg);
+                            }
+                        })
+                }
+            },
+            // 获取企业全部订单信息
+            getOrderAll() {
+                Axios.get(this.URL + '/game/compete/operation/order/all?enterpriseId=' + localStorage.getItem('enterpriseId'))
+                    .then(Response => {
+                        if (Response.data.code === 200) {
+                            this.orderAll = Response.data.data;
+                        } else {
+                            alert(Response.data.msg);
+                        }
+                    })
             },
             // 删除列表中的缓存广告
             deleteItem(id) {
@@ -338,6 +510,9 @@
             },
             // 进程跳转
             TipLink(address) {
+                if (address == 'end') {
+                    this.getOrderAll();
+                }
                 for (let item in this.page) {
                     this.page[item] = false;
                 }
@@ -513,14 +688,84 @@
                             .active {
                                 color: #1afa29;
                             }
+                            .waiting {
+                                color: #E6A23C;
+                            }
+                            .playing {
+                                color: #67C23A;
+                            }
                         }
                     }
                     .main {
-                        height: 240px;
+                        min-height: 240px;
                         margin: 0 20px 20px 20px;
+                        padding: 20px;
                         border: 1px solid #aaa;
                         border-radius: 5px;
+                        ul {
+                            display: flex;
+                            flex-wrap: wrap;
+                        }
+                        .card {
+                            box-sizing: border-box;
+                            font-size: 12px;
+                            padding: 10px;
+                            display: flex;
+                            flex-direction: row;
+                            margin-bottom: 20px;
+                            margin-right: 40px;
+                            width: 260px;
+                            height: 80px;
+                            border: 1px solid #ddd;
+                            border-radius: 10px;
+                            .info {
+                                position: relative;
+                                flex: 0.75;
+                                border-right: 1px solid #ddd;
+                                .ID {
+                                    font-size: 12px;
+                                    font-weight: bold;
+                                }
+                                .value {
+                                    position: absolute;
+                                    // bottom: 0;
+                                    top: 0;
+                                    right: 10px;
+                                }
+                            }
+                            .infos {
+                                position: absolute;
+                                display: flex;
+                                width: 100%;
+                                padding-right: 10px;
+                                justify-content: space-between;
+                                bottom: 0px;
+                            }
+                            .buy {
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                flex: 0.25;
+                                button {
+                                    cursor: pointer;
+                                    background-color: #46B8ED;
+                                    color: #fff;
+                                    width: 50px;
+                                    height: 50px;
+                                    border: 0;
+                                    border-radius: 50%;
+                                    outline: none;
+                                    // box-shadow: 1px 1px 1px 1px #46B8ED;
+                                    &:hover {
+                                        background-color: #3F51F3;
+                                    }
+                                }
+                            }
+                        }
                     }
+                }
+                .end {
+                    padding: 20px;
                 }
 
                 .putIn {

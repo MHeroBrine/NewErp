@@ -15,14 +15,17 @@
         </div>
         <div class="area_2" v-bind:class="{ blur: cover }" v-if="continueGame">
             <h4>{{ data.gameName }}</h4>
-            <img src="@/assets/Nav/GameControl/enter.svg" alt="查看比赛" class="enter" title="查看比赛">
-            <img src="@/assets/Nav/GameControl/begin.svg" alt="继续游戏" class="begin" title="继续游戏" @click="joinGame_continueGame()">
+            <img src="@/assets/Nav/GameControl/enter.svg" alt="继续比赛" class="enter" title="继续比赛" @click="joinGame_continueGame()">
+            <!-- <img src="@/assets/Nav/GameControl/begin.svg" alt="继续游戏" class="begin" title="继续游戏" > -->
+            <img src="@/assets/Nav/GameControl/write.svg" alt="填写" class="write" title="填写心得" @click="joinGame_writeReport()">
         </div>
         <div class="area_2" v-bind:class="{ blur: cover }" v-if="checkGame">
             <h4>{{ data.gameName }}</h4>
-            <img src="@/assets/Nav/GameControl/enter.svg" alt="进入比赛" class="enter" title="进入比赛">
+            <!-- <img src="@/assets/Nav/GameControl/enter.svg" alt="进入比赛" class="enter" title="进入比赛">
             <img src="@/assets/Nav/GameControl/begin.svg" alt="开始比赛" class="begin" title="开始比赛">
-            <img src="@/assets/Nav/GameControl/delete.svg" alt="删除比赛" class="delete" title="删除比赛">   
+            <img src="@/assets/Nav/GameControl/delete.svg" alt="删除比赛" class="delete" title="删除比赛">    -->
+            <img src="@/assets/Nav/GameControl/write.svg" alt="填写" class="write" title="填写心得" @click="joinGame_writeReport()">
+            <img src="@/assets/Nav/GameControl/see.svg" alt="查看" class="write" title="查看报告" @click="checkGame_checkReport()">
         </div>
         <div class="cover" v-show="cover">
             <p><span>比赛名称</span> ： {{ data.gameName }}</p>
@@ -178,8 +181,8 @@
                 this.$router.push('/joinGame/joinGroup');
                 this.$store.commit('setGameWatching', this.data.id);
                 // Ws.initSocket(localStorage.getItem('GAME'));
-                Ws.openSocket();
-                Ws.message();
+                // Ws.openSocket();
+                // Ws.message();
             },
             joinGame_continueGame() {
                 this.$store.commit('setGameWatching', this.data.id);
@@ -187,12 +190,22 @@
                     .then(Response => {
                         if (Response.data.code === 200) {
                             localStorage.setItem('enterpriseId', Response.data.data.id);
+                            // 获取周期
+                            this.$store.commit('getPeriod', this.URL);
                         } else {
                             alert('企业信息获取失败');
                         }
                     })
                 VueEvent.$emit('noEdit', true);
                 this.$router.push('/index');
+            },
+            joinGame_writeReport() {
+                this.$store.commit('setGameWatching', this.data.id);
+                this.$router.push('/report');
+            },
+            checkGame_checkReport() {
+                this.$store.commit('setGameWatching', this.data.id);
+                this.$router.push('/checkReport');
             }
         },
         props: ['title', 'number', 'type', 'data']
@@ -248,6 +261,9 @@
             }
             .begin {
                 left: 45%;
+            }
+            .write {
+                left: 43%;
             }
             .delete {
                 left: 85%;

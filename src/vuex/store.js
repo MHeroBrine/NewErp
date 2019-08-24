@@ -106,6 +106,11 @@ const global = {
                 case 'memberControl':
                     state.HEADER_GAMECONTROL = true;
                     break;
+                case 'report':
+                    state.HEADER_GAMECONTROL = true;
+                    break;
+
+                // 游戏页面
                 case 'index':
                     state.HEADER_INDEX = true;
                     state.SIDEBAR_INDEX = true;
@@ -203,6 +208,7 @@ const global = {
         // data: 表单输入项，需要带上标题和绑定值
         // method: 确认触发的动作
         controlAlert(state ,[type, icon, title, content, data, method]) {
+            console.log(type, icon, title, content);
             if (type === false) {
                 state.ALERT = false;
                 state.ALERT_ICON = icon;
@@ -321,12 +327,37 @@ const gameControl = {
     }
 }
 
+const game = {
+    state: {
+        year: null,
+        period: null
+    },
+    mutations: {
+        // 获取日期
+        getPeriod(state, url) {
+            if (localStorage.getItem('enterpriseId')) {
+                Axios.get(url + '/game/manage/enterprise/period?enterpriseId=' + localStorage.getItem('enterpriseId'))
+                    .then(Response => {
+                        // console.log(Response);
+                        if (Response.data.code === 200) {
+                            state.year = Response.data.data.year;
+                            state.period = Response.data.data.period;
+                        } else {
+                            alert(Response.data.msg);
+                        }
+                    })
+            }
+        }
+    }
+}
+
 const store = new Vuex.Store({
     modules: {
         global,
         user,
         college,
-        gameControl
+        gameControl,
+        game
     }
 })
 

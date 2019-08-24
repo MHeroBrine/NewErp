@@ -58,6 +58,7 @@
             this.College.getCollegeInfo(this.URL);
             
             if (this.Cookie.getCookie('userId')) {
+                console.log('getID');
                 this.$store.commit('setUserInfo', [this.URL, this.Cookie.getCookie('userId')]);
             }
             this.$store.commit('refreshCollegeInfo');
@@ -66,6 +67,11 @@
         },
         beforeMount() {
             
+        },
+        mounted() {
+            if (localStorage.getItem('enterpriseId')) {
+                this.$store.commit('getPeriod', this.URL);
+            }
         },
         components: {
             'v-header1': Header_login,

@@ -16,8 +16,8 @@
                 <img src="../../assets/Header/Nav_user_2.svg" alt="" class="user">
                 <span class="name"><i>姓名：</i>{{ this.$store.state.user.studentName }}</span>
                 <span class="studentAccount"><i>学号：</i>{{ this.$store.state.user.studentAccount }}</span>
-                <img src="../../assets/Header/Nav_clock.svg" class="clock">
-                <span class="game">......比赛</span>
+                <!-- <img src="../../assets/Header/Nav_clock.svg" class="clock">
+                <span class="game">......比赛</span> -->
                 <a class="exit" @click="exit()">安全退出</a>
             </div>
             <div class="footer">

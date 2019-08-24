@@ -43,9 +43,9 @@
                             <td v-if="item.productDevelopStatus === 'DEVELOPPAUSE'">暂停研发</td>
                             <td v-if="item.productDevelopStatus === 'DEVELOPED'">研发成功</td>
                             <td>
-                                <button class="v-button b-primary" v-if="item.productDevelopStatus == 'TODEVELOP'" @click="start(item.id)">开拓市场</button>
-                                <button class="v-button b-primary" v-if="item.productDevelopStatus == 'DEVELOPING'" @click="pause(item.id)">暂停开拓</button>
-                                <button class="v-button b-primary" v-if="item.productDevelopStatus == 'DEVELOPPAUSE'" @click="develop(item.id)">继续开拓</button>
+                                <button class="v-button b-primary" v-if="item.productDevelopStatus == 'TODEVELOP'" @click="start(item.id)">开始研发</button>
+                                <button class="v-button b-primary" v-if="item.productDevelopStatus == 'DEVELOPING'" @click="pause(item.id)">暂停研发</button>
+                                <button class="v-button b-primary" v-if="item.productDevelopStatus == 'DEVELOPPAUSE'" @click="develop(item.id)">继续研发</button>
                                 <button class="v-button b-info b-disabled" v-if="item.productDevelopStatus == 'DEVELOPED'">已研发</button>
                             </td>
                         </tr>

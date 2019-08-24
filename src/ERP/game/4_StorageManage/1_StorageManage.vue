@@ -4,7 +4,7 @@
             <div class="title">
                 <h3>库存管理</h3>
             </div>
-            <div class="main">
+            <div class="_main">
                 <div class="product">
                     <div class="top">
                         <h3>产品仓库</h3>
@@ -17,14 +17,31 @@
                         <ul>
                             <li v-for="item in productInfo">
                                 <div class="temp">
-                                    <img src="@/assets/Game/4_StorageManage/product.svg" alt="">
+                                    <img src="@/assets/Game/4_StorageManage/product.svg" alt="" class="product">
                                     <a>{{ item.productNumber }}</a>
+                                    <img src="@/assets/Game/4_StorageManage/On-Sale.svg" alt="" class="sale" @click="productChoose(item.id)">
                                 </div>
                                 <span>{{ item.productName }}</span>
                             </li>
                         </ul>
                     </div>
                 </div>
+
+                <div class="v-alert" v-show="float.productChoose">
+                    <div class="container">
+                        <div class="title">
+                            <h3>请输入出售数量</h3>
+                        </div>
+                        <div class="main">
+                            <p><span>数量：</span><input type="text" class="v-input" v-model="product.number"></p>
+                            <div class="button">
+                                <button @click="productChoose()">取消</button>
+                                <button @click="productSold()">确认</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="material">
                     <div class="top">
                         <h3>原料仓库</h3>
@@ -37,12 +54,28 @@
                         <ul>
                             <li v-for="item in materialInfo">
                                 <div class="temp">
-                                    <img src="@/assets/Game/4_StorageManage/product.svg" alt="">
+                                    <img src="@/assets/Game/4_StorageManage/product.svg" class="product">
                                     <a>{{ item.materialNumber }}</a>
+                                    <img src="@/assets/Game/4_StorageManage/On-Sale.svg" class="sale" @click="materialChoose(item.id)">
                                 </div>
                                 <span>{{ item.materialName }}</span>
                             </li>
                         </ul>
+                    </div>
+                </div>
+
+                <div class="v-alert" v-show="float.materialChoose">
+                    <div class="container">
+                        <div class="title">
+                            <h3>请输入材料数量</h3>
+                        </div>
+                        <div class="main">
+                            <p><span>数量：</span><input type="text" class="v-input" v-model="material.number"></p>
+                            <div class="button">
+                                <button @click="materialChoose()">取消</button>
+                                <button @click="materialSold()">确认</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -62,15 +95,26 @@
                 float: {
                     productChoose: false,
                     materialChoose: false
+                },
+                // 出售信息
+                product: {
+                    id: null,
+                    number: null
+                },
+                material: {
+                    id: null,
+                    number: null
                 }
             }
         },
         methods: {
-            productChoose() {
+            productChoose(id = null) {
+                this.product.id = id;
                 this.$store.commit('controlFloatWindow');
                 this.float.productChoose = !this.float.productChoose;
             },
-            materialChoose() {
+            materialChoose(id = null) {
+                this.material.id = id;
                 this.$store.commit('controlFloatWindow');
                 this.float.materialChoose = !this.float.materialChoose;
             },
@@ -95,6 +139,42 @@
                             alert('材料数据获取失败');
                         }
                     })
+            },
+            // 产品售卖
+            productSold() {
+                if (this.product.id && this.product.number) {
+                    Axios.post(this.URL + '/game/compete/operation/stock/product/sell', {
+                        productStockId: this.product.id,
+                        sellNumber: this.product.number
+                    }).then(Response => {
+                        if (Response.data.code === 200) {
+                            alert('出售成功');
+                            this.getProductInfo();
+                        } else {
+                            alert(Response.data.msg);
+                        }
+                    })
+                } else {
+                    alert('请输入信息后再提交');
+                }
+            },
+            // 材料售卖
+            materialSold() {
+                if (this.material.id && this.material.number) {
+                    Axios.post(this.URL + '/game/compete/operation/stock/material/sell', {
+                        materialStockId: this.material.id,
+                        sellNumber: this.material.number
+                    }).then(Response => {
+                        if (Response.data.code === 200) {
+                            alert('出售成功');
+                            this.getMaterialInfo();
+                        } else {
+                            alert(Response.data.msg);
+                        }
+                    })
+                } else {
+                    alert('请输入信息后再提交');
+                }
             }
         },
         mounted() {
@@ -113,7 +193,7 @@
         width: 100%;
         .container_default {
             height: 95%;
-            .main {
+            ._main {
                 display: flex;
                 flex-direction: column;
                 padding: 40px;
@@ -166,28 +246,49 @@
                                 justify-content: center;
                                 align-items: center;
                                 width: 30%;
-                            }
-                            img {
-                                width: 100%;
+                                .product {
+                                    width: 100%;
+                                }
+                                .sale {
+                                    position: absolute;
+                                    cursor: pointer;
+                                    width: 40%;
+                                    bottom: 0;
+                                    right: -15px;
+                                }
+                                a {
+                                    cursor: default;
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                    position: absolute;
+                                    top: -10px;
+                                    right: -10px;
+                                    width: 35%;
+                                    height: 35%;
+                                    font-size: 0.5em;
+                                    background-color: #52C41A;
+                                    border-radius: 50%;
+                                    color: #eee;
+                                }
                             }
                             span {
                                 position: absolute;
                                 bottom: 0;
                             }
-                            a {
-                                display: flex;
-                                justify-content: center;
-                                align-items: center;
-                                position: absolute;
-                                top: -10px;
-                                right: -10px;
-                                width: 35%;
-                                height: 35%;
-                                font-size: 0.8em;
-                                background-color: #52C41A;
-                                border-radius: 50%;
-                                color: #fff;
-                            }
+                        }
+                    }
+                }
+                .v-alert {
+                    .main {
+                        padding-top: 50px;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        .v-input {
+                            width: 300px;
+                            height: 25px;
+                            border-radius: 5px;
                         }
                     }
                 }

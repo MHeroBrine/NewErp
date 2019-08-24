@@ -119,6 +119,11 @@
                 this.isVerify = true;
             }
         },
+        created() {
+            if (localStorage.getItem('GAME')) {
+                localStorage.clear();
+            }
+        },
         mounted() {
             this.$store.commit('pageState', 'login');
         }
