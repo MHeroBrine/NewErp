@@ -17,7 +17,7 @@
                     <div class="inside">
                         <div class="cover" v-for="(item, key) in productData[productNow].materialMap" @click="changeItem(item.id)">
                             <img src="@/assets/Nav/GameControl/image.svg" alt="">
-                            <span>{{ key }}（{{ item }}）</span>
+                            <span>{{ key }}（{{ item }}件）</span>
                         </div>
                     </div>
                 </div>

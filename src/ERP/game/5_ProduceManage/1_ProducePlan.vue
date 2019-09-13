@@ -259,11 +259,14 @@
                     Axios.put(this.URL + '/game/compete/operation/produce/productionplan/prodline/produce?prodlineId=' + this.lineNow)
                         .then(Response => {
                             if (Response.data.code === 200) {
-                                alert(Response.data.msg);
-                                this.productNameNow = null;
-                                this.factoryNameNow = null;
-                                this.lineNameNow = null;
-                                this.getProductInfos(this.productWatchNow);
+                                this.$store.commit('controlAlert', [true, 'TRUE', Response.data.msg, null, null, null]);
+                                setTimeout(() => {
+                                    this.$store.commit('controlAlert', [false]);
+                                    this.productNameNow = null;
+                                    this.factoryNameNow = null;
+                                    this.lineNameNow = null;
+                                    this.getProductInfos(this.productWatchNow);
+                                }, 1500);
                             } else {
                                 alert(Response.data.msg);
                             }
@@ -275,9 +278,12 @@
                 Axios.put(this.URL + '/game/compete/operation/produce/productionplan/prodline/produce/receive?prodlineId=' + id)
                     .then(Response => {
                         if (Response.data.code === 200) {
-                            alert('收取成功');
-                            this.getAvailableProduct();
-                            this.getProductInfos();
+                            this.$store.commit('controlAlert', [true, 'TRUE', '收取成功', null, null, null]);
+                            setTimeout(() => {
+                                this.$store.commit('controlAlert', [false]);
+                                this.getAvailableProduct();
+                                this.getProductInfos();
+                            }, 1500);
                         } else {
                             alert(Response.data.msg);
                         }
@@ -303,7 +309,6 @@
                 Axios.get(this.URL + '/game/compete/operation/produce/productionplan/factory/display?prodlineProduceId=' + id)
                     .then(Response => {
                         if (Response.data.code === 200) {
-                            console.log(Response.data);
                             this.factoryData = [Response.data.data];
                         } else {
                             alert('数据获取失败');

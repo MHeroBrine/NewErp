@@ -98,8 +98,11 @@
                     Axios.put(this.URL + '/game/compete/operation/product/start?productDevelopId=' + id)
                     .then(Response => {
                         if (Response.data.code == 200) {
-                            alert(Response.data.msg);
-                            this.getProductInfo(localStorage.getItem('enterpriseId'));
+                            this.$store.commit('controlAlert', [true, 'TRUE', Response.data.msg, null, null, null]);
+                            setTimeout(() => {
+                                this.$store.commit('controlAlert', [false]);
+                                this.getProductInfo(localStorage.getItem('enterpriseId'));
+                            }, 1500);
                         } else {
                             alert('开拓市场失败，请稍后重试');
                         }
@@ -115,8 +118,11 @@
                     Axios.put(this.URL + '/game/compete/operation/product/pause?productDevelopId=' + id)
                     .then(Response => {
                         if (Response.data.code == 200) {
-                            alert(Response.data.msg);
-                            this.getProductInfo(localStorage.getItem('enterpriseId'));
+                            this.$store.commit('controlAlert', [true, 'TRUE', Response.data.msg, null, null, null]);
+                            setTimeout(() => {
+                                this.$store.commit('controlAlert', [false]);
+                                this.getProductInfo(localStorage.getItem('enterpriseId'));
+                            }, 1500);
                         } else {
                             alert('暂停开拓失败，请稍后重试');
                         }
@@ -132,8 +138,11 @@
                     Axios.put(this.URL + '/game/compete/operation/product/develop?productDevelopId=' + id)
                     .then(Response => {
                         if (Response.data.code == 200) {
-                            alert(Response.data.msg);
-                            this.getProductInfo(localStorage.getItem('enterpriseId'));
+                            this.$store.commit('controlAlert', [true, 'TRUE', Response.data.msg, null, null, null]);
+                            setTimeout(() => {
+                                this.$store.commit('controlAlert', [false]);
+                                this.getProductInfo(localStorage.getItem('enterpriseId'));
+                            }, 1500);
                         } else {
                             alert('继续开拓失败，请稍后重试');
                         }

@@ -1,7 +1,7 @@
 <template>
     <div id="Login">
         <div class="container mg">
-            <div class="form" v-show="!isVerify">
+            <div class="form" v-show="!isVerify && state">
                 <h2>学生端</h2>
                 <img src="../assets/Login/cap.svg" class="cap">
                 <div class="userCount">
@@ -18,16 +18,16 @@
                 <router-link class="register" to="/register">新用户注册</router-link>
                 <button class="v-button b-primary login" @click="login()">登录</button>
                 <div class="admin_login">
-                    <span>管理员登录</span>
-                    <img src="../assets/Login/step.svg">
+                    <span @click="state = !state">管理员登录</span>
+                    <img @click="state = !state" src="../assets/Login/step.svg">
                 </div>
             </div>
 
-            <div class="form" v-show="isVerify">
+            <div class="form" v-show="isVerify && state">
                 <h2>学生端</h2>
                 <img src="../assets/Login/cap.svg" class="cap">
                 <div class="userCount">
-                    <input class="v-input" placeholder="学号/用户名" v-model="userAccount">
+                    <input class="v-input" placeholder="学号" v-model="userAccount">
                     <img src="../assets/Login/people.svg">
                 </div>
                 <div class="password">
@@ -48,7 +48,29 @@
                 <button class="v-button b-primary login" @click="login()">登录</button>
                 <div class="admin_login">
                     <span>管理员登录</span>
-                    <img src="../assets/Login/step.svg">
+                    <img @click="state = !state" src="../assets/Login/step.svg">
+                </div>
+            </div>
+
+            <div class="form" v-show="!isVerify && !state">
+                <h2>教师端</h2>
+                <img src="../assets/Login/cap.svg" class="cap">
+                <div class="userCount">
+                    <input class="v-input" placeholder="账号" v-model="userAccount">
+                    <img src="../assets/Login/people.svg">
+                </div>
+                <div class="password">
+                    <input class="v-input" placeholder="请输入密码" type="password" v-model="userPassword" v-show="eye">
+                    <input class="v-input" placeholder="请输入密码" type="text" v-model="userPassword" v-show="!eye">
+                    <img src="../assets/Login/lock.svg" class="lock">
+                    <img src="../assets/Login/eye_open.svg" class="eye" v-show="eye" @click="eye = !eye">
+                    <img src="../assets/Login/eye_close.svg" class="eye" v-show="!eye" @click="eye = !eye">
+                </div>
+                <!-- <router-link class="register" to="/register">新用户注册</router-link> -->
+                <button class="v-button b-primary login" @click="login()">登录</button>
+                <div class="admin_login">
+                    <span @click="state = !state">学生端登录</span>
+                    <img @click="state = !state" src="../assets/Login/step.svg">
                 </div>
             </div>
         </div>
@@ -62,6 +84,9 @@
     export default {
         data() {
             return {
+                // true为学生端，false为教师端
+                state: false,
+
                 // 验证码
                 isVerify: false,
                 verifyCodeUrl: '',
@@ -125,6 +150,7 @@
             }
         },
         mounted() {
+            this.Cookie.setCookie('userId', 1, 0.5);
             this.$store.commit('pageState', 'login');
         }
     }
@@ -250,11 +276,13 @@
                     bottom: 40px;
                     right: 47px;
                     span {
+                        cursor: pointer;
                         font-size: 16px;
                         color: #333;
                         margin-right: 38px;
                     }
                     img {
+                        cursor: pointer;
                         top: -8px;
                         right: 0;
                         position: absolute;

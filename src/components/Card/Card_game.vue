@@ -83,7 +83,7 @@
                     // continueGame_isGameInfo: false,
                 
                 checkGame: false,
-                    // checkGame_isGameInfo: false,
+                    // checkGame_isGameInfo: false
             }
         },
         mounted() {
@@ -218,7 +218,7 @@
         display: flex;
         flex-direction: row;
         width: 25%;
-        min-width: 260px;
+        min-width: 250px;
         margin: 40px;
         box-shadow: 0px 0px 10px 2px rgb(223, 220, 236);
         // border: 1px solid #000;

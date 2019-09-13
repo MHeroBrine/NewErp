@@ -13,6 +13,7 @@
             <v-header2 v-if="this.$store.state.global.HEADER_NAV"></v-header2>
             <v-header3 v-if="this.$store.state.global.HEADER_GAMECONTROL"></v-header3>
             <v-header-user v-if="this.$store.state.global.HEADER_USER"></v-header-user>
+            <v-header-teacher v-if="this.$store.state.global.HEADER_TEACHER"></v-header-teacher>
             <v-header-index v-if="this.$store.state.global.HEADER_INDEX"></v-header-index>
         </header>
         <div class="content">
@@ -20,6 +21,7 @@
                 <v-sidebar-user v-if="this.$store.state.global.SIDEBAR_USER"></v-sidebar-user>
                 <v-sidebar-gameControl v-if="this.$store.state.global.SIDEBAR_GAMECONTROL"></v-sidebar-gameControl>
                 <v-sidebar-index v-if="this.$store.state.global.SIDEBAR_INDEX"></v-sidebar-index>
+                <v-sidebar-teacher v-if="this.$store.state.global.SIDEBAR_TEACHER"></v-sidebar-teacher>
             </div>
             <router-view/>
         </div>
@@ -36,10 +38,12 @@
     import Header_user from './components/Header/Header_user.vue'
     import Header_gameControl from './components/Header/Header_gameControl.vue'
     import Header_index from './components/Header/Header_index.vue'
+    import Header_teacher from './components/Header/Header_teacher.vue'
 
     import Sidebar_user from './components/Sidebar/Sidebar_user.vue'
     import Sidebar_gameControl from './components/Sidebar/Sidebar_gameControl.vue'
     import Sidebar_index from './components/Sidebar/Sidebar_index.vue'
+    import Sidebar_teacher from './components/Sidebar/Sidebar_teacher.vue'
 
     import Footer from './components/Footer/Footer.vue'
 
@@ -79,9 +83,11 @@
             'v-header3': Header_gameControl,
             'v-header-user': Header_user,
             'v-header-index': Header_index,
+            'v-header-teacher': Header_teacher,
             'v-sidebar-user': Sidebar_user,
             'v-sidebar-gameControl': Sidebar_gameControl,
             'v-sidebar-index': Sidebar_index,
+            'v-sidebar-teacher': Sidebar_teacher,
             'v-footer': Footer
         }
     }

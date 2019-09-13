@@ -54,6 +54,9 @@ import LoanManage from '../ERP/game/7_FinanceManage/3_LoanManage.vue'
 import FinanceForm from '../ERP/game/7_FinanceManage/4_FinanceForm.vue'
 import Axios from 'axios';
 
+// 教师端
+import Teacher from '../ERP/Teacher/teacher.vue'
+
 const routes = new Router({
     routes: [
         { path: '/login', component: Login },
@@ -99,6 +102,8 @@ const routes = new Router({
         { path: '/game/loanManage', component: LoanManage },
         { path: '/game/financeForm', component: FinanceForm },
 
+        { path: '/teacher', component: Teacher },
+
         { path: '/', redirect: '/login'}
     ]
 })
@@ -112,6 +117,7 @@ const routes = new Router({
 
 routes.beforeEach((to, from, next) => {
     let userId = Cookie.getCookie('userId');
+    let teacherId = Cookie.getCookie('teacherId');
     if (userId && to.fullPath !== '/login' && to.fullPath !== '/register') {
         if (to.fullPath == '/joinGame/joinGroup' && localStorage.getItem('GAME')) {
             next();

@@ -3,6 +3,8 @@ import VueEvent from '../../model/VueEvent'
 import Store from '../../vuex/store'
 import Axios from 'axios'
 
+const URL = 'http://118.24.113.182:8081'
+
 let socket = null;
 
 let Ws = {
@@ -48,7 +50,7 @@ let Ws = {
                 localStorage.removeItem('GAME_cache');
                 localStorage.removeItem('GAME_watching');
                 // 获取周期
-                Axios.get('http://118.24.113.182:8081' + '/game/manage/enterprise/period?enterpriseId=' + localStorage.getItem('enterpriseId'))
+                Axios.get(URL + '/game/manage/enterprise/period?enterpriseId=' + localStorage.getItem('enterpriseId'))
                     .then(Response => {
                         if (Response.data.code === 200) {
                             localStorage.setItem('YEAR', Response.data.data.year);
@@ -63,6 +65,7 @@ let Ws = {
                                     Store.commit('controlAlert', [true, 'TRUE', '新的一年(当前年份：' + year + '), 订单会开始', null, null, null]);
                                     setTimeout(() => {
                                         Store.commit('controlAlert', [false]);
+                                        Store.commit('getPeriod', URL);
                                     }, 1500);
                                 }
                             }, 0);

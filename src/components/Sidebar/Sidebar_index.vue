@@ -13,7 +13,7 @@
                 <span>市场管理</span><i>+</i>
                 <ul v-bind:class="{ list: active.marketManage.down }">
                     <li @click="controlItem('/game/marketDevelop', 'marketManage', 'dev')" v-bind:class="{ active: active.marketManage.dev }"><router-link to="/game/marketDevelop">市场开发</router-link></li>
-                    <li @click="controlItem('/game/orderManage', 'marketManage', 'manage')" v-bind:class="{ active: active.marketManage.manage }"><router-link to="/game/orderManage">订单管理</router-link></li>
+                    <li @click="controlItem('/game/orderManage', 'marketManage', 'manage')" v-bind:class="{ active: active.marketManage.manage }" v-show="this.$store.state.game.orderState"><router-link to="/game/orderManage">订单管理</router-link></li>
                 </ul>
             </li>
 
@@ -74,7 +74,7 @@
                 <span>财务管理</span><i>+</i>
                 <ul v-bind:class="{ list: active.money.down }">
                     <!-- <li @click="controlItem('/game/taxManage', 'money', 'tax')" v-bind:class="{ active: active.money.tax }"><a>税金管理</a></li> -->
-                    <!-- <li @click="controlItem('/game/accountMoney', 'money', 'account')" v-bind:class="{ active: active.money.account }"><a>账户资金</a></li> -->
+                    <li @click="controlItem('/game/accountMoney', 'money', 'account')" v-bind:class="{ active: active.money.account }"><a>账户资金</a></li>
                     <li @click="controlItem('/game/loanManage', 'money', 'loan')" v-bind:class="{ active: active.money.loan }"><a>贷款管理</a></li>
                     <li @click="controlItem('/game/financeForm', 'money', 'finance')" v-bind:class="{ active: active.money.finance }"><a>财务报表</a></li>
                 </ul>

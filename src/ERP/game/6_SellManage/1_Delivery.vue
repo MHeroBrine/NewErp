@@ -108,8 +108,11 @@
                     Axios.post(this.URL + '/game/compete/operation/order/delivery?orderId=' + id)
                         .then(Response => {
                             if (Response.data.code === 200) {
-                                alert('交货成功');
-                                this.getOrder();
+                                this.$store.commit('controlAlert', [true, 'TRUE', '交货成功', null, null, null]);
+                                setTimeout(() => {
+                                    this.$store.commit('controlAlert', [false]);
+                                    this.getOrder();
+                                }, 1500);
                             } else {
                                 alert(Response.data.msg);
                             }

@@ -75,8 +75,11 @@
                     Axios.put(this.URL + '/game/compete/operation/market/start?marketDevelopId=' + id)
                     .then(Response => {
                         if (Response.data.code == 200) {
-                            alert(Response.data.msg);
-                            this.getMarketInfo();
+                            this.$store.commit('controlAlert', [true, 'TRUE', Response.data.msg, null, null, null]);
+                            setTimeout(() => {
+                                this.$store.commit('controlAlert', [false]);
+                                this.getMarketInfo();
+                            }, 1500);
                         } else {
                             alert('开拓市场失败，请稍后重试');
                         }
@@ -92,8 +95,11 @@
                     Axios.put(this.URL + '/game/compete/operation/market/pause?marketDevelopId=' + id)
                     .then(Response => {
                         if (Response.data.code == 200) {
-                            alert(Response.data.msg);
-                            this.getMarketInfo();
+                            this.$store.commit('controlAlert', [true, 'TRUE', Response.data.msg, null, null, null]);
+                            setTimeout(() => {
+                                this.$store.commit('controlAlert', [false]);
+                                this.getMarketInfo();
+                            }, 1500);
                         } else {
                             alert('暂停开拓失败，请稍后重试');
                         }
@@ -109,8 +115,11 @@
                     Axios.put(this.URL + '/game/compete/operation/market/develop?marketDevelopId=' + id)
                     .then(Response => {
                         if (Response.data.code == 200) {
-                            alert(Response.data.msg);
-                            this.getMarketInfo();
+                            this.$store.commit('controlAlert', [true, 'TRUE', Response.data.msg, null, null, null]);
+                            setTimeout(() => {
+                                this.$store.commit('controlAlert', [false]);
+                                this.getMarketInfo();
+                            }, 1500);
                         } else {
                             alert('继续开拓失败，请稍后重试');
                         }

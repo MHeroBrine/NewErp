@@ -1,5 +1,14 @@
 <template>
     <div class="pagination_game">
+        <div class="v-card first" @click="createMethod()" v-if="this.type === 'createGame'">
+            <div class="covers"></div>
+            <div class="area_1">
+                <img src="@/assets/Nav/GameControl/image.svg">
+            </div>
+            <div class="area_2">
+                <img class="add" src="@/assets/Nav/GameControl/add_2.svg">
+            </div>
+        </div>
         <template v-if="isReady" v-for="item in gameList">
             <v-card-game :data="item" :type="type"></v-card-game>
         </template>
@@ -129,7 +138,7 @@
                 }
             },
         },
-        props: ['list', 'type', 'gameStatus']
+        props: ['list', 'type', 'gameStatus', 'createMethod']
     }
 </script>
 
@@ -140,6 +149,24 @@
         display: flex;
         flex-wrap: wrap;
         flex-direction: row;
+        .first {
+            cursor: pointer;
+            .add {
+                top: 35%;
+                width: 30%;
+                left: 35%;
+            }
+            .covers {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 20;
+                background-color: #fff;
+                opacity: 0.4;
+            }
+        }
         .paginate {
             position: absolute;
             bottom: 20px;

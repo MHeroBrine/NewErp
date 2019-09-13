@@ -3,11 +3,11 @@
         <div class="container_default">
             <div class="title">
                 <h3>创建比赛</h3>
+                <img src="@/assets/Nav/GameControl/refresh.svg" class="refresh" title="刷新" @click="freshList()">
             </div>
             <div class="main">
-                <v-pagination-game type="createGame"></v-pagination-game>
-                <img src="@/assets/Nav/GameControl/add.svg" class="add" @click="createGame()">
-                <img src="@/assets/Nav/GameControl/refresh.svg" class="refresh" @click="freshList()">
+                <v-pagination-game type="createGame" :createMethod="createGame"></v-pagination-game>
+                <!-- <img src="@/assets/Nav/GameControl/add.svg" class="add" title="创建比赛" @click="createGame()"> -->
             </div>
         </div>
     </div>
@@ -59,7 +59,6 @@
                         "gameName": this.data[0].value,
                         "maxEnterpriseNumber": this.data[1].value
                     }).then((Response) => {
-                        console.log(Response);
                         if (Response.data.code === 200) {
                             this.$store.commit('controlAlert', [true, 'TRUE', '操作成功', null, null, null]);
                             this.freshList();
@@ -83,18 +82,27 @@
         width: 100%;
         .container_default {
             height: 95%;
+            .title {
+                img {
+                    cursor: pointer;
+                    width: 30px;
+                    position: absolute;
+                    top: 15px;
+                    left: 120px;
+                }
+            }
         }
         .main {
             height: 85%;
             padding-bottom: 20px;
             img {
                 cursor: pointer;
-                width: 30px;
+                width: 45px;
             }
             .add {
                 position: absolute;
                 bottom: 30px;
-                right: 80px;
+                right: 100px;
             }
             .refresh {
                 position: absolute;

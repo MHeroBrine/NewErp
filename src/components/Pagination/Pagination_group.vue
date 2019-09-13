@@ -1,5 +1,22 @@
 <template>
     <div class="pagination_group" v-if="isReady">
+        <div class="v-card_group first" @click="createMethod()">
+            <div class="area_1">
+                <div class="leader">
+                </div>
+                <div class="info">
+                    
+                    <!-- <p class="sure">准备完毕</p> -->
+                </div>
+                <div class="btns">
+                    
+                </div>
+            </div>
+            <div class="area_2">
+                
+            </div>
+            <img class="add" src="@/assets/Nav/GameControl/add_2.svg">
+        </div>
         <template v-for="item in groupList[page - 1]">
             <v-card-group :data="item"></v-card-group>
         </template>
@@ -60,11 +77,12 @@
                             this.isReady = true;
                         } else {
                             alert(Response.data.msg);
+                            this.isReady = true;
                         }
                     })
             }
         },
-        props: ['list', 'type']
+        props: ['list', 'type', 'createMethod']
     }
 </script>
 
@@ -75,6 +93,15 @@
         display: flex;
         flex-wrap: wrap;
         flex-direction: row;
+        .first {
+            cursor: pointer;
+            img {
+                position: absolute;
+                left: 32%;
+                width: 30%;
+                top: 20%;
+            }
+        }
         .paginate {
             position: absolute;
             bottom: 25px;

@@ -10,13 +10,13 @@
                         <img src="@/assets/Game/7_FinanceManage/card.svg" alt="">
                     </div>
                     <div class="info">
-                        <p>银行卡号：1234567890</p>
-                        <p>账户余额：19万</p>
-                        <p>借入金额：0</p>
+                        <!-- <p>银行卡号：1234567890</p> -->
+                        <p>账户余额：{{ money }}</p>
+                        <!-- <p>借入金额：0</p> -->
                     </div>
-                    <div class="tax">
+                    <!-- <div class="tax">
                         <p @click="pageChange('list')">应收账款提现<img src="@/assets/Game/7_FinanceManage/right-circle-o.svg" alt=""></p>
-                    </div>
+                    </div> -->
                 </div>
 
                 <div class="list" v-show="page.list">
@@ -46,11 +46,13 @@
 </template>
 
 <script>
+    import Axios from 'axios'
     import vueEvent from '../../../model/VueEvent';
 
     export default {
         data() {
             return {
+                money: null,
                 page: {
                     card: true,
                     list: false
@@ -63,6 +65,7 @@
             setTimeout(() => {
                 vueEvent.$emit('sidebarState', '/game/accountMoney', 'money', 'account');
             }, 1);
+            this.getMoneyNow();
         },
         methods: {
             // 页面内跳转
@@ -74,6 +77,15 @@
                     this.page.card = true;
                     this.page.list = false;
                 }
+            },
+            // 获取当前资金
+            getMoneyNow() {
+                Axios.get(this.URL + '/game/compete/operation/finance/current?enterpriseId=' + localStorage.getItem('enterpriseId'))
+                    .then(Response => {
+                        if (Response.data.code === 200) {
+                            this.money = Response.data.data.currentAccount;
+                        }
+                    })
             }
         }
     }

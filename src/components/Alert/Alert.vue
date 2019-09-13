@@ -47,8 +47,9 @@
             console.log(this.icon);
         },
         watch: {
-            // 监听alert，无数据弹窗定时关闭
+            // 监听alert，无方法弹窗定时关闭（针对比赛管理页面）（可废弃）
             method: function(val) {
+                console.log('receive: ' + val);
                 if (val === null) {
                     setTimeout(() => {
                         this.cancel();

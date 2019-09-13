@@ -3,13 +3,13 @@
         <div class="container_default">
             <div class="title">
                 <h3>加入企业</h3>
+                <img src="@/assets/Nav/GameControl/refresh.svg" class="refresh" title="刷新" @click="freshList()">
+                <img src="@/assets/Nav/GameControl/back_round.svg" class="back" title="返回导航" @click="linkTo('/nav')">
+                <!-- <img src="@/assets/Nav/GameControl/add.svg" class="add" title="创建企业" @click="createGroup()"> -->
                 <button class="v-button b-primary begin" @click="begin()">开始比赛</button>
             </div>
             <div class="main">
-                <v-pagination-group></v-pagination-group>
-                <img src="@/assets/Nav/GameControl/back_round.svg" class="back" @click="linkTo('/nav')">
-                <img src="@/assets/Nav/GameControl/add.svg" class="add" @click="createGroup()">
-                <img src="@/assets/Nav/GameControl/refresh.svg" class="refresh" @click="freshList()">
+                <v-pagination-group :createMethod="createGroup"></v-pagination-group>
             </div>
         </div>
     </div>
@@ -104,7 +104,10 @@
                                             Ws.openSocket();
                                             Ws.message();
                                             vueEvent.$emit('setReadyState');
-                                            alert('重连成功');
+                                            this.$store.commit('controlAlert', [true, 'TRUE', '重连成功', null, null, null]);
+                                            setTimeout(() => {
+                                                this.$store.commit('controlAlert', [false]);
+                                            }, 1500);
                                         }
                                     }
                                 })
@@ -144,6 +147,20 @@
         width: 100%;
         .container_default {
             height: 95%;
+            .title {
+                img {
+                    position: absolute;
+                    width: 30px;
+                    top: 15px;
+                    cursor: pointer;
+                    &:nth-of-type(1) {
+                        left: 120px;
+                    }
+                    &:nth-of-type(2) {
+                        left: 160px;
+                    }
+                }
+            }
             .begin {
                 position: absolute;
                 top: 10px;
@@ -154,23 +171,23 @@
                 padding-top: 20px;
                 img {
                     cursor: pointer;
-                    width: 30px;
+                    width: 45px;
                 }
                 .back {
-                    width: 34px;
+                    width: 50px;
                     position: absolute;
-                    bottom: 28px;
-                    right: 130px;
+                    bottom: 27px;
+                    right: 170px;
                 }
                 .add {
                     position: absolute;
                     bottom: 30px;
-                    right: 80px;
+                    right: 100px;
                 }
                 .refresh {
                     position: absolute;
                     bottom: 30px;
-                    right: 30px;
+                    right: 30px
                 }
             }
         }

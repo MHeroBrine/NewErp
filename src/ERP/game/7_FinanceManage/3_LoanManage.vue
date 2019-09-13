@@ -52,12 +52,14 @@
                     <ul>
                         <li>
                             贷款类型：<select class="v-select" v-model="loanNow_search">
+                                <option :value="null">全部</option>
                                 <option :value="item.id" v-for="item in loanData">
                                     {{ item.loanType }}
                                 </option>
                             </select>
                         </li>
                         <li>状态：<select class="v-select" v-model="stateNow_search">
+                            <option :value="null">全部</option>
                             <option value="0">未还款</option>
                             <option value="1">已还款</option>
                             </select>
@@ -70,7 +72,6 @@
                 <table class="v-table_border">
                     <tr>
                         <th>贷款编号</th>
-                        <th>贷款类型</th>
                         <th>贷款时间</th>
                         <th>还款时间</th>
                         <th>贷款金额（万）</th>
@@ -78,11 +79,10 @@
                     </tr>
                     <tr v-for="item in searchData">
                         <td>{{ item.loanNumber }}</td>
-                        <td>{{ item.loanType }}</td>
                         <td>{{ item.beginPeriod }}</td>
-                        <td>{{ item.endPeriod }}</td>
+                        <td>{{ item.endPeriod || '-' }}</td>
                         <td>{{ item.loanAmount }}</td>
-                        <td><button v-if="!item.repaid" class="v-button b-primary" style="width: 80px;" @click="repay(item.id)">还款</button></td>
+                        <td><button v-if="!item.repaid" class="v-button b-primary" style="width: 80px;" @click="repay(item.loanId)">还款</button></td>
                     </tr>
                 </table>
                 <button class="v-button b-primary control_button" @click="pageChange('control')">返回</button>
@@ -106,8 +106,8 @@
                 yearNow: null,
                 
                 // 查询信息
-                loanNow_search: 1,
-                stateNow_search: 0,
+                loanNow_search: null,
+                stateNow_search: null,
                 searchData: [],
 
                 page: {
@@ -159,8 +159,11 @@
                             "loanBasicId": this.loanNow
                         }).then(Response => {
                             if (Response.data.code === 200) {
-                                alert('申请成功');
-                                this.pageChange('detail');
+                                this.$store.commit('controlAlert', [true, 'TRUE', '申请成功', null, null, null]);
+                                setTimeout(() => {
+                                    this.$store.commit('controlAlert', [false]);
+                                    this.pageChange('detail');
+                                }, 1500);
                             }
                         })
                     }
@@ -175,8 +178,12 @@
                 if (parseInt(this.stateNow_search)) {
                     state = true;
                 }
+                if (this.stateNow_search === null) {
+                    state = null;
+                }
                 Axios.post(this.URL + '/game/compete/operation/loan', {
-                    "loanId": this.loanNow_search,
+                    "enterpriseId": localStorage.getItem('enterpriseId'),
+                    "loanBasicId": this.loanNow_search,
                     "repaid": state
                 }).then(Response => {
                     if (Response.data.code === 200) {
@@ -188,14 +195,21 @@
             },
             // 还款
             repay(id) {
-                Axios.get(this.URL + '/game/compete/operation/loan/repay?loanEnterpriseId=' + id)
-                    .then(Response => {
-                        if (Response.data.code === 200) {
-                            alert('还款成功');
-                        } else {
-                            alert(Response.data.msg);
-                        }
-                    })
+                let i = confirm('是否确认还款？');
+                if (i) {
+                    Axios.get(this.URL + '/game/compete/operation/loan/repay?loanEnterpriseId=' + id)
+                        .then(Response => {
+                            if (Response.data.code === 200) {
+                                this.$store.commit('controlAlert', [true, 'TRUE', '还款成功', null, null, null]);
+                                setTimeout(() => {
+                                    this.$store.commit('controlAlert', [false]);
+                                    this.search();
+                                }, 1500);
+                            } else {
+                                alert(Response.data.msg);
+                            }
+                        })
+                }
             }
         },
         mounted() {

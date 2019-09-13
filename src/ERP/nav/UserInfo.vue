@@ -174,9 +174,12 @@
                     studentClass: this.data.studentClass,
                 }).then(Response => {
                     if (Response.data.code === 200) {
-                        alert(Response.data.msg);
+                        this.$store.commit('controlAlert', [true, 'TRUE', '操作成功', null, null, null]);
+                        setTimeout(() => {
+                            this.$store.commit('controlAlert', [false]);
+                            this.$router.push('/nav');
+                        }, 1500);
                         this.$store.commit('setUserInfo', [this.URL, this.Cookie.getCookie('userId')]);
-                        this.$router.push('/nav');
                     } else {
                         alert(Response.data.msg);
                     }
@@ -197,8 +200,11 @@
                         newPassword: this.password.new
                     })).then(Response => {
                         if (Response.data.code === 204) {
-                            alert('操作成功');
-                            this.$router.push('/nav');
+                            this.$store.commit('controlAlert', [true, 'TRUE', '操作成功', null, null, null]);
+                            setTimeout(() => {
+                                this.$store.commit('controlAlert', [false]);
+                                this.$router.push('/nav');
+                            }, 1500);
                         } else {
                             alert(Response.data.msg);
                         }

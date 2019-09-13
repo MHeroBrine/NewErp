@@ -20,6 +20,7 @@ const global = {
         HEADER_USER: false,
         HEADER_GAMECONTROL: false,
         HEADER_INDEX: false,
+        HEADER_TEACHER: false,
 
         // sidebar组件
         SIDEBAR_USER: false,
@@ -197,6 +198,12 @@ const global = {
                     state.HEADER_INDEX = true;
                     state.SIDEBAR_INDEX = true;
                     break;
+
+                // 教师端
+                case 'teacher':
+                    state.HEADER_TEACHER = true;
+                    state.SIDEBAR_TEACHER = true;
+                    break;
                 default:
                     break;
             }
@@ -208,7 +215,6 @@ const global = {
         // data: 表单输入项，需要带上标题和绑定值
         // method: 确认触发的动作
         controlAlert(state ,[type, icon, title, content, data, method]) {
-            console.log(type, icon, title, content);
             if (type === false) {
                 state.ALERT = false;
                 state.ALERT_ICON = icon;
@@ -330,7 +336,8 @@ const gameControl = {
 const game = {
     state: {
         year: null,
-        period: null
+        period: null,
+        orderState: false
     },
     mutations: {
         // 获取日期
@@ -342,6 +349,12 @@ const game = {
                         if (Response.data.code === 200) {
                             state.year = Response.data.data.year;
                             state.period = Response.data.data.period;
+                            if (parseInt(Response.data.data.period) === 1) {
+                                state.orderState = true;
+                                router.push('/game/orderManage');
+                            } else {
+                                state.orderState = false;
+                            }
                         } else {
                             alert(Response.data.msg);
                         }

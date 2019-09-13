@@ -4,6 +4,7 @@
             <div class="title">
                 <h3>订单获取</h3>
                 <button v-show="page.select" style="position: absolute; right: 10px; top: 10px; width: 100px;" class="v-button b-primary" @click="selectOver()">结束选单</button>
+                <button v-show="page.select" style="position: absolute; right: 120px; top: 10px; width: 100px;" class="v-button b-primary" @click="orderOver()">退出订单会</button>
                 <button v-show="page.wait" style="position: absolute; right: 10px; top: 10px; width: 100px;" class="v-button b-primary" @click="orderOver()">退出订单会</button>
             </div>
             <div class="main">
@@ -20,12 +21,12 @@
                     <ul>
                         <li>
                             <span>产品</span>
-                            <input type="text" class="v-input" v-model="AD_data.productName">
+                            <input type="text" class="v-input" v-model="AD_data.productName" readonly>
                             <img src="@/assets/Game/1_MarketManage/edit.svg" @click="chooseProduct()">
                         </li>
                         <li>
                             <span>编号</span>
-                            <input type="text" class="v-input" v-model="AD_data.productBasicInfoId">
+                            <input type="text" class="v-input" v-model="AD_data.productBasicInfoId" readonly>
                         </li>
                         <li>
                             <span>投放广告（万元）</span>
@@ -74,12 +75,12 @@
                         <div class="market">
                             <div class="area">
                                 <p>市场：
-                                    <a v-for="item in market_AD" @click="orderFilter('market', item.id)">
+                                    <a v-bind:class="{ active: item.id === orderActive_market }" v-for="item in market_AD" @click="orderFilter('market', item.id)">
                                         {{ item.marketName }}
                                     </a>
                                 </p>
                                 <p>产品：
-                                    <a v-for="item in product_AD" @click="orderFilter('product', item.id)"> 
+                                    <a v-bind:class="{ active: item.id === orderActive_product }" v-for="item in product_AD" @click="orderFilter('product', item.id)"> 
                                         {{ item.productName }}
                                     </a>
                                 </p>
@@ -118,12 +119,12 @@
                         <div class="market">
                             <div class="area">
                                 <p>市场：
-                                    <a v-for="item in market_AD" @click="orderFilter('market', item.id)">
+                                    <a v-bind:class="{ active: item.id === orderActive_market }" v-for="item in market_AD" @click="orderFilter('market', item.id)">
                                         {{ item.marketName }}
                                     </a>
                                 </p>
                                 <p>产品：
-                                    <a v-for="item in product_AD" @click="orderFilter('product', item.id)"> 
+                                    <a v-bind:class="{ active: item.id === orderActive_product }" v-for="item in product_AD" @click="orderFilter('product', item.id)"> 
                                         {{ item.productName }}
                                     </a>
                                 </p>
@@ -141,12 +142,12 @@
                         <ul>
                             <li class="card" v-for="item in orderShow">
                                 <div class="info">
-                                    <span class="ID">{{ item.orderId }}</span>
-                                    <p class="value">￥{{ item.price }}</p>
+                                    <span class="ID">编号: {{ item.orderId }}</span>
+                                    <p class="value">￥{{ item.price }} / 件</p>
                                     <div class="infos">
                                         <p>数量:{{ item.productNumber }}</p>
                                         <p>交货期:{{ item.deliveryPeriod }}</p>
-                                        <p>账期:{{ item.moneyTime }}</p>
+                                        <a @click="checkDetail(item)" class="detail">详情</a>
                                     </div>
                                 </div>
                                 <div class="buy">
@@ -154,6 +155,31 @@
                                 </div>
                             </li>
                         </ul>
+                        <div class="v-alert" v-if="float.detailShow">
+                            <div class="container mg">
+                                <div class="title">
+                                    <h3>信息</h3>
+                                </div>
+                                <div class="infos" v-if="float.detailShow">
+                                    <div>
+                                        <p>编号：{{ details.orderId }}</p>
+                                        <p>单价：{{ details.price }}</p>
+                                        <p>产品：{{ details.productBasicType.productName }}</p>
+                                        <p>市场：{{ details.marketBasicType.marketName }}</p>
+                                    </div>
+                                    <div>
+                                        <p>订单年份：{{ details.year }}</p>
+                                        <p>截止交货日期：{{ details.deliveryPeriod }}</p>
+                                        <p v-if="details.isoBasicType">所需的质量认证：{{ details.isoBasicType.isoName }}</p>
+                                        <p v-if="!details.isoBasicType">所需的质量认证：暂无</p>
+                                        <p>违约金比率：{{ details.penalPercent }}</p>
+                                    </div>
+                                </div>
+                                <div class="button">
+                                    <button @click="closeDetail()">确认</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="end" v-show="page.end">
@@ -223,7 +249,8 @@
                 float: {
                     productList: false,
                     endOrder: false,
-                    note: false
+                    note: false,
+                    detailShow: false,
                 },
                 // 页面
                 page: {
@@ -256,8 +283,12 @@
                 orderData: [],
                 // 筛选后的订单数据
                 orderShow: [],
+                // 订单高亮ID
+                orderActive_product: null,
                 // 所有订单
                 orderAll: [],
+                // 查看订单的详情
+                details: {},
                 // 当前状态
                 state: false,
                 // 确定页面，当前显示页
@@ -265,8 +296,7 @@
                 // 可编辑设置
                 editable: [],
                 // 表单刷新控制
-                refresh: true,
-                
+                refresh: true
             }
         },
         beforeMount() {
@@ -274,23 +304,31 @@
         },
         mounted() {
             let that = this;
-            // 设置页面格式
-            this.chooseMarket();
-            this.getMarketInfo();
-            this.enterpriseTurn();
-            this.$store.commit('pageState', 'orderManage')
-            setTimeout(() => {
-                vueEvent.$emit('sidebarState', '/game/orderManage', 'marketManage', 'manage');
-            }, 1);
-            vueEvent.$on('changeOrderState', function(val) {
-                that.state = val;
-                setTimeout(() => {
-                    that.TipLink('select');
-                }, 0);
-            })
-            vueEvent.$on('getOrderByYear', function() {
-                that.getOrderByYear();
-            })
+            // 检测是否结束了订单会
+            Axios.get(this.URL + '/game/compete/operation/order/choose/isDrop?enterpriseId=' + localStorage.getItem('enterpriseId'))
+                .then(Response => {
+                    if (Response.data.data === true) {
+                        this.getOrderAll();
+                        that.TipLink('end');
+                    } else {
+                        this.chooseMarket();
+                        this.getMarketInfo();
+                        this.enterpriseTurn();
+                        this.$store.commit('pageState', 'orderManage')
+                        setTimeout(() => {
+                            vueEvent.$emit('sidebarState', '/game/orderManage', 'marketManage', 'manage');
+                        }, 1);
+                        vueEvent.$on('changeOrderState', function(val) {
+                            that.state = val;
+                            setTimeout(() => {
+                                that.TipLink('select');
+                            }, 0);
+                        })
+                        vueEvent.$on('getOrderByYear', function() {
+                            that.getOrderByYear();
+                        })      
+                    }
+                })
         },
         methods: {
             // 分页页数随浏览器高度变换
@@ -358,7 +396,10 @@
                     for (let item in this.AD_data) {
                         this.AD_data[item] = null;
                     }
-                    alert('加入成功，可以继续添加其它广告');
+                    this.$store.commit('controlAlert', [true, 'TRUE' ,'加入成功，可以继续添加其它广告', null, null, null]);
+                    setTimeout(() => {
+                        this.$store.commit('controlAlert', [false]);
+                    }, 1500);
                 } else {
                     alert('请选择好信息再添加');
                 }
@@ -370,7 +411,10 @@
                     Axios.post(this.URL + '/game/compete/operation/order/choose/advertise?enterpriseId=' + localStorage.getItem('enterpriseId'), this.AD_data_list)
                     .then(Response => {
                         if (Response.data.code === 200) {
-                            alert('投放成功');
+                            this.$store.commit('controlAlert', [true, 'TRUE' ,'投放成功', null, null, null]);
+                            setTimeout(() => {
+                                this.$store.commit('controlAlert', [false]);
+                            }, 1500);   
                             this.TipLink('wait');
                         } else if (Response.data.code === 500) {
                             // 结束
@@ -403,23 +447,40 @@
                     .then(Response => {
                         if (Response.data.code === 200) {
                             this.orderData = Response.data.data;
+                            this.orderFilter(null, null);
                         } else {
                             alert(Response.data.msg);
                         }
-                        console.log(Response);
                     })
             },
             // 根据条件筛选订单
             orderFilter(type, index) {
+                this.orderActive_product = null;
+                this.orderActive_market = null;
+                if (type === null && index === null) {
+                    this.orderShow = this.orderData;
+                }
                 if (type == 'market') {
+                    this.orderActive_market = index;
                     this.orderShow = this.orderData.filter((obj) => {
-                        return obj.marketBasicInfoId === index;
+                        return obj.marketBasicType.id === index;
                     })
                 } else if (type == 'product') {
+                    this.orderActive_product = index;
                     this.orderShow = this.orderData.filter((obj) => {
-                        return obj.productBasicInfoId === index;
+                        return obj.productBasicType.id === index;
                     })
                 }
+            },
+            checkDetail(item) {
+                this.details = item;
+                this.$store.commit('controlFloatWindow');
+                this.float.detailShow = true;
+            },
+            closeDetail() {
+                this.float.detailShow = false;
+                this.$store.commit('controlFloatWindow');
+                this.details = {};
             },
             // 选取订单
             selectOrder(id) {
@@ -443,8 +504,12 @@
                     Axios.get(this.URL + '/game/compete/operation/order/choose/finish?enterpriseId=' + localStorage.getItem('enterpriseId'))
                         .then(Response => {
                             if (Response.data.code === 200) {
-                                alert('结束选单成功');
-                                this.TipLink('end');
+                                this.$store.commit('controlAlert', [true, 'TRUE', '结束选单成功', null, null, null]);
+                                setTimeout(() => {
+                                    this.$store.commit('controlAlert', [false]);
+                                    this.TipLink('wait');
+                                    this.enterpriseTurn();
+                                }, 1500);
                             } else {
                                 alert(Response.data.msg);
                             }
@@ -657,13 +722,18 @@
                                 line-height: 30px;
                                 a {
                                     color: #aaa;
+                                    border-radius: 5px;
                                     font-size: 12px;
-                                    padding: 4px;
+                                    padding: 5px 8px 5px 8px;
                                     margin-right: 20px;
                                     &:hover {
                                         background-color: #aaa;
                                         color: #fff;
                                     }
+                                }
+                                .active {
+                                    background-color: #aaa;
+                                    color: #fff;
                                 }
                             }
                         }
@@ -740,6 +810,11 @@
                                 padding-right: 10px;
                                 justify-content: space-between;
                                 bottom: 0px;
+                                .detail {
+                                    cursor: pointer;
+                                    color: #46B8ED;
+                                    text-decoration: underline;
+                                }
                             }
                             .buy {
                                 display: flex;
@@ -759,6 +834,17 @@
                                     &:hover {
                                         background-color: #3F51F3;
                                     }
+                                }
+                            }
+                        }
+                         .v-alert {
+                            .infos {
+                                display: flex;
+                                flex-direction: row;
+                                div {
+                                    padding-left: 90px;
+                                    flex: 1;
+                                    line-height: 50px;
                                 }
                             }
                         }

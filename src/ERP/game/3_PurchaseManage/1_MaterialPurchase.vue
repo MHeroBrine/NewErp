@@ -301,11 +301,14 @@
                     Axios.post(this.URL + '/game/compete/operation/stock/material/order/submit', this.purchaseList)
                         .then(Response => {
                             if (Response.data.code === 200) {
-                                alert(Response.data.msg);
-                                this.purchaseList = [];
-                                this.total = 0;
                                 this.selectTransport();
-                                this._getOrderInfo(true);
+                                this.$store.commit('controlAlert', [true, 'TRUE', Response.data.msg, null, null, null]);
+                                setTimeout(() => {
+                                    this.$store.commit('controlAlert', [false]);
+                                    this.purchaseList = [];
+                                    this.total = 0;
+                                    this._getOrderInfo(true);
+                                }, 1500);
                             } else {
                                 alert('选择失败，请稍后重试');
                             }
@@ -344,9 +347,12 @@
                     materialOrderId: this.reviewNow
                 })).then(Response => {
                     if (Response.data.code === 200) {
-                        alert(Response.data.msg);
-                        this._getOrderInfo();
-                        this.review();
+                        this.review(); 
+                        this.$store.commit('controlAlert', [true, 'TRUE', Response.data.msg, null, null, null]);
+                        setTimeout(() => {
+                            this.$store.commit('controlAlert', [false]);
+                            this._getOrderInfo();
+                        }, 1500);
                     } else {
                         alert('操作失败');
                         this._getOrderInfo();

@@ -142,38 +142,44 @@
             },
             // 产品售卖
             productSold() {
-                if (this.product.id && this.product.number) {
+                if (this.product.id && (this.product.number > 0)) {
                     Axios.post(this.URL + '/game/compete/operation/stock/product/sell', {
                         productStockId: this.product.id,
                         sellNumber: this.product.number
                     }).then(Response => {
-                        if (Response.data.code === 200) {
-                            alert('出售成功');
-                            this.getProductInfo();
+                        if (Response.data.code === 204) {
+                            this.productChoose();
+                            this.$store.commit('controlAlert', [true, 'TRUE', '出售成功', null, null, null]);
+                            setTimeout(() => {
+                                this.$store.commit('controlAlert', [false]);
+                                this.getProductInfo();
+                            }, 1500);
                         } else {
                             alert(Response.data.msg);
                         }
                     })
                 } else {
-                    alert('请输入信息后再提交');
+                    alert('请检测输入的信息');
                 }
             },
             // 材料售卖
             materialSold() {
-                if (this.material.id && this.material.number) {
-                    Axios.post(this.URL + '/game/compete/operation/stock/material/sell', {
-                        materialStockId: this.material.id,
-                        sellNumber: this.material.number
-                    }).then(Response => {
-                        if (Response.data.code === 200) {
-                            alert('出售成功');
-                            this.getMaterialInfo();
-                        } else {
-                            alert(Response.data.msg);
-                        }
+                if (this.material.id && this.material.number > 0) {
+                    Axios.post(this.URL + '/game/compete/operation/stock/material/sell?materialStockId=' + this.material.id + '&sellNumber=' + this.material.number)
+                        .then(Response => {
+                            if (Response.data.code === 204) {
+                                this.materialChoose();
+                                this.$store.commit('controlAlert', [true, 'TRUE', '出售成功', null, null, null]);
+                                setTimeout(() => {
+                                    this.$store.commit('controlAlert', [false]);
+                                    this.getMaterialInfo();
+                                }, 1500);
+                            } else {
+                                alert(Response.data.msg);
+                            }
                     })
                 } else {
-                    alert('请输入信息后再提交');
+                    alert('请检测输入的信息');
                 }
             }
         },

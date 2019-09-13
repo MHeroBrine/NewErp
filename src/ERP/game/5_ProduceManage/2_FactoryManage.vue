@@ -263,9 +263,12 @@
                     'factoryBasicId': this.createFactoryNow
                 })).then(Response => {
                     if (Response.data.code === 200) {
-                        alert('新建厂房成功');
                         this.exitCreateFactory();
-                        this.getFactory();
+                        this.$store.commit('controlAlert', [true, 'TRUE', '新建厂房成功', null, null, null]);
+                        setTimeout(() => {
+                            this.$store.commit('controlAlert', [false]);
+                            this.getFactory();
+                        }, 1500);
                     }
                 })
             },
@@ -287,9 +290,12 @@
                     'factoryBasicId': this.createFactoryNow
                 })).then(Response => {
                     if (Response.data.code === 200) {
-                        alert('租用厂房成功');
                         this.exitLeanFactory();
-                        this.getFactory();
+                        this.$store.commit('controlAlert', [true, 'TRUE', '租用厂房成功', null, null, null]);
+                        setTimeout(() => {
+                            this.$store.commit('controlAlert', [false]);
+                            this.getFactory();
+                        }, 1500);
                     }
                 })
             },
@@ -300,7 +306,10 @@
                     'factoryId': factoryId
                 })).then(Response => {
                     if (Response.data.code === 200) {
-                        alert('出售成功')
+                        this.$store.commit('controlAlert', [true, 'TRUE', '出售成功', null, null, null]);
+                        setTimeout(() => {
+                            this.$store.commit('controlAlert', [false]);
+                        }, 1500);
                     } else {
                         alert(Response.data.msg);
                     }
@@ -360,9 +369,12 @@
                     'enterpriseId': localStorage.getItem('enterpriseId')
                 })).then(Response => {
                     if (Response.data.code === 200) {
-                        alert(Response.data.msg);
                         this.$store.commit('controlFloatWindow');
                         this.float.newLine = false;
+                        this.$store.commit('controlAlert', [true, 'TRUE', Response.data.msg, null, null, null]);
+                        setTimeout(() => {
+                            this.$store.commit('controlAlert', [false]);
+                        }, 1500);
                     } else {
                         alert('获取数据失败');
                     }
@@ -402,7 +414,7 @@
             },
             // 继续安装生产线
             continueInstall(prodlineDevelopId) {
-                Axios.put(this.URL + '/game/compete/operation/produce/factorymanagement/prodline/develop/developing?prodlineDevelopId=' + prodlineDevelopId)
+                (this.URL + '/game/compete/operation/produce/factorymanagement/prodline/develop/developing?prodlineDevelopId=' + prodlineDevelopId)
                     .then(Response => {
                         if (Response.data.code === 200) {
                             alert(Response.data.msg);
