@@ -5,7 +5,7 @@
         </div>
         <div class="title_right">
             <div class="user" @mouseover="isHide = false">
-                <span class="userName">用户名</span><img src="../../assets/Header/Nav_user.png">
+                <span class="userName">{{ this.$store.state.user.studentName }}</span><img src="../../assets/Header/Nav_user.png">
             </div>
         </div>
         <div class="cover" v-show="!isHide" @mouseleave="isHide = true" v-if="turn">

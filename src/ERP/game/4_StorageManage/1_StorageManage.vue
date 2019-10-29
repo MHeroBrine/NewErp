@@ -143,20 +143,18 @@
             // 产品售卖
             productSold() {
                 if (this.product.id && (this.product.number > 0)) {
-                    Axios.post(this.URL + '/game/compete/operation/stock/product/sell', {
-                        productStockId: this.product.id,
-                        sellNumber: this.product.number
-                    }).then(Response => {
-                        if (Response.data.code === 204) {
-                            this.productChoose();
-                            this.$store.commit('controlAlert', [true, 'TRUE', '出售成功', null, null, null]);
-                            setTimeout(() => {
-                                this.$store.commit('controlAlert', [false]);
-                                this.getProductInfo();
-                            }, 1500);
-                        } else {
-                            alert(Response.data.msg);
-                        }
+                    Axios.post(this.URL + '/game/compete/operation/stock/product/sell?productStockId=' + this.product.id + '&sellNumber=' + this.product.number)
+                        .then(Response => {
+                            if (Response.data.code === 204) {
+                                this.productChoose();
+                                this.$store.commit('controlAlert', [true, 'TRUE', '出售成功', null, null, null]);
+                                setTimeout(() => {
+                                    this.$store.commit('controlAlert', [false]);
+                                    this.getProductInfo();
+                                }, 1500);
+                            } else {
+                                alert(Response.data.msg);
+                            }
                     })
                 } else {
                     alert('请检测输入的信息');

@@ -70,17 +70,17 @@
                 if (this.type === 'createGame') {
                     Axios.post(this.URL + '/game/manage/search', {
                         "concurrentPage": value,
-                        "pageSize": 6,
+                        "pageSize": 5,
                         "gameStatusEnum": "CREATE",
                         "studentId": this.$store.state.user.id
                     }).then((Response) => {
                         console.log(Response);
                         this.gameList = Response.data.data.pageData;
                         let totalMessage = parseInt(Response.data.data.totalMessage);
-                        if (totalMessage % 6 === 0) {
-                            this.total = parseInt(totalMessage / 6);
+                        if (totalMessage % 5 === 0) {
+                            this.total = parseInt(totalMessage / 5);
                         } else {
-                            this.total = parseInt((totalMessage / 6) + 1);
+                            this.total = parseInt((totalMessage / 5) + 1);
                         }
                         this.isReady = true;
                     })
@@ -120,21 +120,18 @@
                 }
 
                 if (this.type === 'checkGame') {
-                    Axios.post(this.URL + '/game/manage/gameInfos/search', {
-                        "concurrentPage": value,
-                        "pageSize": 6,
-                        "gameStatusEnum": "OVER",
-                        "teacherId": this.$store.state.user.teacherId
-                    }).then((Response) => {
-                        this.gameList = Response.data.data.pageData;
-                        let totalMessage = parseInt(Response.data.data.totalMessage);
-                        if (totalMessage % 6 === 0) {
-                            this.total = parseInt(totalMessage / 6);
-                        } else {
-                            this.total = parseInt((totalMessage / 6) + 1);
-                        }
-                        this.isReady = true;
-                    })
+                    Axios.get(this.URL + '/game/manage/status?userId=' + this.$store.state.user.id + '&gameStatus=OVER&currentPage=' + value + '&amountOfPage=6')
+                        .then(Response => {
+                            console.log(Response);
+                            this.gameList = Response.data.data.gameDetailInfoVo;
+                            let totalMessage = parseInt(Response.data.data.totalAmount);
+                            if (totalMessage % 6 === 0) {
+                                this.total = parseInt(totalMessage / 6);
+                            } else {
+                                this.total = parseInt((totalMessage / 6) + 1);
+                            }
+                            this.isReady = true;
+                        })
                 }
             },
         },

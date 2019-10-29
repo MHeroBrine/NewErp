@@ -85,11 +85,11 @@
                         <button class="v-button b-info" @click="resetPassword()">重置</button>
                     </div>
                 </div>
-                <div class="changeProfile">
+                <!-- <div class="changeProfile">
                     <div class="header">
                         <h2>修改头像</h2>
                     </div>
-                </div>
+                </div> -->
             </div>
         </div>
     </div>

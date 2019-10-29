@@ -3,13 +3,13 @@ import VueEvent from '../../model/VueEvent'
 import Store from '../../vuex/store'
 import Axios from 'axios'
 
-const URL = 'http://118.24.113.182:8081'
+const URL = 'http://192.168.43.243:8081'
 
 let socket = null;
 
 let Ws = {
     initSocket(gameId) {
-        socket = new WebSocket('ws://118.24.113.182:8081/commonWebSocket?gameId=' + gameId);
+        socket = new WebSocket('ws://192.168.43.243:8081/commonWebSocket?gameId=' + gameId);
     },
 
     openSocket() {
@@ -44,7 +44,7 @@ let Ws = {
                 // 企业准备就绪
                 // alert('企业准备就绪');
                 let enterpriseId = e.data.match(reg_enterprise_ready)[0].replace(/[^0-9]/ig, "");
-                localStorage.setItem('enterpriseId', parseInt(enterpriseId));
+                // localStorage.setItem('enterpriseId', parseInt(enterpriseId));
             } else if (e.data.match(reg_game_init)) {
                 // 比赛初始化完成
                 localStorage.removeItem('GAME_cache');
@@ -79,16 +79,20 @@ let Ws = {
                 // alert('新的一年（当前年份：' + year + ')，订单会开始');
                 eventQueue[1] = true;
                 setTimeout(() => {
-                    if (eventQueue[0] === true) {
+                    if (eventQueue[0] === true || year > 1) {
                         Store.commit('controlAlert', [true, 'TRUE', '新的一年(当前年份：' + year + '), 订单会开始', null, null, null]);
                         setTimeout(() => {
                             Store.commit('controlAlert', [false]);
+                            if (year > 1) {
+                                location.reload();
+                            }
                         }, 1500);
                     }
                 }, 0);
             } else if (e.data.match(reg_game_over)) {
                 // 注意，该项为中文识别
-                alert('企业破产，游戏结束！');
+                // alert('企业破产，游戏结束！');
+                alert(e.data);
                 localStorage.clear();
                 Router.push('/nav');
             }

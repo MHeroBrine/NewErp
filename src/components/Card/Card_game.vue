@@ -1,13 +1,23 @@
 <template>
     <div class="card">
-        <div class="area_1" @mouseenter="cover = !cover" @mouseleave="cover = !cover">
-            <img src="@/assets/Nav/GameControl/image.svg">
+        <div class="area_1" v-if="createGame" @mouseenter="cover = !cover" @mouseleave="cover = !cover" @click="createGame_enterGame()">
+            <img src="@/assets/Nav/GameControl/begin_2.svg" class="begin">
         </div>
+        <div class="area_1" v-if="joinGame" @mouseenter="cover = !cover" @mouseleave="cover = !cover" @click="createGame_enterGame()">
+            <img src="@/assets/Nav/GameControl/begin_2.svg" class="begin">
+        </div>
+        <div class="area_1" v-if="continueGame" @mouseenter="cover = !cover" @mouseleave="cover = !cover" @click="joinGame_continueGame()">
+            <img src="@/assets/Nav/GameControl/begin_2.svg" class="begin">
+        </div>
+        <div class="area_1" v-if="checkGame" @mouseenter="cover = !cover" @mouseleave="cover = !cover" @click="uploadReport()">
+            <img src="@/assets/Nav/GameControl/upload_2.svg" class="upload">
+        </div>
+
         <div class="area_2" v-bind:class="{ blur: cover }" v-if="createGame">
             <h4>{{ data.gameName }}</h4>
-            <img src="@/assets/Nav/GameControl/enter.svg" alt="进入比赛" class="enter" title="进入比赛" @click="createGame_enterGame()">
-            <img src="@/assets/Nav/GameControl/begin.svg" alt="开始比赛" class="begin" title="开始比赛" @click="createGame_begin()">
-            <img src="@/assets/Nav/GameControl/delete.svg" alt="删除比赛" class="delete" title="删除比赛" @click="createGame_delete_confirm()">   
+            <!-- <img src="@/assets/Nav/GameControl/enter.svg" alt="进入比赛" class="enter" title="进入比赛" @click="createGame_enterGame()"> -->
+            <!-- <img src="@/assets/Nav/GameControl/begin.svg" alt="开始比赛" class="begin" title="开始比赛" @click="createGame_begin()"> -->
+            <img src="@/assets/Nav/GameControl/delete.svg" alt="删除比赛" class="enter" title="删除比赛" @click="createGame_delete_confirm()">   
         </div>
         <div class="area_2" v-bind:class="{ blur: cover }" v-if="joinGame">
             <h4>{{ data.gameName }}</h4>
@@ -15,17 +25,13 @@
         </div>
         <div class="area_2" v-bind:class="{ blur: cover }" v-if="continueGame">
             <h4>{{ data.gameName }}</h4>
-            <img src="@/assets/Nav/GameControl/enter.svg" alt="继续比赛" class="enter" title="继续比赛" @click="joinGame_continueGame()">
+            <!-- <img src="@/assets/Nav/GameControl/enter.svg" alt="继续比赛" class="enter" title="继续比赛" @click="joinGame_continueGame()"> -->
             <!-- <img src="@/assets/Nav/GameControl/begin.svg" alt="继续游戏" class="begin" title="继续游戏" > -->
-            <img src="@/assets/Nav/GameControl/write.svg" alt="填写" class="write" title="填写心得" @click="joinGame_writeReport()">
+            <!-- <img src="@/assets/Nav/GameControl/write.svg" alt="填写" class="write" title="填写心得" @click="joinGame_writeReport()"> -->
         </div>
         <div class="area_2" v-bind:class="{ blur: cover }" v-if="checkGame">
             <h4>{{ data.gameName }}</h4>
-            <!-- <img src="@/assets/Nav/GameControl/enter.svg" alt="进入比赛" class="enter" title="进入比赛">
-            <img src="@/assets/Nav/GameControl/begin.svg" alt="开始比赛" class="begin" title="开始比赛">
-            <img src="@/assets/Nav/GameControl/delete.svg" alt="删除比赛" class="delete" title="删除比赛">    -->
-            <img src="@/assets/Nav/GameControl/write.svg" alt="填写" class="write" title="填写心得" @click="joinGame_writeReport()">
-            <img src="@/assets/Nav/GameControl/see.svg" alt="查看" class="write" title="查看报告" @click="checkGame_checkReport()">
+            <!-- <img src="@/assets/Nav/GameControl/upload.svg" alt="上传" class="enter" title="上传报告" @click="uploadReport()"> -->
         </div>
         <div class="cover" v-show="cover">
             <p><span>比赛名称</span> ： {{ data.gameName }}</p>
@@ -160,12 +166,14 @@
                             return Qs.stringify(params, { indices: false })
                         }
                     }).then((Response) => {
-                        if (Response.data.code === 200) {
+                        if (Response.data.code === 204) {
                             this.$store.commit('controlAlert', [true, 'TRUE', '删除比赛成功', null, null, null]);
-                            VueEvent.$emit('refreshList');
+                            VueEvent.$emit('refreshGameList');
+                            // location.reload();
                         } else {
                             this.$store.commit('controlAlert', [true, 'FALSE', '删除失败', null, null, null]);
-                            VueEvent.$emit('refreshList');
+                            VueEvent.$emit('refreshGameList');
+                            // location.reload();
                         }
                     })
                 }]);
@@ -206,6 +214,11 @@
             checkGame_checkReport() {
                 this.$store.commit('setGameWatching', this.data.id);
                 this.$router.push('/checkReport');
+            },
+            // 上传实验报告
+            uploadReport() {
+                localStorage.setItem('GAME', this.data.id);
+                this.$router.push('/report');
             }
         },
         props: ['title', 'number', 'type', 'data']
@@ -235,6 +248,16 @@
                 top: 20%;
                 left: 10%;
                 width: 80%;
+            }
+            .begin {
+                width: 50%;
+                top: 30%;
+                left: 25%;
+            }
+            .upload {
+                width: 50%;
+                top: 33%;
+                left: 25%;
             }
         }
         .area_2 {

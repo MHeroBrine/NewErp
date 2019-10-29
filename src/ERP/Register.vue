@@ -46,6 +46,8 @@
                 data: [
                     { title: '姓名', data: null },
                     { title: '班级', data: null },
+                    // { title: '邮箱', data: null },
+                    { title: '联系方式', data: null, RegExp: /^[1]([3-9])[0-9]{9}$/ },
                     { title: '密码（长度6-18位）', data: null, check: true, RegExp: /^[\w_-]{6,16}$/, type: 'password' },
                     { title: '确认密码', data: null, check: true, RegExp: 'rePassword', type: 'password' },
                 ],
@@ -143,11 +145,12 @@
                     if (this.majorNow != 0) {
                         let data = {  
                             "majorInfoId": this.majorNow,
-                            "rePassword": this.data[3].data,
+                            "rePassword": this.data[4].data,
                             "studentAccount": this.studentAccount,
                             "studentClass": this.data[1].data,
                             "studentName": this.data[0].data,
-                            "studentPassword": this.data[2].data
+                            "studentPassword": this.data[3].data,
+                            "phone": this.data[2].data
                         }
                         Axios.post(this.URL + '/user/student/register', data)
                             .then((Response) => {
@@ -177,7 +180,7 @@
             flex-direction: column;
             align-items: center;
             width: 600px;
-            height: 640px;
+            height: 700px;
             background-color: #fff;
             border-radius: 15px;
             border: 3px solid rgb(222, 222, 222);

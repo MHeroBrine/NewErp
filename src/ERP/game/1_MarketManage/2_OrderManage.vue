@@ -385,7 +385,7 @@
             },
             // 广告推入列表
             pushAD() {
-                if (this.AD_data.marketBasicInfoId && this.AD_data.productBasicInfoId && this.AD_data.productName && this.AD_data.money) {
+                if (this.AD_data.marketBasicInfoId && this.AD_data.productBasicInfoId && this.AD_data.productName && (this.AD_data.money > 0)) {
                     let data = JSON.parse(JSON.stringify(this.AD_data))
                     if (this.AD_data_list.length === 0) {
                         data.id = 1;
@@ -401,7 +401,7 @@
                         this.$store.commit('controlAlert', [false]);
                     }, 1500);
                 } else {
-                    alert('请选择好信息再添加');
+                    alert('请确认所有信息是否正确');
                 }
             },
             // 确认广告订单
@@ -416,8 +416,11 @@
                                 this.$store.commit('controlAlert', [false]);
                             }, 1500);   
                             this.TipLink('wait');
+                            this.enterpriseTurn();
                         } else if (Response.data.code === 500) {
                             // 结束
+                            alert(Response.data.msg);
+                        } else if (Response.data.code === 400) {
                             alert(Response.data.msg);
                         } else {
                             // 已投放 用于重连
@@ -484,13 +487,22 @@
             },
             // 选取订单
             selectOrder(id) {
-                let i = confirm('是否选取该订单');
+                let i = confirm('是否选取该订单（选取后自动结束该轮选单）');
                 if (i) {
                     Axios.post(this.URL + '/game/compete/operation/order/choose/choose?enterpriseId=' + localStorage.getItem('enterpriseId') + '&gameOrderId=' + id)
                         .then(Response => {
                             if (Response.data.code === 200) {
                                 alert(Response.data.msg);
-                                this.TipLink('wait');
+                                // this.TipLink('wait');
+                                Axios.get(this.URL + '/game/compete/operation/order/choose/finish?enterpriseId=' + localStorage.getItem('enterpriseId'))
+                                    .then(Response => {
+                                        if (Response.data.code === 200) {
+                                            this.TipLink('wait');
+                                            this.getOrderByYear();
+                                        } else {
+                                            alert('发生错误');
+                                        }
+                                    })
                             } else {
                                 alert(Response.data.msg);
                             }
@@ -523,8 +535,11 @@
                     Axios.get(this.URL + '/game/compete/operation/order/choose/drop?enterpriseId=' + localStorage.getItem('enterpriseId'))
                         .then(Response => {
                             if (Response.data.code === 204) {
-                                alert(Response.data.msg);
-                                this.TipLink('end');
+                                this.$store.commit('controlAlert', [true, 'TRUE', Response.data.msg, null, null]);
+                                setTimeout(() => {
+                                    this.$store.commit('controlAlert', [false]);
+                                    this.TipLink('end');
+                                }, 1500);
                             } else {
                                 alert(Response.data.msg);
                             }

@@ -55,7 +55,8 @@ import FinanceForm from '../ERP/game/7_FinanceManage/4_FinanceForm.vue'
 import Axios from 'axios';
 
 // 教师端
-import Teacher from '../ERP/Teacher/teacher.vue'
+import Enterprise_history from '../ERP/Teacher/Enterprise_history.vue'
+import Enterprise_history_2 from '../ERP/Teacher/Enterprise_history_2.vue'
 
 const routes = new Router({
     routes: [
@@ -102,7 +103,8 @@ const routes = new Router({
         { path: '/game/loanManage', component: LoanManage },
         { path: '/game/financeForm', component: FinanceForm },
 
-        { path: '/teacher', component: Teacher },
+        { path: '/teacher/enterprise_history', component: Enterprise_history },
+        { path: '/teacher/enterprise_history_2', component: Enterprise_history_2 },        
 
         { path: '/', redirect: '/login'}
     ]
@@ -124,7 +126,7 @@ routes.beforeEach((to, from, next) => {
         }
         // 缓存存在且属于该用户
         if (localStorage.getItem('GAME_watching') && (localStorage.getItem('GAME_cache') == userId)) {
-            Axios.get('http://118.24.113.182:8081' + '/game/manage/judge?gameId=' + localStorage.getItem('GAME_watching') + '&userId=' + userId)
+            Axios.get('http://192.168.43.243:8081' + '/game/manage/judge?gameId=' + localStorage.getItem('GAME_watching') + '&userId=' + userId)
                 .then(Response => {
                     if (Response.data.code === 200) {
                         if (Response.data.data === true) {

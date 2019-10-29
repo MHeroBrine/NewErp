@@ -26,6 +26,9 @@
         },
         mounted() {
             this.$store.commit('pageState', 'index');
+            // if (localStorage.getItem('enterpriseId')) {
+            //     this.$store.commit('getPeriod', this.URL);
+            // }
         }
     }
 </script>

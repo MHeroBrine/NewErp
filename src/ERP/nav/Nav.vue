@@ -32,13 +32,14 @@
             <a style="margin-top: 88px;" v-show="activeNow.GAMECONTROL != 'middle'">比赛管理</a>
             <router-link to="/createGame" style="margin-top: 88px;" v-show="activeNow.GAMECONTROL == 'middle'">比赛管理</router-link>
             </li>
+
             <li class="card" v-bind:class="{ active: activeNow.CREATEGAME == 'middle', left: activeNow.CREATEGAME == 'left', right: activeNow.CREATEGAME == 'right' }">
     
                 <svg @mouseover="turn('CREATEGAME')"
                     xmlns="http://www.w3.org/2000/svg"
                     xmlns:xlink="http://www.w3.org/1999/xlink"
                     width="185px" height="169px"
-                    @click="pushTo_card('CREATEGAME', '/createGame')">
+                    @click="pushTo_card('CREATEGAME', '/checkGame')">
                     <path fill-rule="evenodd"  :fill="activeNow.CREATEGAME == 'middle' ? activeColor : defaultColor"
                     d="M-0.000,28.000 L3.000,28.000 L3.000,169.000 L-0.000,169.000 L-0.000,28.000 Z"/>
                     <path fill-rule="evenodd"  :fill="activeNow.CREATEGAME == 'middle' ? activeColor : defaultColor"
@@ -59,16 +60,17 @@
                     d="M63.000,68.000 L63.000,64.000 L121.000,64.000 L121.000,68.000 L63.000,68.000 ZM63.000,51.000 L121.000,51.000 L121.000,56.000 L63.000,56.000 L63.000,51.000 ZM63.000,37.000 L121.000,37.000 L121.000,41.000 L63.000,41.000 L63.000,37.000 ZM62.000,20.000 L98.000,20.000 L98.000,25.000 L62.000,25.000 L62.000,20.000 Z"/>
                 </svg>
 
-                <a v-show="activeNow.CREATEGAME != 'middle'">创建比赛</a>
-                <router-link to="/createGame" v-show="activeNow.CREATEGAME == 'middle'">创建比赛</router-link>
+                <a v-show="activeNow.CREATEGAME != 'middle'">比赛归档</a>
+                <router-link to="/checkGame" v-show="activeNow.CREATEGAME == 'middle'">比赛归档</router-link>
             </li>
+
             <li class="card" v-bind:class="{ active: activeNow.JOINGAME == 'middle', left: activeNow.JOINGAME == 'left', right: activeNow.JOINGAME == 'right' }">
                 
                 <svg @mouseover="turn('JOINGAME')"
                     xmlns="http://www.w3.org/2000/svg"
                     xmlns:xlink="http://www.w3.org/1999/xlink"
                     width="185px" height="169px"
-                    @click="pushTo_card('JOINGAME', '/continueGame')">
+                    @click="pushTo_card('JOINGAME', '/userInfo')">
                     <path fill-rule="evenodd"  :fill="activeNow.JOINGAME == 'middle' ? activeColor : defaultColor"
                     d="M120.338,169.306 L117.445,169.306 C116.477,154.522 109.056,143.032 93.976,143.032 C78.896,143.032 71.475,154.522 70.507,169.306 L67.615,169.306 C68.556,154.469 75.749,142.614 89.467,140.491 C83.469,138.725 79.082,133.134 79.082,126.497 C79.082,118.443 85.537,111.913 93.500,111.913 C101.463,111.913 107.918,118.443 107.918,126.497 C107.918,133.007 103.699,138.517 97.877,140.392 C111.996,142.251 119.384,154.247 120.338,169.306 ZM105.048,126.497 C105.048,120.050 99.875,114.825 93.494,114.825 C87.114,114.825 81.941,120.050 81.941,126.497 C81.941,132.943 87.114,138.169 93.494,138.169 C99.875,138.169 105.048,132.943 105.048,126.497 Z"/>
                     <!-- <image  x="60px" y="101px" width="62px" height="70px"  xlink:href="data:img/png;base64,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" /> -->
@@ -90,8 +92,8 @@
                     d="M63.167,65.444 L63.167,61.594 L121.811,61.594 L121.811,65.444 L63.167,65.444 ZM63.167,49.083 L121.811,49.083 L121.811,53.895 L63.167,53.895 L63.167,49.083 ZM63.167,35.609 L121.811,35.609 L121.811,39.459 L63.167,39.459 L63.167,35.609 ZM62.156,19.248 L98.556,19.248 L98.556,24.060 L62.156,24.060 L62.156,19.248 Z"/>
                 </svg>
 
-                <a v-show="activeNow.JOINGAME != 'middle'">加入比赛</a>
-                <router-link to="/continueGame" v-show="activeNow.JOINGAME == 'middle'">加入比赛</router-link>
+                <a v-show="activeNow.JOINGAME != 'middle'">个人信息</a>
+                <router-link to="/userInfo" v-show="activeNow.JOINGAME == 'middle'">个人信息</router-link>
             </li>
         </ul>
     </div>
@@ -102,9 +104,9 @@
         data() {
             return {
                 activeNow: {
-                    GAMECONTROL: 'left',
-                    CREATEGAME: 'middle',
-                    JOINGAME: 'right'
+                    GAMECONTROL: 'right',
+                    CREATEGAME: 'left',
+                    JOINGAME: 'middle'
                 },
                 activeColor: 'rgb(70, 184, 237)',
                 defaultColor: '#7793A0'

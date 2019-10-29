@@ -5,12 +5,12 @@
                 <h2>学生端</h2>
                 <img src="../assets/Login/cap.svg" class="cap">
                 <div class="userCount">
-                    <input class="v-input" placeholder="学号/用户名" v-model="userAccount">
+                    <input class="v-input" placeholder="学号" v-model="userAccount">
                     <img src="../assets/Login/people.svg">
                 </div>
                 <div class="password">
-                    <input class="v-input" placeholder="请输入密码" type="password" v-model="userPassword" v-show="eye">
-                    <input class="v-input" placeholder="请输入密码" type="text" v-model="userPassword" v-show="!eye">
+                    <input class="v-input" placeholder="请输入密码" type="password" v-model="userPassword" v-show="eye" @keyup.enter="login()">
+                    <input class="v-input" placeholder="请输入密码" type="text" v-model="userPassword" v-show="!eye" @keyup.enter="login()">
                     <img src="../assets/Login/lock.svg" class="lock">
                     <img src="../assets/Login/eye_open.svg" class="eye" v-show="eye" @click="eye = !eye">
                     <img src="../assets/Login/eye_close.svg" class="eye" v-show="!eye" @click="eye = !eye">
@@ -60,8 +60,8 @@
                     <img src="../assets/Login/people.svg">
                 </div>
                 <div class="password">
-                    <input class="v-input" placeholder="请输入密码" type="password" v-model="userPassword" v-show="eye">
-                    <input class="v-input" placeholder="请输入密码" type="text" v-model="userPassword" v-show="!eye">
+                    <input class="v-input" placeholder="请输入密码" type="password" v-model="userPassword" v-show="eye" @keyup="login">
+                    <input class="v-input" placeholder="请输入密码" type="text" v-model="userPassword" v-show="!eye" @keyup="login">
                     <img src="../assets/Login/lock.svg" class="lock">
                     <img src="../assets/Login/eye_open.svg" class="eye" v-show="eye" @click="eye = !eye">
                     <img src="../assets/Login/eye_close.svg" class="eye" v-show="!eye" @click="eye = !eye">
@@ -85,7 +85,7 @@
         data() {
             return {
                 // true为学生端，false为教师端
-                state: false,
+                state: true,
 
                 // 验证码
                 isVerify: false,
@@ -123,13 +123,15 @@
                 Axios.post(this.URL + '/user/student/login', Qs.stringify(data))
                     .then((Response) => {
                         if (Response.data.code === 200) {
-                            alert('登录成功');
-
-                            // 修改
-                            this.Cookie.setCookie('userId', Response.data.data, 0.5);
-                            this.$store.commit('setUserInfo', [this.URL, Response.data.data]);
-                            
-                            this.$router.push('/nav');
+                            this.$store.commit('controlAlert', [true, 'TRUE', '登录成功', null, null, null]);
+                            setTimeout(() => {
+                                this.$store.commit('controlAlert', [false]);
+                                // 修改
+                                this.Cookie.setCookie('userId', Response.data.data, 0.5);
+                                this.$store.commit('setUserInfo', [this.URL, Response.data.data]);
+                                
+                                this.$router.push('/nav');
+                            }, 1500);
                         } else if (Response.data.code === 400 && Response.data.data) {
                             alert('账户密码有误，请检查后重试');
                         } else if (Response.data.code === 400 && !Response.data.data) {
@@ -150,7 +152,7 @@
             }
         },
         mounted() {
-            this.Cookie.setCookie('userId', 1, 0.5);
+            // this.Cookie.setCookie('userId', 1, 0.5);
             this.$store.commit('pageState', 'login');
         }
     }

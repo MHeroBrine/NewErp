@@ -70,9 +70,11 @@
                         "userId": this.$store.state.user.id
                     }).then((Response) => {
                         if (Response.data.code === 200) {
+                            console.log(Response);
                             this.$store.commit('controlAlert', [true, 'TRUE' ,'加入成功', null, null, null]);
                             localStorage.setItem('GAME_watching', localStorage.getItem('GAME'));
                             localStorage.setItem('GAME_cache', this.$store.state.user.id);
+                            localStorage.setItem('enterpriseId', Response.data.data);
                             Ws.initSocket(localStorage.getItem('GAME_watching'));
                             Ws.openSocket();
                             Ws.message();
@@ -98,8 +100,12 @@
                     }).then((Response) => {
                         if (Response.data.code === 204) {
                             this.$store.commit('controlAlert', [true, 'TRUE', '退出成功', null, null, null]);
-                            localStorage.clear();
-                            VueEvent.$emit('refreshGroupList');
+                            setTimeout(() => {
+                                this.$store.commit('controlAlert', [false]);                                
+                                localStorage.clear();
+                                VueEvent.$emit('refreshGroupList');
+                                this.$router.push('/joinGame');
+                            }, 1500);
                         } else {
                             this.$store.commit('controlAlert', [true, 'FALSE', Response.data.msg, null, null, null]);
                             VueEvent.$emit('refreshGroupList');
@@ -205,11 +211,14 @@
                     })).then((Response) => {
                         if (Response.data.code === 204) { 
                             // localStorage.setItem('GROUP_watching', this.data.id);                           
-                            alert('准备成功');
-                            this.data.enterpriseStatusEnum = 'SURE';
-                            localStorage.setItem('GAME_watching', localStorage.getItem('GAME'));
-                            localStorage.setItem('GAME_cache', this.$store.state.user.id);
-                            VueEvent.$emit('setReadyState');
+                            this.$store.commit('controlAlert', [true, 'TRUE', '准备成功', null, null, null]);
+                            setTimeout(() => {
+                                this.$store.commit('controlAlert', [false]);
+                                this.data.enterpriseStatusEnum = 'SURE';
+                                localStorage.setItem('GAME_watching', localStorage.getItem('GAME'));
+                                localStorage.setItem('GAME_cache', this.$store.state.user.id);
+                                VueEvent.$emit('setReadyState');
+                            }, 1500);
                         } else {
                             val = false;
                         }

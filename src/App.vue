@@ -62,7 +62,6 @@
             this.College.getCollegeInfo(this.URL);
             
             if (this.Cookie.getCookie('userId')) {
-                console.log('getID');
                 this.$store.commit('setUserInfo', [this.URL, this.Cookie.getCookie('userId')]);
             }
             this.$store.commit('refreshCollegeInfo');

@@ -30,6 +30,7 @@
                         <tr>
                             <th>ISO认证名称</th>
                             <th>研发总期数</th>
+                            <th>已研发期数</th>
                             <th>每期研发费用(万元)</th>
                             <th>每期维护费用(万元)</th>
                             <th>状态</th>
@@ -38,6 +39,10 @@
                         <tr v-for="item in ISOdata">
                             <td>{{ item.isoName }}</td>
                             <td>{{ item.isoResearchPeriod }}</td>
+
+                            <td v-if="item.isoStatus === 'DEVELOPING' || item.isoStatus === 'DEVELOPPAUSE'">{{ item.researchedPeriod }}</td>
+                            <td v-if="item.isoStatus === 'TODEVELOP' || item.isoStatus === 'DEVELOPED'"> - </td>
+                            
                             <td>{{ item.isoResearchCost }}</td>
                             <td>{{ item.isoMaintainCost }}</td>
                             <td v-if="item.isoStatus == 'DEVELOPED'">
@@ -86,9 +91,9 @@
             this.getISOInfo(localStorage.getItem('enterpriseId'));
         },
         methods: {
-            // 获取某个企业的全部ISO认证信息
-            getISOInfo(enterpriseId) {
-                Axios.get(this.URL + '/game/compete/operation/iso?enterpriseId=' + enterpriseId)
+            // 获取某个比赛的全部ISO认证信息
+            getISOInfo() {
+                Axios.get(this.URL + '/game/compete/operation/iso?gameId=' + localStorage.getItem('GAME'))
                     .then(Response => {
                         if (Response.data.code === 200) {
                             this.ISOdata = Response.data.data;

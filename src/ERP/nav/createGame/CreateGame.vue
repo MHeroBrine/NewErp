@@ -54,6 +54,10 @@
         methods: {
             createGame() {
                 this.$store.commit('controlAlert', [true, 'WARN' ,'新建比赛', null, this.data, () => {
+                    if (typeof +this.data[1].value !== 'number') {
+                        alert('请检查输入是否正确');
+                        return;
+                    }
                     Axios.post(this.URL + '/game/manage/create', {
                         "creatorId": this.$store.state.user.id,
                         "gameName": this.data[0].value,

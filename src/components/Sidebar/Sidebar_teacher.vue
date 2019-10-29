@@ -1,18 +1,18 @@
 <template>
     <div class="nav_teacher">
         <ul class="main">
-            <li @click="linkTo('/nav')" style="margin-top: 20px;" class="mainItem">
+            <li style="margin-top: 20px;" class="mainItem">
+                <img src="@/assets/Teacher/history.svg" alt="">
+                <img src="@/assets/Teacher/history_active.svg" alt="">
+                <router-link to="/teacher" class="home">企业历史数据</router-link>
+            </li>
+            <!-- <li @click="linkTo('/nav')" style="margin-top: 20px;" class="mainItem">
                 <img src="@/assets/Game/Index/index.svg">
                 <router-link to="/nav" class="home">首页</router-link>
-            </li>
-            <li class="mainItem" v-bind:class="{ active: sidebarActive.info }">
-                <img src="@/assets/Nav/UserInfo/info.svg" v-show="!sidebarActive.info">
-                <img src="@/assets/Nav/UserInfo/info_active.svg" v-show="sidebarActive.info">
-                <a class="home">个人信息</a>
-            </li>
+            </li> -->
             <!-- <li class="mainItem" v-bind:class="{ active: sidebarActive.password }">
                 <img src="@/assets/Nav/UserInfo/password.svg" v-show="!sidebarActive.password">
-                <img src="@/assets/Nav/UserInfo/password_active.svg" v-show="sidebarActive.password">
+                <img src="@/assets/Nav/UserInfo/password_active.svg" v-show="!sidebarActive.password">
                 <a class="home">修改密码</a>
             </li> -->
         </ul>

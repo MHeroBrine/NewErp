@@ -30,6 +30,7 @@
                         <tr>
                             <th>产品名称</th>
                             <th>研发总期数</th>
+                            <th>已研发期数</th>
                             <th>每期研发费用(万元)</th>
                             <th>状态</th>
                             <th>操作</th>
@@ -37,6 +38,10 @@
                         <tr v-for="(item, index) in productData">
                             <td>{{ item.productName }}</td>
                             <td>{{ item.productResearchPeriod }}</td>
+                            
+                            <td v-if="item.productDevelopStatus === 'DEVELOPING' || item.productDevelopStatus === 'DEVELOPPAUSE'">{{ item.developedPeriod }}</td>
+                            <td v-if="item.productDevelopStatus === 'TODEVELOP' || item.productDevelopStatus === 'DEVELOPED'"> - </td>
+
                             <td>{{ item.productResearchCost }}</td>
                             <td v-if="item.productDevelopStatus === 'TODEVELOP'">未研发</td>
                             <td v-if="item.productDevelopStatus === 'DEVELOPING'">研发中</td>

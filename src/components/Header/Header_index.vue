@@ -3,12 +3,12 @@
         <div class="title">
             <h1>ERP虚拟运营系统</h1>
         </div>
-        <i title="退出比赛"><img src="@/assets/Game/Index/quit.svg" @click="quit()" alt="退出比赛"></i>
-        <i title="周期推进"><img src="@/assets/Game/Index/next.svg" @click="advance()" alt="周期推进"></i>
+        <i title="退出比赛"><img src="@/assets/Game/Index/quit.svg" @click="quit()" alt="退出比赛"><p>退出比赛</p></i>
+        <i title="周期推进"><img src="@/assets/Game/Index/next.svg" @click="advance()" alt="周期推进"><p>进入下季度</p></i>
         
         <div class="title_right">
             <div class="user" @mouseover="isHide = false">
-                <img src="@/assets/Header/Nav_user.png"><span class="userName">用户名</span>
+                <img src="@/assets/Header/Nav_user.png"><span class="userName">{{ this.$store.state.user.studentName }}</span>
             </div>
         </div>
         <div class="cover" v-show="!isHide" @mouseleave="isHide = true" v-if="turn">
@@ -24,7 +24,7 @@
                 <a class="exit" @click="exit()">安全退出</a>
             </div>
             <div class="footer">
-                <a class="link" @click="infoCenter()">个人中心 >></a>
+                <!-- <a class="link" @click="infoCenter()">个人中心 >></a> -->
             </div>
         </div>
     </div>
@@ -72,14 +72,19 @@
                     Axios.get(this.URL + '/game/compete/operation/advance?enterpriseId=' + localStorage.getItem('enterpriseId'))
                         .then(Response => {
                             if (Response.data.code === 204) {
-                                this.$store.commit('getPeriod', this.URL);
-                                this.$router.push('/index');
-                                location.reload();
-                                alert(Response.data.msg);
+                                this.$store.commit('controlAlert', [true, 'TRUE', Response.data.msg, null, null, null]);
+                                setTimeout(() => {
+                                    this.$store.commit('controlAlert', [false]);
+                                    this.$router.push('/index');
+                                    location.reload();
+                                    this.$store.commit('getPeriod', this.URL);
+                                }, 1500);
                             } else if (Response.data.code === 200) {
-                                alert(Response.data.msg);
-                                localStorage.clear();
-                                this.$router.push('/index');
+                                alert(Response.data.data);
+                                setTimeout(() => {
+                                    localStorage.clear();
+                                    this.$router.push('/nav');
+                                }, 2000);
                             } else {
                                 alert(Response.data.msg);
                             }
@@ -117,7 +122,7 @@
         }
         i {
             position: absolute;
-            width: 28px;
+            width: 100px;
             height: 28px;
             border: 1px solid #eee;
             left: 250px;
@@ -131,8 +136,15 @@
                 width: 16px;
                 height: 16px;
             }
+            p {
+                font-size: 12px;
+                position: absolute;
+                top: -17px;
+                color: #666;
+                left: 30px;
+            }
             &:nth-of-type(2) {
-                left: 295px;
+                left: 365px;
             }
         }
         .version {

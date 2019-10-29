@@ -20,7 +20,7 @@ if (process.env.NODE_ENV == 'development') {
   Vue.config.devtools = false;
 }
 
-const URL = 'http://118.24.113.182:8081';
+const URL = 'http://192.168.43.243:8081';
 Vue.prototype.URL = URL;
 
 // Functions
@@ -38,6 +38,19 @@ Vue.prototype.College = COLLEGE
 import store from './vuex/store.js'
 
 Vue.config.productionTip = false
+
+let echarts = require('echarts/lib/echarts')
+
+require('echarts/lib/chart/bar')
+require('echarts/lib/chart/scatter')
+
+// 引入提示框和title组件，图例
+require('echarts/lib/component/tooltip')
+require('echarts/lib/component/title')
+require('echarts/lib/component/legend')
+require('echarts/lib/component/legendScroll')
+
+Vue.prototype.$echarts = echarts;
 
 // 组件导入
 import Input_1 from './components/Input/Input_1.vue'

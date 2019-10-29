@@ -66,7 +66,7 @@
                             <span class="total">￥{{ (item.purchaseNumber * item.price).toFixed(2) }}</span>
                         </li>
                     </ul>
-                    <span class="result">合计：￥{{ total.toFixed(2) }}</span>
+                    <span class="result">合计：￥{{ (total).toFixed(2) }}</span>
                     <button class="v-button b-primary orderInfo" @click="back()">查看现有订单</button>
                     <button class="v-button b-primary purchase" @click="selectTransport()">购买</button>
                 </div>
@@ -248,13 +248,14 @@
                 })).then(Response => {
                     if (Response.data.code === 200) {
                         this.page.orderDetail = false;
+                        this.page.materialPurchase = true;
                         this.orderDetailInfo = Response.data.data;
                         if (state) {
                             this.back();
                         } else {
-                            location.reload();
+                            // location.reload();
                             this.$nextTick(() => {
-                                this.page.orderDetail = true;
+                                // this.page.orderDetail = true;
                             })
                             // this.page.orderDetail = true;
                         }
@@ -285,7 +286,7 @@
             },
             // 计算总金额
             totalCount() {
-                let temp = null;
+                let temp = 0;
                 for (let i = 0; i < this.purchaseList.length; i ++) {
                     temp += this.purchaseList[i].price * this.purchaseList[i].purchaseNumber;
                 }
@@ -306,8 +307,8 @@
                                 setTimeout(() => {
                                     this.$store.commit('controlAlert', [false]);
                                     this.purchaseList = [];
-                                    this.total = 0;
-                                    this._getOrderInfo(true);
+                                    this.total = 0.00;
+                                    // this._getOrderInfo(true);
                                 }, 1500);
                             } else {
                                 alert('选择失败，请稍后重试');
