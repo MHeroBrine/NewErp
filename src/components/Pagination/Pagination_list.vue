@@ -11,6 +11,8 @@
 </template>
 
 <script>
+    import vueEvent from '../../model/VueEvent';
+
     export default {
         data() {
             return {
@@ -24,21 +26,7 @@
             }
         },
         mounted() {
-            const unwatch = this.$watch('data', function() {
-                this.dataDivide();
-                for (let i = 0; i < this.list.length; i ++) {
-                    if (i > 4) {
-                        setTimeout(() => {
-                            this.$refs[i][0].style = 'display: none';
-                        }, 0);
-                    }
-                }
-                setTimeout(() => {
-                    this.state = true;
-                }, 0);
-                this.$emit('change', this.list[0]);
-                unwatch();
-            })
+            this.componentFresh();
         },
         watch: {
             'pageNow': function(val) {
@@ -84,6 +72,30 @@
                         }
                     }
                 }
+            },
+            componentFresh() {
+                let hash = Math.random() * 100 + Math.random() * 100;
+                let unwatch = {};
+                unwatch['item_' + hash] = this.$watch('data', function() {
+                    this.dataDivide();
+                    for (let i = 0; i < this.list.length; i ++) {
+                        if (i > 4) {
+                            setTimeout(() => {
+                                this.$refs[i][0].style = 'display: none';
+                            }, 0);
+                        }
+                    }
+                    setTimeout(() => {
+                        this.state = true;
+                    }, 0);
+                    this.$emit('change', this.list[0]);
+                    unwatch['item_' + hash]();
+                })
+                let that = this;
+                vueEvent.$on('dataReceive', (val) => {
+                    // console.log(val);
+                    that.data = val;
+                })
             }
         },
         props: ['data', 'divide']

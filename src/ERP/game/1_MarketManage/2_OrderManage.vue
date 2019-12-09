@@ -3,8 +3,8 @@
         <div class="container_default">
             <div class="title">
                 <h3>订单获取</h3>
-                <button v-show="page.select" style="position: absolute; right: 10px; top: 10px; width: 100px;" class="v-button b-primary" @click="selectOver()">结束选单</button>
-                <button v-show="page.select" style="position: absolute; right: 120px; top: 10px; width: 100px;" class="v-button b-primary" @click="orderOver()">退出订单会</button>
+                <!-- <button v-show="page.select" style="position: absolute; right: 10px; top: 10px; width: 100px;" class="v-button b-primary" @click="selectOver()">结束选单</button> -->
+                <button v-show="page.select" style="position: absolute; right: 10px; top: 10px; width: 100px;" class="v-button b-primary" @click="orderOver()">退出订单会</button>
                 <button v-show="page.wait" style="position: absolute; right: 10px; top: 10px; width: 100px;" class="v-button b-primary" @click="orderOver()">退出订单会</button>
             </div>
             <div class="main">
@@ -21,7 +21,7 @@
                     <ul>
                         <li>
                             <span>产品</span>
-                            <input type="text" class="v-input" v-model="AD_data.productName" readonly>
+                            <input type="text" class="v-input" v-model="AD_data.productName" readonly @click="chooseProduct()">
                             <img src="@/assets/Game/1_MarketManage/edit.svg" @click="chooseProduct()">
                         </li>
                         <li>
@@ -30,7 +30,7 @@
                         </li>
                         <li>
                             <span>投放广告（万元）</span>
-                            <input type="text" class="v-input" v-model="AD_data.money">
+                            <input type="text" class="v-input" v-model="AD_data.money" @click="float.note = true">
                             <img src="@/assets/Game/1_MarketManage/warning.svg" alt="" @mouseover="float.note = true" @mouseout="float.note = false">
                             <div class="hover" v-show="float.note">
                                 <p>Ⅰ.广告费有两个用途，一是获得选取订单的机会，二是判断选单的顺序。</p>
@@ -96,18 +96,24 @@
                     </div>
                     <div class="main">
                         <ul>
-                            <li class="card" v-for="item in orderShow">
-                                <div class="info">
-                                    <span class="ID">{{ item.orderId }}</span>
-                                    <p class="value">￥{{ item.price }}</p>
-                                    <div class="infos">
-                                        <p>数量:{{ item.productNumber }}</p>
-                                        <p>交货期:{{ item.deliveryPeriod }}</p>
-                                        <p>账期:{{ item.moneyTime }}</p>
-                                    </div>
+                            <li class="card_new" v-for="item in orderShow">
+                                <div class="_title">
+                                    <h4>订单编号:{{ item.orderId }}</h4>
+                                    <!-- <span @click="selectOrder(item.orderId)">选择订单</span> -->
                                 </div>
-                                <div class="buy">
-                                    <!-- <button @click="selectOrder(item.orderId)">购买</button> -->
+                                <div class="info">
+                                    <div class="items">
+                                        <p>市场：{{ item.marketBasicType.marketName }}</p>
+                                        <p>产品：{{ item.productBasicType.productName }}</p>
+                                        <p>数量：{{ item.productNumber }}</p>
+                                        <p>单价：{{ item.price }}</p>
+                                    </div>
+                                    <div class="items">
+                                        <p>订单日期：{{ item.year }}</p>
+                                        <p>截止交货日期：{{ item.deliveryPeriod }}</p>
+                                        <p>违约金比率：{{ item.penalPercent }}</p>
+                                        <p v-if="item.isoBasicType">ISO认证：{{ item.isoBasicType.isoName }}</p>
+                                    </div>
                                 </div>
                             </li>
                         </ul>
@@ -139,7 +145,7 @@
                         </div>
                     </div>
                     <div class="main">
-                        <ul>
+                        <!-- <ul>
                             <li class="card" v-for="item in orderShow">
                                 <div class="info">
                                     <span class="ID">编号: {{ item.orderId }}</span>
@@ -152,6 +158,28 @@
                                 </div>
                                 <div class="buy">
                                     <button @click="selectOrder(item.orderId)">购买</button>
+                                </div>
+                            </li>
+                        </ul> -->
+                        <ul>
+                            <li class="card_new" v-for="item in orderShow">
+                                <div class="_title">
+                                    <h4>订单编号:{{ item.orderId }}</h4>
+                                    <span @click="selectOrder(item.orderId)">选择订单</span>
+                                </div>
+                                <div class="info">
+                                    <div class="items">
+                                        <p>市场：{{ item.marketBasicType.marketName }}</p>
+                                        <p>产品：{{ item.productBasicType.productName }}</p>
+                                        <p>数量：{{ item.productNumber }}</p>
+                                        <p>单价：{{ item.price }}</p>
+                                    </div>
+                                    <div class="items">
+                                        <p>订单日期：{{ item.year }}</p>
+                                        <p>截止交货日期：{{ item.deliveryPeriod }}</p>
+                                        <p>违约金比率：{{ item.penalPercent }}</p>
+                                        <p v-if="item.isoBasicType">ISO认证：{{ item.isoBasicType.isoName }}</p>
+                                    </div>
                                 </div>
                             </li>
                         </ul>
@@ -300,6 +328,7 @@
             }
         },
         beforeMount() {
+            this.AD_data_list = this.$store.state.game.orderManageADTemp;
             this.editCheck(this.data_confirm);
         },
         mounted() {
@@ -396,6 +425,7 @@
                     for (let item in this.AD_data) {
                         this.AD_data[item] = null;
                     }
+                    this.$store.state.game.orderManageADTemp = this.AD_data_list;
                     this.$store.commit('controlAlert', [true, 'TRUE' ,'加入成功，可以继续添加其它广告', null, null, null]);
                     setTimeout(() => {
                         this.$store.commit('controlAlert', [false]);
@@ -433,14 +463,32 @@
             },
             // 检测是否轮到某企业选单
             enterpriseTurn() {
-                Axios.get(this.URL + '/game/compete/operation/order/choose/turn?enterpriseId=' + localStorage.getItem('enterpriseId'))
+                // 先检测是否处于订单会中
+                Axios.get(this.URL + '/game/compete/operation/order/choose/isIn?enterpriseId=' + localStorage.getItem('enterpriseId'))
                     .then(Response => {
                         if (Response.data.code === 200) {
-                            if (Response.data.data === true) {
-                                this.stat = true;
-                                this.TipLink('select');
-                                this.getOrderByYear();
+                            if (Response.data.data == true) {
+                                // 处于订单会中
+                                Axios.get(this.URL + '/game/compete/operation/order/choose/turn?enterpriseId=' + localStorage.getItem('enterpriseId'))
+                                    .then(Response => {
+                                        if (Response.data.code === 200) {
+                                            if (Response.data.data === true) {
+                                                // 处于选择状态 
+                                                this.state = true;
+                                                this.TipLink('select');
+                                                this.getOrderByYear();
+                                            } else {
+                                                // this.state = true;
+                                                this.TipLink('wait');
+                                                this.getOrderByYear();
+                                            }
+                                        }
+                                    })
+                            } else {
+                                // 未处于订单会中
                             }
+                        } else {
+                            alert(Response.data.msg);
                         }
                     })
             },
@@ -458,21 +506,33 @@
             },
             // 根据条件筛选订单
             orderFilter(type, index) {
-                this.orderActive_product = null;
-                this.orderActive_market = null;
                 if (type === null && index === null) {
                     this.orderShow = this.orderData;
                 }
                 if (type == 'market') {
-                    this.orderActive_market = index;
-                    this.orderShow = this.orderData.filter((obj) => {
-                        return obj.marketBasicType.id === index;
-                    })
+                    if (this.orderActive_market == index) {
+                        this.orderShow = this.orderData;
+                        this.orderActive_product = null;
+                        this.orderActive_market = null;
+                    } else {
+                        this.orderActive_product = null;
+                        this.orderActive_market = index;
+                        this.orderShow = this.orderData.filter((obj) => {
+                            return obj.marketBasicType.id === index;
+                        })
+                    }
                 } else if (type == 'product') {
-                    this.orderActive_product = index;
-                    this.orderShow = this.orderData.filter((obj) => {
-                        return obj.productBasicType.id === index;
-                    })
+                    if (this.orderActive_product == index) {
+                        this.orderShow = this.orderData;
+                        this.orderActive_product = null;
+                        this.orderActive_market = null;
+                    } else {
+                        this.orderActive_market = null;
+                        this.orderActive_product = index;
+                        this.orderShow = this.orderData.filter((obj) => {
+                            return obj.productBasicType.id === index;
+                        })  
+                    }
                 }
             },
             checkDetail(item) {
@@ -493,7 +553,6 @@
                         .then(Response => {
                             if (Response.data.code === 200) {
                                 alert(Response.data.msg);
-                                // this.TipLink('wait');
                                 Axios.get(this.URL + '/game/compete/operation/order/choose/finish?enterpriseId=' + localStorage.getItem('enterpriseId'))
                                     .then(Response => {
                                         if (Response.data.code === 200) {
@@ -741,10 +800,10 @@
                                     font-size: 12px;
                                     padding: 5px 8px 5px 8px;
                                     margin-right: 20px;
-                                    &:hover {
-                                        background-color: #aaa;
-                                        color: #fff;
-                                    }
+                                    // &:hover {
+                                    //     background-color: #aaa;
+                                    //     color: #fff;
+                                    // }
                                 }
                                 .active {
                                     background-color: #aaa;
@@ -783,9 +842,9 @@
                     }
                     .main {
                         min-height: 240px;
-                        margin: 0 20px 20px 20px;
+                        margin: -30px 20px 20px 0px;
                         padding: 20px;
-                        border: 1px solid #aaa;
+                        // border: 1px solid #aaa;
                         border-radius: 5px;
                         ul {
                             display: flex;
@@ -849,6 +908,51 @@
                                     &:hover {
                                         background-color: #3F51F3;
                                     }
+                                }
+                            }
+                        }
+                        .card_new {
+                            width: 310px;
+                            box-sizing: border-box;
+                            height: 185px;
+                            position: relative;
+                            // color: #666;
+                            padding: 15px;
+                            border-radius: 10px;
+                            background-color: #FFFFD9;
+                            box-shadow: 0px 0px 5px 2px #aaa;
+                            margin-right: 70px;
+                            margin-bottom: 40px;
+                            cursor: pointer;
+                            h4 {
+                                font-size: 14px;
+                            }
+                            span {
+                                position: absolute;
+                                padding: 2px 15px;
+                                right: 0;
+                                cursor: pointer;
+                                top: 10px;
+                                font-size: 12px;
+                                color: #fff;
+                                background-color: #5CCCCC;
+                                
+                            }
+                            ._title {
+                                height: 30px;
+                                font-weight: bold;
+                                line-height: 20px;
+                                border-bottom: 1px solid #eee;
+                            }
+                            .info {
+                                height: 125px;
+                                display: flex;
+                                flex-direction: row;
+                                .items {
+                                    flex: 1;
+                                    padding-top: 5px;
+                                    line-height: 22px;
+                                    font-size: 12px;
                                 }
                             }
                         }

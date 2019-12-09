@@ -9,7 +9,7 @@
                     <div class="inside">
                         <div class="cover" v-for="(item, key) in productData" v-bind:class="{ active: productNow === key }" @click="changeItem(key)">
                             <img src="@/assets/Nav/GameControl/image.svg">
-                            <span>P{{ item.id }}</span>
+                            <span>{{ item.productTypeVo.productName }}</span>
                         </div>
                     </div>
                 </div>

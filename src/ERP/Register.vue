@@ -2,6 +2,8 @@
     <div id="register" class="mg center">
         <div class="form">
             <h2>注册</h2>
+            <!-- <button @click="register_test()">一键注册</button> -->
+            <!-- <button @click="register_test_2()">一键注册2</button> -->
 
             <div class="account">
                 <input class="v-input" placeholder="学号" v-model="studentAccount">
@@ -24,8 +26,8 @@
             </div>
             <div v-for="item in data" class="item">
                 <input :type="item.type" class="v-input" :placeholder="item.title" v-model="item.data">
-                <i v-if="item.check && Reg(item.data, item.RegExp) === true" class="true"></i>
-                <i v-if="item.check && Reg(item.data, item.RegExp) === false" class="false"></i>
+                <i v-if="(item.check && Reg(item.data, item.RegExp)) == true" class="true"></i>
+                <i v-if="(item.check && Reg(item.data, item.RegExp)) == false" class="false"></i>
             </div>
             <div class="radio">
                 <input type="checkbox" class="v-radio" v-model="readed">&nbsp;<p>我已阅读相关<a>《服务条款》</a></p>
@@ -47,7 +49,7 @@
                     { title: '姓名', data: null },
                     { title: '班级', data: null },
                     // { title: '邮箱', data: null },
-                    { title: '联系方式', data: null, RegExp: /^[1]([3-9])[0-9]{9}$/ },
+                    { title: '联系方式', data: null, check: true, RegExp: 'phone' },
                     { title: '密码（长度6-18位）', data: null, check: true, RegExp: /^[\w_-]{6,16}$/, type: 'password' },
                     { title: '确认密码', data: null, check: true, RegExp: 'rePassword', type: 'password' },
                 ],
@@ -104,6 +106,10 @@
             Reg(val, Reg) {
                 if (Reg === 'rePassword' && val) {
                     return val === this.passwordNow;
+                }
+
+                if (Reg === 'phone' && val) {
+                    return /^[1]([3-9])[0-9]{9}$/.test(val);
                 }
 
                 // 为空
@@ -166,6 +172,48 @@
                     }
                 }
             },
+            // 注册测试
+            register_test() {
+                let data = {  
+                    "majorInfoId": 1,
+                    "rePassword": '123456',
+                    "studentAccount": '2017211003',
+                    "studentClass": '03011702',
+                    "studentName": '王昊岩',
+                    "studentPassword": '123456',
+                    "phone": '1375971109'
+                }
+                Axios.post(this.URL + '/user/student/register', data)
+                    .then((Response) => {
+                        if (Response.data.code === 200) {
+                            alert('注册成功，请耐心等待老师审核');
+                            this.$router.push('/login');
+                        } else {
+                            alert('输入信息有误，请检查后重试');
+                        }
+                    })
+            },
+            // 注册测试
+            register_test_2() {
+                let data = {  
+                    "majorInfoId": 1,
+                    "rePassword": '123456',
+                    "studentAccount": '2017210988',
+                    "studentClass": '03011702',
+                    "studentName": '袁乙文',
+                    "studentPassword": '123456',
+                    "phone": '1375971109'
+                }
+                Axios.post(this.URL + '/user/student/register', data)
+                    .then((Response) => {
+                        if (Response.data.code === 200) {
+                            alert('注册成功，请耐心等待老师审核');
+                            this.$router.push('/login');
+                        } else {
+                            alert('输入信息有误，请检查后重试');
+                        }
+                    })
+            }
         }
     }
 </script>

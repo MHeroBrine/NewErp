@@ -3,8 +3,8 @@
         <div class="title">
             <h1>ERP虚拟运营系统</h1>
         </div>
-        <i title="退出比赛"><img src="@/assets/Game/Index/quit.svg" @click="quit()" alt="退出比赛"><p>退出比赛</p></i>
-        <i title="周期推进"><img src="@/assets/Game/Index/next.svg" @click="advance()" alt="周期推进"><p>进入下季度</p></i>
+        <i title="退出比赛" @click="quit()"><img src="@/assets/Game/Index/quit.svg" alt="退出比赛"><p>退出比赛</p></i>
+        <i title="周期推进" @click="advance()"><img src="@/assets/Game/Index/next.svg" alt="周期推进"><p>进入下季度</p></i>
         
         <div class="title_right">
             <div class="user" @mouseover="isHide = false">
@@ -56,6 +56,7 @@
                 if (i) {
                     this.$router.push('/nav');
                     localStorage.clear();
+                    this.$store.state.game.orderManageADTemp = [];
                 }
             },
             linkTo(address) {
@@ -84,7 +85,7 @@
                                 setTimeout(() => {
                                     localStorage.clear();
                                     this.$router.push('/nav');
-                                }, 2000);
+                                }, 1000);
                             } else {
                                 alert(Response.data.msg);
                             }
@@ -127,6 +128,7 @@
             border: 1px solid #eee;
             left: 250px;
             top: 15px;
+            cursor: pointer;
             // border-radius: 50%;
             img {
                 cursor: pointer;

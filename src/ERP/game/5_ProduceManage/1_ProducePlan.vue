@@ -8,7 +8,7 @@
                 <li>
                     <span>产品</span>
                     <input type="text" class="v-input" v-model="productNameNow" readonly>
-                    <img src="@/assets/game/5_ProduceManage/product.svg" alt="产品" @click="notice.product = !notice.product">
+                    <img src="@/assets/game/5_ProduceManage/product.svg" alt="产品" @click="notice.product = !notice.product; notice.factory = false; notice.line = false">
                     <div class="notice" v-if="notice.product" style="z-index: 120">
                         <a v-for="item in productAvailable" @click="selectProduct(item.id, item.productName)">
                             产品{{ item.productName }}
@@ -18,7 +18,7 @@
                 <li>
                     <span>厂房</span>
                     <input type="text" class="v-input" v-model="factoryNameNow" readonly>
-                    <img src="@/assets/game/5_ProduceManage/factory.svg" alt="厂房" @click="notice.factory = !notice.factory">
+                    <img src="@/assets/game/5_ProduceManage/factory.svg" alt="厂房" @click="notice.factory = !notice.factory; notice.product = false; notice.line = false;">
                     <div class="notice" v-if="notice.factory" style="z-index: 119">
                         <a v-show="!this.factoryAvailable == true">（请先选择产品）</a>
                         <a v-for="(item, key) in this.factoryAvailable" @click="selectFactory(key, item.factoryType)">
@@ -29,7 +29,7 @@
                 <li>
                     <span>生产线</span>
                     <input type="text" class="v-input" v-model="lineNameNow" readonly>
-                    <img src="@/assets/game/5_ProduceManage/tools.svg" alt="生产线" @click="notice.line = !notice.line">
+                    <img src="@/assets/game/5_ProduceManage/tools.svg" alt="生产线" @click="notice.line = !notice.line; notice.product = false; notice.factory = false;">
                     <div class="notice" v-if="notice.line" style="z-index: 118">
                         <p v-show="!this.lineAvailable == true">（请先选择厂房和生产线）</p>
                         <p v-for="(item, key) in this.lineAvailable" @click="selectLine(item.id, item.prodlineType)">
@@ -62,14 +62,13 @@
                 <h3>厂房信息</h3>
             </div>
             <div class="main">
-                <table class="v-table_border">
+                <!-- <table class="v-table_border">
                     <tr>
                         <th>厂房编号</th>
                         <th>规模</th>
                         <th>类型</th>
                         <th>生产线数量</th>
                         <th>状态</th>
-                        <th>操作</th>
                     </tr>
                     <template v-for="item in factoryData">
                         <tr>
@@ -79,7 +78,7 @@
                             <td v-if="item.factoryHoldingStatus === 'HOLDING'">非租赁</td>
                             <td v-if="item.factoryHoldingStatus === 'LEASING'">租赁</td>
                             
-                            <td>{{ item.currentCapacity }} / {{ item.factoryCapacity }}<img src="@/assets/Game/5_ProduceManage/add_2.svg" @click="createNewLine(item.id)"></td>
+                            <td>{{ item.currentCapacity }} / {{ item.factoryCapacity }}</td>
                             
                             <td v-if="item.factoryHoldingStatus === 'HOLDING' && item.developStatus === true">拥有中</td>
                             <td v-if="item.factoryHoldingStatus === 'HOLDING' && item.developStatus === false">已出售</td>
@@ -87,17 +86,7 @@
                             <td v-if="item.factoryHoldingStatus === 'LEASING' && item.developStatus === true">租赁中</td>
                             <td v-if="item.factoryHoldingStatus === 'LEASING' && item.developStatus === false">暂停租赁</td>
                         
-                            <td class="btns">
-                                <div class="temp">
-                                    <button class="v-button b-primary" @click="getFactoryDetail(item.id)">详情</button>
-                                    <div class="cover"></div>
-                                    <button class="v-button b-primary" v-if="item.factoryHoldingStatus === 'HOLDING'" @click="sellFactory(item.id)">出售</button>
-                                    <button class="v-button b-primary" v-if="item.factoryHoldingStatus === 'LEASING' && item.developStatus === true" @click="pause_lean(item.id)">暂停</button>
-                                    <button class="v-button b-primary" v-if="item.factoryHoldingStatus === 'LEASING' && item.developStatus === false" @click="_continue_lean(item.id)">继续</button>
-                                </div>
-                            </td>
                         </tr>
-                        <!-- 修建状态 -->
                         <ul class="second" v-for="_item in item.prodlineDevelopDisplayVoList" v-show="false" :ref="'list_' + item.id">
                             <div class="inside">
                                 <li>{{ _item.prodlineType }}</li>
@@ -113,7 +102,6 @@
                                 </li>
                             </div>
                         </ul>
-                        <!-- 生产状态 -->
                         <ul class="second" v-for="_item in item.prodlineProduceDisplayVoList" v-show="false" :ref="'list_' + item.id">
                             <div class="inside">
                                 <li>{{ _item.prodlineType }}</li>
@@ -132,8 +120,61 @@
                             </div>
                         </ul>
                     </template>
-                </table>
+                </table> -->
+                <div class="table_factory" v-for="item in factoryData">
+                    <div class="head" @click="showFactoryLine(item.id)">
+                        <a class="profile"><img src="@/assets/Game/5_ProduceManage/factory_2.svg" class="factory" alt=""></a>
+                        <div class="titles">
+                            <span>厂房编号</span>
+                            <span>规模</span>
+                            <span>类型</span>
+                            <span>生产线数量</span>
+                            <span>状态</span>
+                        </div>
+                        <div class="infos">
+                            <span>{{ item.factoryNumber }}</span>
+                            <span>{{ item.factoryType }}</span>
+                            <span v-if="item.factoryHoldingStatus === 'HOLDING'">非租赁</span>
+                            <span v-if="item.factoryHoldingStatus === 'LEASING'">租赁</span>
+                            <span>{{ item.currentCapacity }} / {{ item.factoryCapacity }}</span>
+                            <span v-if="item.factoryHoldingStatus === 'HOLDING' && item.developStatus === true">拥有中</span>
+                            <span v-if="item.factoryHoldingStatus === 'HOLDING' && item.developStatus === false">已出售</span>
+
+                            <span v-if="item.factoryHoldingStatus === 'LEASING' && item.developStatus === true">租赁中</span>
+                            <span v-if="item.factoryHoldingStatus === 'LEASING' && item.developStatus === false">暂停租赁</span>
+                        </div>
+                        <img src="@/assets/Game/5_ProduceManage/down.svg" class="down" alt="">
+                        <!-- <img src="@/assets/Game/5_ProduceManage/down.svg" class="down" alt=""> -->
+                    </div>
+                    <!-- 修建状态 -->
+                    <ul class="new_ul"v-for="_item in item.prodlineDevelopDisplayVoList" v-show="false" :ref="'list_' + item.id">
+                        <img src="@/assets/Game/5_ProduceManage/tool.svg" class="tool" alt="">
+                        <li>{{ _item.prodlineType }}</li>
+                        <li v-if="_item.prodlineDevelopStatus === 'DEVELOPING'">正在安装</li>
+                        <li v-if="_item.prodlineDevelopStatus === 'DEVELOPPAUSE'">暂停安装</li>
+                        <li v-if="_item.prodlineDevelopStatus === 'DEVELOPED'">完成安装</li>
+                        <li>可生产产品：{{ _item.productName }}</li>
+                        <li>已修建周期：{{ _item.developedPeriod }}</li>
+                    </ul>
+                    <!-- 生产状态 -->
+                    <ul class="new_ul" v-for="_item in item.prodlineProduceDisplayVoList" v-show="false" :ref="'list_' + item.id">
+                        <img src="@/assets/Game/5_ProduceManage/assembly.svg" class="tool" alt="">
+                        <li>{{ _item.prodlineType }}</li>
+                        <li v-if="_item.prodlineProduceStatus === 'TOPRODUCE'">待生产</li>
+                        <li v-if="_item.prodlineProduceStatus === 'PRODUCING'">正在生产</li>
+                        <li v-if="_item.prodlineProduceStatus === 'PRODUCEPAUSE'">暂停生产</li>
+                        <li v-if="_item.prodlineProduceStatus === 'PRODUCED'">完成生产</li>
+                        <li v-if="_item.prodlineProduceStatus === 'TRANSFERRING'">转产中</li>
+
+                        <li v-if="_item.prodlineProduceStatus === 'TOPRODUCE'">可生产产品：{{ _item.productName }}</li>
+                        <li v-if="_item.prodlineProduceStatus !== 'TOPRODUCE'">正在生产产品：{{ _item.productName }}</li>
+                        
+                        <li>已生产周期：{{ _item.producedPeriod }}</li>
+                    </ul>
+                </div>
             </div>
+
+            <button class="v-button b-primary back">返回生产计划</button>
         </div>
     </div>
 </template>
@@ -318,7 +359,7 @@
             showFactoryLine(factoryId) {    
                 for (let i = 0; i < this.$refs['list_' + factoryId].length; i ++) {
                     if (this.$refs['list_' + factoryId][i].style.display == 'none') {
-                        this.$refs['list_' + factoryId][i].style.display = 'block';
+                        this.$refs['list_' + factoryId][i].style.display = 'flex';
                     } else {
                         this.$refs['list_' + factoryId][i].style.display = 'none';
                     }
@@ -336,6 +377,93 @@
             height: 300px;
             h4 {
                 font-size: 14px;
+            }
+        }
+        .table_factory {
+            margin-top: 40px;
+            .head {
+                position: relative;
+                padding: 15px 120px 0 180px;
+                height: 100px;
+                // line-height: 35px;
+                background-color: #eee;
+                box-shadow: 0px 0px 5px 2px #aaa;
+                border-radius: 10px;
+                cursor: pointer;
+                font-size: 14px;
+                &:hover {
+                    background-color: #ddd;
+                }
+                .titles {
+                    display: flex;
+                    justify-content: space-between;
+                    text-align: center;
+                    font-size: 16px;
+                }
+                .infos {
+                    display: flex;
+                    justify-content: space-between;
+                    text-align: center;
+                    font-size: 14px;
+                    padding-top: 35px;
+                    color: #666;
+                    button {
+                        position: absolute;
+                        bottom: -10px;
+                        left: 15px;
+                    }
+                    .add {
+                        position: absolute;
+                        width: 15px;
+                        right: 5px;
+                    }
+                }
+                .down {
+                    position: absolute;
+                    right: 0;
+                    top: 30px;
+                    right: 20px;
+                    width: 50px;
+                }
+                .profile {
+                    position: absolute;
+                    border-radius: 50%;
+                    width: 80px;
+                    height: 80px;
+                    top: 10px;
+                    left: 40px;
+                    // border: 1px solid #aaa;
+                    .factory {
+                        width: 70px;
+                    }
+                }
+                span {
+                    position: relative;
+                    display: block;
+                    width: 80px;
+                    // font-size: 16px;
+                    text-align: center;
+                    // font-weight: bold;
+                }
+            }
+            .new_ul {
+                position: relative;
+                display: flex;
+                margin: 0 40px;
+                padding: 15px 60px 0 140px;
+                height: 60px;
+                line-height: 60px;
+                border-bottom: 1px dotted #aaa;
+                justify-content: space-between;
+                .tool {
+                    position: absolute;
+                    width: 50px;
+                    top: 20px;
+                    left: 0;
+                }
+                li {
+                    width: 150px;
+                }
             }
         }
         .info { 
@@ -574,6 +702,11 @@
                         }
                     }
                 }
+            }
+            .back {
+                position: absolute;
+                right: 10px;
+                bottom: 10px;
             }
         }
     }

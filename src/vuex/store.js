@@ -337,7 +337,9 @@ const game = {
     state: {
         year: null,
         period: null,
-        orderState: false
+        orderState: false,
+        // 订单会广告缓存
+        orderManageADTemp: []
     },
     mutations: {
         // 获取日期
@@ -345,10 +347,12 @@ const game = {
             if (localStorage.getItem('enterpriseId')) {
                 Axios.get(url + '/game/manage/enterprise/period?enterpriseId=' + localStorage.getItem('enterpriseId'))
                     .then(Response => {
-                        // console.log(Response);
+                        console.log(Response);
                         if (Response.data.code === 200) {
                             state.year = Response.data.data.year;
                             state.period = Response.data.data.period;
+                            localStorage.setItem('YEAR', state.year);
+                            localStorage.setItem('PERIOD', state.period);
                             if (parseInt(Response.data.data.period) === 1) {
                                 state.orderState = true;
                                 router.push('/game/orderManage');
@@ -356,7 +360,7 @@ const game = {
                                 state.orderState = false;
                             }
                         } else {
-                            alert(Response.data.msg);
+                            // alert(Response.data.msg);
                         }
                     })
             }

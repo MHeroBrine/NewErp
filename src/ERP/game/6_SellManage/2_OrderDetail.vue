@@ -42,6 +42,7 @@
 </template>
 
 <script>
+    import Axios from 'axios'
     import vueEvent from '../../../model/VueEvent';
 
     export default {
@@ -59,19 +60,31 @@
                 vueEvent.$emit('sidebarState', '/game/orderDetail', 'sold', 'detail');
             }, 1);
             this.$store.commit('pageState', 'delivery');
+            this.getOrder();
         },
         methods: {
             // 获取未交货的订单
+            // getOrder() {
+            //     Axios.get(this.URL + '/game/compete/operation/order/status?enterpriseId=' + localStorage.getItem('enterpriseId') + '&orderStatus=true')
+            //         .then(Response => {
+            //             if (Response.data.code === 200) {
+            //                 this.data = Response.data.data;
+            //             } else {
+            //                 alert(Response.data.msg);
+            //             }
+            //         })
+            // },
+            // 获取一个企业的全部订单
             getOrder() {
-                Axios.get(this.URL + '/game/compete/operation/order/status?enterpriseId=' + localStorage.getItem('enterpriseId') + '&orderStatus=true')
+                Axios.get(this.URL + '/game/compete/operation/order/all?enterpriseId=' + localStorage.getItem('enterpriseId'))
                     .then(Response => {
                         if (Response.data.code === 200) {
                             this.data = Response.data.data;
                         } else {
-                            alert(Response.data.msg);
+                            alert('获取订单信息失败');
                         }
                     })
-            },
+            }
         }
     }
 </script>

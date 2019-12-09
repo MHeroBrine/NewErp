@@ -20,7 +20,7 @@ if (process.env.NODE_ENV == 'development') {
   Vue.config.devtools = false;
 }
 
-const URL = 'http://192.168.43.243:8081';
+const URL = 'http://118.24.113.182:8081';
 Vue.prototype.URL = URL;
 
 // Functions

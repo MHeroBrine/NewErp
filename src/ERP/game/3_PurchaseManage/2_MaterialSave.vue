@@ -27,7 +27,7 @@
                         <td>{{ item.transportMethod.transportName }}</td>
                         <td>{{ item.transportMethod.transportPeriod }}</td>
                         <td>
-                            <button class="v-button b-disabled" v-if="item.transportStatus == 'TOCHECK'" @click="review(item.id)">待审核</button>
+                            <button class="v-button b-primary" v-if="item.transportStatus == 'TOCHECK'" @click="review(item.id)">待审核</button>
                             <button class="v-button b-disabled" v-if="item.transportStatus == 'CHECKED'">已审核</button>
                             <button class="v-button b-disabled" v-if="item.transportStatus == 'TRANSPORTING'">运输中</button>
                             <button class="v-button b-info" v-if="item.transportStatus == 'ARRIVED'">已到达</button>
@@ -40,6 +40,24 @@
                 :divide="pageCount"
                 v-on:change="data = $event">
                 </v-pagination-list>
+            </div>
+
+            <!-- 订单审核 -->
+            <div class="v-alert review" v-show="float.review">
+                <div class="container mg">
+                    <div class="title">
+                        <h3>审核通过采购单？</h3>
+                    </div>
+                    <div class="main">
+                        <h3>注：</h3>
+                        <p>1.只有采购单的审核通过，系统才开始派送原材料</p>
+                        <p>2.派送原材料需要支付0.1w的运输费用</p>
+                    </div>
+                    <div class="button">
+                        <button @click="review()">取消</button>
+                        <button @click="review_confirm()">确认</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -58,6 +76,11 @@
                     detail: true,
                     storage: false
                 },
+                // 浮窗
+                float: {
+                    transport: false,
+                    review: false
+                },
                 pageCount: 10
             }
         },
@@ -75,6 +98,56 @@
                         this.data = Response.data.data;
                     } else {
                         alert('订单数据获取失败');
+                    }
+                })
+            },
+            // 获取所有已有订单信息（页面异步）
+            _getOrderInfo(state) {
+                Axios.post(this.URL + '/game/compete/operation/stock/material/order/all', Qs.stringify({
+                    enterpriseId: localStorage.getItem('enterpriseId')
+                })).then(Response => {
+                    if (Response.data.code === 200) {
+                        // this.page.orderDetail = false;
+                        // this.page.materialPurchase = true;
+                        this.data = [];
+                        setTimeout(() => {
+                            // this.page.orderDetail = true;
+                            this.data = Response.data.data;
+                            setTimeout(() => {
+                                vueEvent.$emit('dataReceive', Response.data.data);                                
+                            }, 0);
+                        }, 0);
+                    } else {
+                        alert('订单获取失败');
+                    }
+                })
+            },
+            // 审核订单
+            review(id) {
+                if (id) {
+                    this.reviewNow = id;
+                } else {
+                    this.reviewNow = null;
+                }
+                this.$store.commit('controlFloatWindow');
+                this.float.review = !this.float.review;
+            },
+            // 提交审核订单
+            review_confirm() {
+                Axios.put(this.URL + '/game/compete/operation/stock/material/transport/status/checked', Qs.stringify({
+                    materialOrderId: this.reviewNow
+                })).then(Response => {
+                    if (Response.data.code === 200) {
+                        this.review(); 
+                        this.$store.commit('controlAlert', [true, 'TRUE', Response.data.msg, null, null, null]);
+                        setTimeout(() => {
+                            this.$store.commit('controlAlert', [false]);
+                            this._getOrderInfo();
+                        }, 1500);
+                    } else {
+                        alert('操作失败');
+                        this._getOrderInfo();
+                        this.review();
                     }
                 })
             },
@@ -115,6 +188,17 @@
                 padding: 20px 50px 20px 50px;
                 table {
                     // margin: 20px;
+                }
+            }
+            .review {
+                .container {
+                    .main {
+                        display: flex;
+                        flex-direction: column;
+                        padding: 20px 50px 20px 50px;
+                        line-height: 30px;
+                        font-size: 14px;
+                    }
                 }
             }
         }

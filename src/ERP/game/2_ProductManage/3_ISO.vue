@@ -37,7 +37,7 @@
                             <th>操作</th>
                         </tr>
                         <tr v-for="item in ISOdata">
-                            <td>{{ item.isoName }}</td>
+                            <td :title="item.isoName">{{ item.isoName }}</td>
                             <td>{{ item.isoResearchPeriod }}</td>
 
                             <td v-if="item.isoStatus === 'DEVELOPING' || item.isoStatus === 'DEVELOPPAUSE'">{{ item.researchedPeriod }}</td>
@@ -93,7 +93,7 @@
         methods: {
             // 获取某个比赛的全部ISO认证信息
             getISOInfo() {
-                Axios.get(this.URL + '/game/compete/operation/iso?gameId=' + localStorage.getItem('GAME'))
+                Axios.get(this.URL + '/game/compete/operation/iso?enterpriseId=' + localStorage.getItem('enterpriseId'))
                     .then(Response => {
                         if (Response.data.code === 200) {
                             this.ISOdata = Response.data.data;

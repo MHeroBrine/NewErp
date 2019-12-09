@@ -2,14 +2,15 @@ import Router from '../../router/index'
 import VueEvent from '../../model/VueEvent'
 import Store from '../../vuex/store'
 import Axios from 'axios'
+import store from '../../vuex/store'
 
-const URL = 'http://192.168.43.243:8081'
+const URL = 'http://118.24.113.182:8081'
 
 let socket = null;
 
 let Ws = {
     initSocket(gameId) {
-        socket = new WebSocket('ws://192.168.43.243:8081/commonWebSocket?gameId=' + gameId);
+        socket = new WebSocket('ws://118.24.113.182:8081/commonWebSocket?gameId=' + gameId);
     },
 
     openSocket() {
@@ -31,6 +32,7 @@ let Ws = {
         let reg_game_over = /^企业破产，游戏结束！$/;
 
         socket.addEventListener('message', function(e) {
+            console.log(e);
             if (e.data.match(reg_enterprise_now)) {
                 // 企业选单
                 let enterpriseId = e.data.match(reg_enterprise_now)[0].replace(/[^0-9]/ig, "");
@@ -38,6 +40,8 @@ let Ws = {
                     alert('轮到您选单了');
                     Router.push('/game/orderManage');
                     VueEvent.$emit('changeOrderState', true);
+                    VueEvent.$emit('getOrderByYear');
+                } else {
                     VueEvent.$emit('getOrderByYear');
                 }
             } else if (e.data.match(reg_enterprise_ready)) {
@@ -49,6 +53,8 @@ let Ws = {
                 // 比赛初始化完成
                 localStorage.removeItem('GAME_cache');
                 localStorage.removeItem('GAME_watching');
+                store.state.game.orderManageADTemp = []
+                // this.$store.state.game.orderManageADTem  p = [];
                 // 获取周期
                 Axios.get(URL + '/game/manage/enterprise/period?enterpriseId=' + localStorage.getItem('enterpriseId'))
                     .then(Response => {

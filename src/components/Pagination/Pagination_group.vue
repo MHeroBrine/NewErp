@@ -72,11 +72,12 @@
                 Axios.get(this.URL + '/game/manage/enterprise/enterpriseInfos/get?gameId=' + this.$store.state.gameControl.gameWatching)
                     .then((Response) => {
                         if (Response.data.code === 200) {
-                            this.groupList = this.Util.chunk(Response.data.data, 6);
+                            this.groupList = this.Util.chunk(Response.data.data, 5);
                             this.total = this.groupList.length;
                             this.isReady = true;
                         } else {
-                            alert(Response.data.msg);
+                            // alert(Response.data.msg);
+                            this.groupList = [];
                             this.isReady = true;
                         }
                     })

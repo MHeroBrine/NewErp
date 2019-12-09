@@ -6,8 +6,8 @@
                 <img src="@/assets/Nav/GameControl/refresh.svg" class="refresh" title="刷新" @click="freshList()">
                 <img src="@/assets/Nav/GameControl/back_round.svg" class="back" title="返回导航" @click="linkTo('/nav')">
                 <!-- <img src="@/assets/Nav/GameControl/add.svg" class="add" title="创建企业" @click="createGroup()"> -->
-                <button class="v-button b-primary delete" @click="deleteGame()">删除比赛</button>
-                <button class="v-button b-primary begin" @click="begin()">开始比赛</button>
+                <button class="v-button b-primary delete" @click="deleteGame()" v-if="isAdmin">删除比赛</button>
+                <button class="v-button b-primary begin" @click="begin()" v-if="isAdmin">开始比赛</button>
             </div>
             <div class="main">
                 <v-pagination-group :createMethod="createGroup"></v-pagination-group>
@@ -25,6 +25,8 @@
     export default {
         data() {
             return {
+                // 检测是否为组长
+                isAdmin: false,
                 data: [
                     {
                         title: '企业名称',
@@ -43,9 +45,16 @@
                 ]   
             }
         },
+        beforeMount() {
+            let that = this;
+            vueEvent.$on('ceoTrue', function() {
+                that.isAdmin = true;
+            })
+        },
         mounted() {
             this.memberTest();
             this.$store.commit('pageState', 'gameControl_joinGame_joinGroup');
+            this.checkIdentity();
         },
         methods: {
             createGroup() {
@@ -166,9 +175,10 @@
                         "concurrentPage": 1,
                         "gameId": localStorage.getItem('GAME_watching'),
                         "gameStatusEnum": "CREATE",
+                        "studentId": this.$store.state.user.id, 
                         "pageSize": 1
                     }).then(Response => {
-                        if (Response.data.code === 200) {
+                        if (Response.data.code === 200 && Response.data.pageData) {
                             alert('你已处于准备中，不可退出');
                             return;
                         } else {
@@ -178,6 +188,20 @@
                 } else {
                     history.back();
                 }
+            },
+            checkIdentity() {
+                Axios.post(this.URL + '/game/manage/search', {
+                    "concurrentPage": 1,
+                    "gameId": localStorage.getItem('GAME'),
+                    "pageSize": 1,
+                    "studentId": this.$store.state.user.id
+                }).then(Response => {
+                    if (Response.data.code === 200) {
+                        if (Response.data.data.pageData[0].creatorId === this.$store.state.user.id) {
+                            this.isAdmin = true;
+                        }
+                    }
+                })
             }
         }
     }

@@ -86,7 +86,7 @@
                         <th>等待周期</th>
                         <th>操作</th>
                     </tr>
-                    <tr v-for="item in orderDetailInfo">
+                    <tr v-for="item in orderDetailInfo" v-if="page.orderDetail">
                         <td>{{ item.orderNumber }}</td>
                         <td>{{ item.materialName }}</td>
                         <td>￥{{ item.materialPrice.toFixed(2) }}</td>
@@ -241,6 +241,9 @@
                     }
                 })
             },
+
+            // * 玄学bug 玄学debug
+            // 有关于vue的eventloop
             // 获取所有已有订单信息（页面异步）
             _getOrderInfo(state) {
                 Axios.post(this.URL + '/game/compete/operation/stock/material/order/all', Qs.stringify({
@@ -248,22 +251,21 @@
                 })).then(Response => {
                     if (Response.data.code === 200) {
                         this.page.orderDetail = false;
-                        this.page.materialPurchase = true;
-                        this.orderDetailInfo = Response.data.data;
-                        if (state) {
-                            this.back();
-                        } else {
-                            // location.reload();
-                            this.$nextTick(() => {
-                                // this.page.orderDetail = true;
-                            })
-                            // this.page.orderDetail = true;
-                        }
+                        // this.page.materialPurchase = true;
+                        this.orderDetailInfo = [];
+                        setTimeout(() => {
+                            this.page.orderDetail = true;
+                            // this.orderDetailInfo = Response.data.data;
+                            setTimeout(() => {
+                                vueEvent.$emit('dataReceive', Response.data.data);                                
+                            }, 0);
+                        }, 0);
                     } else {
                         alert('订单获取失败');
                     }
                 })
             },
+
             // 添加进购物车
             shopAdd(data) {
                 for (let i = 0; i < this.purchaseList.length; i ++) {
@@ -329,8 +331,12 @@
             },
             // 选购运输方式
             selectTransport() {
-                this.$store.commit('controlFloatWindow');
-                this.float.transport = !this.float.transport;
+                if (this.purchaseList[0]) {
+                    this.$store.commit('controlFloatWindow');
+                    this.float.transport = !this.float.transport;
+                } else {
+                    alert('请先选择材料');
+                }
             },
             // 审核订单
             review(id) {

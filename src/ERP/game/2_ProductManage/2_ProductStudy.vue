@@ -98,7 +98,7 @@
             // 产品研发部分
             // 开始开拓
             start(id) {
-                let i = confirm('开始开拓该市场？');
+                let i = confirm('开始研发该产品？');
                 if (i) {
                     Axios.put(this.URL + '/game/compete/operation/product/start?productDevelopId=' + id)
                     .then(Response => {
@@ -118,7 +118,7 @@
             },
             // 暂停开拓
             pause(id) {
-                let i = confirm('暂停开拓该市场？');
+                let i = confirm('暂停研发该产品？');
                 if (i) {
                     Axios.put(this.URL + '/game/compete/operation/product/pause?productDevelopId=' + id)
                     .then(Response => {

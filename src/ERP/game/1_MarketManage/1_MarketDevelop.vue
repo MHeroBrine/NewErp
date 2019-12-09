@@ -22,7 +22,7 @@
                         <td>{{ item.marketMaintainCost }}</td>
                         <td>{{ item.researchedPeriod == null ? '-' : item.researchedPeriod }}</td>
                         <td v-if="item.marketStatus == 'DEVELOPED'">
-                            维护中
+                            已开拓
                         </td>
                         <td v-if="item.marketStatus == 'TODEVELOP'">
                             未开拓
@@ -37,7 +37,7 @@
                             <button class="v-button b-primary" v-if="item.marketStatus == 'TODEVELOP'" @click="start(item.id)">开拓市场</button>
                             <button class="v-button b-primary" v-if="item.marketStatus == 'DEVELOPING'" @click="pause(item.id)">暂停开拓</button>
                             <button class="v-button b-primary" v-if="item.marketStatus == 'DEVELOPPAUSE'" @click="develop(item.id)">继续开拓</button>
-                            <button class="v-button b-info b-disabled" v-if="item.marketStatus == 'DEVELOPED'">已研发</button>
+                            <button class="v-button b-info b-disabled" v-if="item.marketStatus == 'DEVELOPED'">已开拓</button>
                         </td>
                     </tr>
                 </table>

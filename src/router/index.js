@@ -126,7 +126,7 @@ routes.beforeEach((to, from, next) => {
         }
         // 缓存存在且属于该用户
         if (localStorage.getItem('GAME_watching') && (localStorage.getItem('GAME_cache') == userId)) {
-            Axios.get('http://192.168.43.243:8081' + '/game/manage/judge?gameId=' + localStorage.getItem('GAME_watching') + '&userId=' + userId)
+            Axios.get('http://118.24.113.182:8081' + '/game/manage/judge?gameId=' + localStorage.getItem('GAME_watching') + '&userId=' + userId)
                 .then(Response => {
                     if (Response.data.code === 200) {
                         if (Response.data.data === true) {

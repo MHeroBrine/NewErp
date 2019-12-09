@@ -266,10 +266,10 @@
                                     justify-content: center;
                                     align-items: center;
                                     position: absolute;
-                                    top: -10px;
-                                    right: -10px;
-                                    width: 35%;
-                                    height: 35%;
+                                    top: -15px;
+                                    right: -15px;
+                                    width: 50%;
+                                    height: 50%;
                                     font-size: 0.5em;
                                     background-color: #52C41A;
                                     border-radius: 50%;

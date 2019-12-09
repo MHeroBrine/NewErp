@@ -36,6 +36,7 @@
     import Qs from 'qs'
     import VueEvent from '../../model/VueEvent.js'
     import Ws from '../../ERP/Functions/Ws'
+import ReportVue from '../../ERP/nav/gameControl/Report.vue'
 
     export default {
         data() {
@@ -148,7 +149,7 @@
                             return Qs.stringify(params, { indices: false })
                         }
                     }).then((Response) => {
-                        if (Response.data.code === 204) {
+                        if (Response.data.code === 204 || Response.data.code === 200) {
                             this.$store.commit('controlAlert', [true, 'TRUE', '删除成功', null, null, null]);
                             VueEvent.$emit('refreshGroupList');
                         } else {
@@ -288,10 +289,10 @@
                 left: 23%;
                 h3 {
                     color: rgb(95, 95, 95);
-                    font-size: 0.8vw;
+                    font-size: 16px;
                 }
                 p {
-                    font-size: 0.2vw;
+                    font-size: 12px;
                 }
                 .create {
                     position: absolute;
@@ -315,7 +316,7 @@
                     width: 35%;
                     padding: 3% 0 3% 0;
                     border-radius: 5px;
-                    font-size: 0.2vw;
+                    font-size: 10px;
                     color: rgb(117, 117, 117);
                     outline: none;
                     transition: all 0.2s;
@@ -337,7 +338,7 @@
                 .item {
                     position: relative;
                     display: flex;
-                    font-size: 0.2vw;
+                    font-size: 10px;
                     width: 95%;
                     height: 10%;
                     line-height: 220%;

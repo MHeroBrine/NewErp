@@ -74,7 +74,6 @@
                         "gameStatusEnum": "CREATE",
                         "studentId": this.$store.state.user.id
                     }).then((Response) => {
-                        console.log(Response);
                         this.gameList = Response.data.data.pageData;
                         let totalMessage = parseInt(Response.data.data.totalMessage);
                         if (totalMessage % 5 === 0) {

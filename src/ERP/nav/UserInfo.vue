@@ -29,8 +29,8 @@
                             <li><span>性别：</span>{{ this.$store.state.user.gender == 'Man' ? '男' : '女' }}</li>
                         </div>
                         <div class="item">
-                            <li><span>学院：</span>{{ this.$store.state.user.majorBasicInfo.major }}</li>
-                            <li><span>专业：</span>{{ this.$store.state.user.majorBasicInfo.college.college }}</li>
+                            <li><span>专业：</span>{{ this.$store.state.user.majorBasicInfo.major }}</li>
+                            <li><span>学院：</span>{{ this.$store.state.user.majorBasicInfo.college.college }}</li>
                         </div>
                         <div class="item">
                             <li><span>Email：</span>{{ this.$store.state.user.email || "" }}</li>
@@ -46,9 +46,9 @@
                 <div class="main">
                     <!-- <h2>信息修改</h2> -->
                     <ul>
-                        <li class="item"><span>姓名</span><input type="text" class="v-input" v-model="data.studentName"></li>
-                        <li class="item"><span>学号</span><input type="text" class="v-input" v-model="data.studentAccount"></li>
-                        <li class="item"><span>班级</span><input type="text" class="v-input" v-model="data.studentClass"></li>
+                        <li class="item"><span>姓名</span><input type="text" class="v-input" disabled v-model="data.studentName"></li>
+                        <li class="item"><span>学号</span><input type="text" class="v-input" disabled v-model="data.studentAccount"></li>
+                        <li class="item"><span>班级</span><input type="text" class="v-input" disabled v-model="data.studentClass"></li>
                         <li class="item"><span>性别</span><select class="v-input" v-model="data.gender">
                             <option value="Man">男</option>
                             <option value="Woman">女</option>    
